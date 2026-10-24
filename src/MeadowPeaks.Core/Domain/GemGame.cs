@@ -1,0 +1,66 @@
+namespace MeadowPeaks;
+
+public sealed class GemGame : ICoinGame
+{
+    readonly int[] cells = new int[64];
+    public IReadOnlyList<int> Cells => Array.AsReadOnly(cells);
+    public int Moves { get; private set; } = 20;
+    public int Earned { get; private set; }
+    public int LastGain { get; private set; }
+    readonly Random rng;
+    public GemGame(int seed) { rng = new Random(seed); Fresh(); }
+    void Fresh()
+    {
+        do
+        {
+            for (int i = 0; i < 64; i++)
+            {
+                do { cells[i] = rng.Next(6); }
+                while ((i % 8 >= 2 && cells[i] == cells[i - 1] && cells[i] == cells[i - 2]) || (i >= 16 && cells[i] == cells[i - 8] && cells[i] == cells[i - 16]));
+            }
+        } while (Hint() == null);
+    }
+    public HashSet<int> Matches()
+    {
+        var result = new HashSet<int>();
+        for (int i = 0; i < 64; i++)
+        {
+            if (i % 8 < 6 && cells[i] == cells[i + 1] && cells[i] == cells[i + 2]) { result.Add(i); result.Add(i + 1); result.Add(i + 2); }
+            if (i < 48 && cells[i] == cells[i + 8] && cells[i] == cells[i + 16]) { result.Add(i); result.Add(i + 8); result.Add(i + 16); }
+        }
+        return result;
+    }
+    static bool Neighbors(int a, int b) => a >= 0 && b >= 0 && a < 64 && b < 64 && (Math.Abs(a / 8 - b / 8) + Math.Abs(a % 8 - b % 8) == 1);
+    void Swap(int a, int b) => (cells[a], cells[b]) = (cells[b], cells[a]);
+    public (int, int)? Hint()
+    {
+        for (int i = 0; i < 64; i++) foreach (int j in new[] { i + 1, i + 8 })
+        {
+            if (!Neighbors(i, j)) continue;
+            Swap(i, j); bool match = Matches().Count > 0; Swap(i, j);
+            if (match) return (i, j);
+        }
+        return null;
+    }
+    public bool Play(int a, int b)
+    {
+        if (Moves == 0 || !Neighbors(a, b)) return false;
+        Swap(a, b); var matches = Matches();
+        if (matches.Count == 0) { Swap(a, b); return false; }
+        Moves--; LastGain = 0; int chain = 1;
+        while (matches.Count > 0)
+        {
+            LastGain += matches.Count * 2 * chain;
+            for (int col = 0; col < 8; col++)
+            {
+                var kept = Enumerable.Range(0, 8).Select(row => row * 8 + col).Where(i => !matches.Contains(i)).Select(i => cells[i]).ToList();
+                int missing = 8 - kept.Count;
+                for (int row = 0; row < 8; row++) cells[row * 8 + col] = row < missing ? rng.Next(6) : kept[row - missing];
+            }
+            chain++; matches = Matches();
+        }
+        Earned += LastGain;
+        if (Moves > 0 && Hint() == null) Fresh();
+        return true;
+    }
+}

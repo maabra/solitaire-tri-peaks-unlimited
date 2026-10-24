@@ -1,0 +1,41 @@
+using System.Text.Json;
+
+namespace MeadowPeaks;
+
+public sealed class JsonProfileStore : IProfileStore
+{
+    readonly string path;
+    public JsonProfileStore(string path) { this.path = path; }
+    public static string DefaultPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MeadowPeaks", "progress.json");
+    public Progress Load(out string warning)
+    {
+        warning = "";
+        if (!File.Exists(path)) return new();
+        foreach (var candidate in new[] { path, path + ".bak" })
+        {
+            try
+            {
+                var p = JsonSerializer.Deserialize<Progress>(File.ReadAllText(candidate));
+                if (!ProfileValidator.Valid(p)) throw new InvalidDataException();
+                if (candidate != path) warning = "Recovered progress from the backup save.";
+                return p!;
+            }
+            catch (Exception e) when (e is IOException || e is JsonException || e is InvalidDataException || e is UnauthorizedAccessException) { }
+        }
+        warning = "The save could not be read. A new profile is open; the old files are preserved until you make progress.";
+        return new();
+    }
+    public void Save(Progress profile)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+        string temp = path + ".tmp";
+        File.WriteAllText(temp, JsonSerializer.Serialize(profile, new JsonSerializerOptions { WriteIndented = true }));
+        // Only a valid previous save may replace the recovery backup.
+        if (File.Exists(path))
+        {
+            try { var old = JsonSerializer.Deserialize<Progress>(File.ReadAllText(path)); if (ProfileValidator.Valid(old)) File.Copy(path, path + ".bak", true); }
+            catch (JsonException) { }
+        }
+        File.Move(temp, path, true);
+    }
+}

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>MeadowPeaks</AssemblyName>
+    <Version>1.0.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/MeadowPeaks.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="MeadowPeaks.Core/**/*.cs" />
+    <ProjectReference Include="MeadowPeaks.Core/MeadowPeaks.Core.csproj" />
+    <None Include="../LICENSE" Link="GAME-LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="Assets/Runtime-LICENSE.txt" TargetPath="Runtime-LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="Assets/Runtime-ThirdPartyNotices.txt" TargetPath="Runtime-ThirdPartyNotices.txt" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

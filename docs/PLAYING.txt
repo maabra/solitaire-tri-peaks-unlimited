@@ -1,0 +1,65 @@
+MEADOW PEAKS — SOLITAIRE UNLIMITED
+
+Single EXE: double-click MeadowPeaks.exe. No installation or other files needed.
+Its bundled runtime extracts to a local cache automatically on first launch.
+
+Extract the entire ZIP to a folder, then double-click MeadowPeaks.exe.
+Windows 10/11, x64. No installation, internet, account, or runtime download needed.
+Keep the executable together with its bundled files and language folders.
+
+ADVENTURE
+Continue adventure opens a map of 2,000 levels. Pick the golden next level.
+You can replay any completed level. Previous/Next and Go to level browse the map.
+The levels are reproducible seeded deals with three different board layouts.
+
+Play any uncovered card one rank above or below the waste card. Suits do not
+matter. Ace wraps around to King. Clear covering cards to expose new cards.
+Clear the entire board to win. Draw from the stock when you need another rank.
+There is no timer. Every level has a legal solution without buying helpers.
+
+ENDLESS MEADOW
+An ongoing sequence of new seeded hands. Each completed hand grows your garden
+and pays coins. No final level, lives, energy, or entry fee.
+
+COINS & HELPERS
+Start with 300 coins, two Wilds, two +5 helpers, and one Remove helper.
+Wild (75 coins): any exposed card can be played on it; your streak continues.
+More cards (60 coins): adds five cards, usable only when your stock is empty.
+Remove (90 coins): choose any exposed card to remove. Click again to cancel.
+Helpers are inventory items: buy in the shop, then use from the bottom toolbar.
+Using a helper clears undo history so it cannot be reclaimed by undoing.
+Three free undos per hand; further undos cost 15 coins each.
+First level win: 100 + 10 per star + 2 per stock card left.
+Replay win: 30 + 10 per star + 2 per stock card left.
+Endless win: 100 + 10 per star + 2 per stock card left.
+Stars: one for clearing, two for a best streak of 5+, three for 9+.
+Collect a 75-coin daily gift on the home screen. Every five cleared hands earns
+an 80-coin garden gift, also collected on the home screen.
+
+GEM GARDEN
+Always free, including at zero coins. Swap two neighboring gems to make a line
+of three or more. Matches disappear, gems fall, and cascades can follow.
+Each removed gem earns 2 coins times its cascade depth. Coins enter your wallet
+immediately. Invalid swaps cost no moves. Play 20 successful swaps per round,
+then start another free round. The free hint identifies a legal swap.
+Open it through the home screen, the coin shop, or the empty-stock prompt.
+Your solitaire hand waits while you play. Return using Back to my hand.
+
+KEYBOARD
+Tab / Shift+Tab: move focus. Enter / Space: activate the focused button.
+D: draw. U: undo. W: Wild. H: hint. Escape: close dialog / return home.
+F11: maximize or restore the window. Settings include sound, card glow,
+and reduced motion. Sound is off by default and is never required.
+
+SAVING
+Your wallet, inventory, level scores/stars, garden, settings and current
+solitaire hand save automatically to:
+  %LOCALAPPDATA%\MeadowPeaks\progress.json
+A .bak file holds the previous valid save. Undo history and an unfinished
+Gem Garden round are session-only; earned coins save immediately.
+Starting a different solitaire hand asks before replacing your current hand.
+Replay restarts the same deal; spent coins and helpers stay spent.
+
+This is an original offline game. It does not contain the reference games,
+their characters, music, artwork, or assets. Game source/artwork: MIT license.
+Bundled Microsoft runtime files retain their own licenses and notices.
