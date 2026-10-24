@@ -290,7 +290,7 @@ public sealed partial class GameWindow : Form
         Save(); if(overlay.Length>0)Build();else RefreshHandView();
         if ((hand as IAdventureHand)?.Failed == true) Tell("A bomb burst! Undo your last move or replay this deal.");
     }
-    void Draw() { if (session.Draw()) { effects.Fly(hand!.Waste, new(465, 593), new(604, 593)); selectedPowerup = null; cardHint = -1; Chime(); Changed(); } else Tell("The stock is empty. Try a Wild, five more cards, or replay this deal."); }
+    void Draw() { if (session.Draw()) { effects.Fly(hand!.Waste, new(465, 593), new(604, 593)); selectedPowerup = null; cardHint = -1; Chime(); Changed(); } else Tell((hand as ITemporaryHand)?.Effects.DrawCooldown>0 ? $"Stock ready in {((ITemporaryHand)hand!).Effects.DrawCooldown:0.0}s" : "The stock is empty. Try a Wild, five more cards, or replay this deal."); }
     void Undo()
     {
         var result = session.Undo();
@@ -343,7 +343,7 @@ public sealed partial class GameWindow : Form
         {
             int index = i;
             var b = Button("gem" + i, "", 432 + i % 8 * 64, 189 + i / 8 * 60, 60, 59, () => SelectGem(index));
-            b.Gem = gems.Cells[i]; b.Hint = i == selectedGem || i == gemHint;
+            b.Gem = reducedGemFrame?.Cells[i] ?? gems.Cells[i];b.MatchGlow=reducedGemFrame?.Matched.Contains(i)==true?1:0; b.Hint = i == selectedGem || i == gemHint;
             b.AccessibleName = $"{new[] { "Ruby diamond", "Blue pearl", "Violet triangle", "Gold star", "Jade square", "Amber hexagon" }[b.Gem]} row {i / 8 + 1} column {i % 8 + 1}";
             b.Enabled = gems.Moves > 0 && gemAnimation == null;
         }
@@ -567,7 +567,7 @@ public sealed partial class GameWindow : Form
         {
             Art.Text(g, "Share this deal", 280, 180, 36, artwork.Ink, true, 720, true);
             Art.Text(g, session.ShareCode ?? "Start a new hand to share its deal.", 260, 310, 22, artwork.Teal, true, 760, true);
-            Art.Text(g, "Same cards, same level. Open this code from the home screen.\nCampaign levels must be unlocked. Works with version 1.6 and 1.7.", 280, 410, 18, artwork.Teal, false, 720, true);
+            Art.Text(g, "Same cards, same level. Open this code from the home screen.\nCampaign levels must be unlocked. Share between current Windows and browser editions.", 280, 410, 18, artwork.Teal, false, 720, true);
         }
         else if (overlay == "settings")
         {
@@ -613,7 +613,7 @@ public sealed partial class GameWindow : Form
                 }
                 image.Save(Path.Combine(outputDirectory, "screenshots", name + ".png"));
             }
-            void Click(string name) { if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); b.PerformClick(); }
+            void Click(string name) { if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); var stableCards=Controls.OfType<GameButton>().Where(c=>c.Name.StartsWith("card")&&c.Name!=name).ToDictionary(c=>c.Name);b.PerformClick();if(overlay.Length==0 && screen=="play" && (name=="draw"||name.StartsWith("card")))foreach(var pair in stableCards)if(Controls.Find(pair.Key,false).FirstOrDefault() is Control current&&!ReferenceEquals(current,pair.Value))throw new Exception("Untouched card control was replaced"); }
             Shot("01-home"); Click("adventure"); Shot("02-adventure"); Click("level1"); Shot("03-solitaire");
             var path = hand!.Deal.Solution.ToArray();
             Click("card" + path[0].Index);

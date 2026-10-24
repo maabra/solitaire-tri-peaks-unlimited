@@ -84,7 +84,7 @@ internal static class Art
     }
     public static string Rank(int rank) => rank switch { 0 => "★", 1 => "A", 11 => "J", 12 => "Q", 13 => "K", _ => rank.ToString() };
     public static string Suit(int suit) => new[] { "♠", "♥", "♦", "♣" }[suit % 4];
-    public static Color SuitColor(int suit) => suit switch { 1 => Color.FromArgb(184, 64, 74), 2 => Color.FromArgb(59, 103, 160), 3 => Color.FromArgb(41, 127, 87), _ => Ink };
+    public static Color SuitColor(int suit) => suit is 1 or 2 ? Color.FromArgb(184,64,74) : Ink;
     public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);

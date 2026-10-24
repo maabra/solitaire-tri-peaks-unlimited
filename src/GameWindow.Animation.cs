@@ -123,30 +123,34 @@ public sealed partial class GameWindow
         effects.Coins(coins, origin); effects.Burst(origin, artwork.Gold, 24);
         effects.Cheer($"+{coins} little reasons to smile!", new(820, 530)); Chime(SoundCue.Coins);
     }
+    GemAnimationFrame? reducedGemFrame;double reducedGemUntil;
     void StartGemAnimation()
     {
-        if (profile.ReducedMotion || gems is not IAnimatedCoinGame animated || animated.LastAnimation.Count == 0) return;
+        if(gems is not IAnimatedCoinGame animated || animated.LastAnimation.Count==0)return;
+        if(profile.ReducedMotion){reducedGemFrame=animated.LastAnimation.FirstOrDefault(f=>f.Kind==GemFrameKind.Match);reducedGemUntil=effects.Time+.22;return;}
         gemAnimation = new(animated.LastAnimation, effects.Time);
         UpdateGemAnimation();
     }
     void UpdateGemAnimation()
     {
+        if(reducedGemFrame!=null && effects.Time>=reducedGemUntil){reducedGemFrame=null;if(screen=="gems")foreach(var b in Controls.OfType<GameButton>().Where(b=>b.Name.StartsWith("gem")&&int.TryParse(b.Name.Substring(3),out _))){int i=int.Parse(b.Name.Substring(3));b.Gem=gems!.Cells[i];b.MatchGlow=0;b.Invalidate();}}
         if (gemAnimation == null) return;
         if (screen != "gems" || overlay.Length > 0 || profile.ReducedMotion) { gemAnimation = null; return; }
         bool changed = gemAnimation.Advance(effects.Time);
         if (gemAnimation.Finished) { gemAnimation = null; Build(); return; }
         var frame = gemAnimation.Current; float progress = gemAnimation.Progress;
+        int SourceRow(int i){int col=i%8,row=i/8;var kept=Enumerable.Range(0,8).Where(r=>!frame.Matched.Contains(r*8+col)).ToArray();int missing=8-kept.Length;return row<missing?row-missing:kept[row-missing];}
         for (int i = 0; i < frame.Cells.Count; i++)
         {
             if (Controls.Find("gem" + i, false).FirstOrDefault() is not GameButton button) continue;
             button.Gem = frame.Cells[i]; button.Enabled = false; button.VisualOffset = PointF.Empty;
-            button.HideGem = frame.Kind == GemFrameKind.Swap && (i == frame.First || i == frame.Second);
+            button.HideGem = frame.Kind == GemFrameKind.Swap && (i == frame.First || i == frame.Second) || frame.Kind==GemFrameKind.Drop && SourceRow(i)!=i/8;
             button.MatchGlow = frame.Kind == GemFrameKind.Match && frame.Matched.Contains(i) ? MathF.Sin(progress * MathF.PI) : 0;
             if (frame.Kind == GemFrameKind.Swap && (i == frame.First || i == frame.Second))
             {
                 // The moving gem is drawn above controls by the click-through effects layer.
             }
-            if (frame.Kind == GemFrameKind.Drop && frame.Matched.Any(m => m % 8 == i % 8)) button.VisualOffset = new(0, -22 * (1 - progress) * scale);
+
             button.Invalidate();
         }
         if (changed && frame.Kind == GemFrameKind.Swap)
@@ -155,8 +159,10 @@ public sealed partial class GameWindow
             effects.FlyGem(frame.Cells[frame.First], Center(frame.Second), Center(frame.First));
             effects.FlyGem(frame.Cells[frame.Second], Center(frame.First), Center(frame.Second));
         }
+        if(changed && frame.Kind==GemFrameKind.Drop)for(int i=0;i<64;i++)if(SourceRow(i)!=i/8)effects.FlyGem(frame.Cells[i],new(462+i%8*64,218+SourceRow(i)*60),new(462+i%8*64,218+i/8*60));
         if (changed && frame.Kind == GemFrameKind.Match)
         {
+            effects.Add(new GemMatchLinks(frame.Matched));effects.Cheer($"+{frame.Matched.Count*2*frame.Cascade} coins",new(688,180),artwork.Teal);
             foreach (int i in frame.Matched) effects.Burst(new(462 + i % 8 * 64, 218 + i / 8 * 60), WorldPalette.For(i % 20).Accent, 7);
             if (frame.Cascade > 1) effects.Cheer($"Cascade ×{frame.Cascade}!", new(1090, 531), Color.FromArgb(144, 100, 172));
         }

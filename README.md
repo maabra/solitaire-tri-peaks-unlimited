@@ -1,8 +1,7 @@
 # Meadow Peaks — Solitaire Unlimited
 
-A free, offline Windows solitaire game with an original illustrated countryside,
+A Windows and browser solitaire game with an original illustrated countryside,
 large cards, **480,000 adventure levels**, an endless mode, and a match-three coin garden.
-No accounts, ads, entry fees, energy systems, or real-money purchases.
 
 ![Meadow Peaks](docs/home.png)
 
@@ -45,7 +44,7 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 - Endless Meadow: new seeded hands, unlimited retries, coins, and a growing garden.
 - Wild cards, five extra stock cards, targeted removal, free hints and three free undos per hand.
 - A shared coin wallet, helper shop, daily gifts and garden milestones.
-- Gem Garden: an 8×8 match-three game with swaps, cascades, hints, automatic dead-board recovery, and immediate coin payouts. Unlimited free 20-move rounds.
+- Gem Garden: an 8×8 match-three game with swaps, cascades, hints, automatic dead-board recovery, and immediate coin payouts. 20-move rounds with a one-hour refresh cooldown.
 - Automatic local saves, active solitaire hand recovery and a previous-save backup.
 - 20 world palettes with rainbows, snowy valleys, moonlit lakes, blossoms and a cheerful bird guide, Pip.
 - Flying cards, reveals, sparkles, coin trails, combo cheers and confetti celebrations.
@@ -164,3 +163,13 @@ covered by their included licenses and third-party notices.
 Play without installing through GitHub Pages once the repository Pages source is set to GitHub Actions. [Browser setup and parity contract](docs/WEB.md). The browser game includes the same campaign, card mechanics, helpers, coins and Gem Garden, with compatible exported saves and deal codes.
 
 Release 1.7 replaces native button painting to remove black corners and keep animated labels centered, adds illustrated explanations, and handles startup errors in a readable report. Stock draws now have a 2-second cooldown; +5 rescue cards expire after 10 seconds; fresh deals recharge for 30 seconds. No level countdown or permanent boosts.
+
+## Release 1.8
+
+New deals add rotated fans, rings, ribbons, butterfly wings, tower groups and
+other graph-based story formations, with a shared illustrated backdrop. The
+board updates surviving cards in place; Gem Garden shows connected matches,
+coin bursts, falling gems and cascades. Helpers follow mechanic discovery and
+level relevance. Fresh Garden recharges for one hour in real time and preserves
+the board and deadline across restarts. Flowery scene messages remain;
+promotional free/no-purchases claims have been removed from the interface.

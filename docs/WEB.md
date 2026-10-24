@@ -1,8 +1,7 @@
 # Browser edition
 
 The original browser game is in `web/`. It uses standard ES modules, has no build
-dependencies, and runs entirely in the browser. No account, server database,
-advertising, or paid purchases are involved.
+dependencies, and runs entirely in the browser.
 
 For a local preview, run `python -m http.server 8765 --directory web` from the
 repository and open http://localhost:8765. Opening index.html directly with a
@@ -16,10 +15,10 @@ Windows binaries, tests, and developer files from the published site.
 ## Windows and browser parity
 
 Both editions include the 480,000-level campaign, 24,000 chapters, endless mode,
-4–8 card rows, fifteen card kinds, eleven consumables, the shared coin economy,
+layered formations, 5–8 tower layouts, fifteen card kinds, eleven consumables, the shared coin economy,
 Gem Garden, hint timers, temporary effects, two-second stock draw cooldowns,
 ten-second rescue cards, thirty-second fresh deals, daily and garden gifts,
-chapter gifts, bonus levels, picnic goals, favorites, star hunt, and MP16 codes.
+chapter gifts, bonus levels, picnic goals, favorites, star hunt, and versioned MP16/MP18 codes.
 Windows has a native animated effects layer and synthesized sound; the browser
 uses CSS/Web Animations and Web Audio. Their visual presentation differs.
 
@@ -48,3 +47,22 @@ Optional UI checks: serve web on port 8765, then run
 The campaign count supports a planning estimate of 8,000 campaign hours at one
 minute per level, plus up to 2,000 hours budgeted for endless. This is an estimate,
 not a measured playtime guarantee or an artificial play limit.
+
+## Release 1.8 presentation
+
+New deals use 16 story formation families with deterministic geometry variations:
+rotated fans, rings, twin arches, butterflies, ribbons, diamond loops, starbursts,
+5?8 towers, crowns, hourglasses and serpents. Explicit cover graphs match rotated
+card intersections. Old saved boards and MP16 codes keep their original rules;
+new layouts use MP18 codes.
+
+Both editions share the original generated story-meadow illustration. Saved
+reference pages, videos and examples remain excluded from builds and source ZIPs.
+Unchanged cards retain their controls/DOM nodes during stock draws and clears.
+Gem Garden displays swap, connected-match highlights, coin bursts, falls and
+cascades; reduced motion uses a brief static highlight. Helpers are hidden until
+discovered, and obstacle helpers stay off boards where they have no target.
+
+Fresh Garden has a minimum one-hour real-time recharge. Its deadline, gem board
+and successful swaps are saved, including across browser reloads and Windows
+restarts. Menus do not pause this deadline.

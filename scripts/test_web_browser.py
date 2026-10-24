@@ -18,12 +18,16 @@ async def main():
         await page.goto('http://127.0.0.1:8765/', wait_until='networkidle')
         await page.screenshot(path=str(OUT/'home.png'), full_page=True)
         await page.locator('[data-action="continue"]').click()
+        assert await page.locator('.tool').count()==3
         await page.screenshot(path=str(OUT/'cards.png'), full_page=True)
+        await page.wait_for_timeout(100)
+        await page.evaluate('window.stockNode=document.querySelector(\'[data-action="draw"]\');window.cardNodes=new Map([...document.querySelectorAll(".board .card")].map(e=>[e.dataset.action,e]));')
         fixture=json.loads((ROOT/'shared'/'engine-fixtures.json').read_text('utf-8'))['StoryDeals'][0]
         for step in fixture['Deal']['Solution']:
             action='draw' if step['Index']<0 else 'card:'+str(step['Index'])
             if step['Index']<0: await page.wait_for_function('!document.querySelector(\'[data-action="draw"]\').disabled')
             await page.locator('[data-action="'+action+'"]').click()
+            assert await page.evaluate('window.stockNode===document.querySelector(\'[data-action="draw"]\')&&[...document.querySelectorAll(".board .card")].every(e=>window.cardNodes.get(e.dataset.action)===e)')
         await page.wait_for_selector('dialog[open] .victory')
         assert await page.locator('.victory').inner_text() and 'Beautifully' in await page.locator('.victory').inner_text()
         saved=await page.evaluate('JSON.parse(localStorage.getItem("meadow-peaks-profile"))')
@@ -64,6 +68,26 @@ async def main():
         await page.locator('[data-action="guide"]').first.click()
         assert await page.locator('.guide-grid article').count()==13
         assert errors==[], errors
+        await context.close()
+        context=await browser.new_context(viewport={'width':1280,'height':950},reduced_motion='no-preference')
+        page=await context.new_page()
+        page.on('pageerror',lambda e:errors.append(str(e)))
+        await page.goto('http://127.0.0.1:8765/')
+        await page.locator('[data-action="gems"]').first.click()
+        await page.locator('[data-action="gemHint"]').click()
+        hints=await page.locator('.gem.found').evaluate_all('els=>els.map(e=>e.dataset.action)')
+        for action in hints:await page.locator('[data-action="'+action+'"]').click()
+        await page.wait_for_selector('.gem-links path')
+        assert await page.locator('.gem.matched').count()>=3
+        assert '+' in await page.locator('.gem-reward').inner_text()
+        await page.screenshot(path=str(OUT/'gem-match-animation.png'),full_page=True)
+        await page.wait_for_selector('.gems .gem:enabled',timeout=15000)
+        assert (await page.evaluate('JSON.parse(localStorage.getItem("meadow-peaks-profile")).ActiveGarden.Swaps.length'))==1
+        await page.reload()
+        await page.locator('[data-action="gems"]').first.click()
+        assert '19 moves left' in await page.locator('.subhead .meta').inner_text()
+        assert await page.locator('#garden-refresh').is_disabled()
+        assert errors==[],errors
         await browser.close()
         print('PASS: real-browser win, rewards, gem swap, save restore, settings, guide, and mobile deep board; no JavaScript errors.')
 

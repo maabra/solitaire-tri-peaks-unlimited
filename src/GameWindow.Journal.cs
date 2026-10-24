@@ -18,7 +18,7 @@ public sealed partial class GameWindow
     void ImportDeal()
     {
         using var dialog=new Form { Text="Open a deal code", ClientSize=new(590,165), FormBorderStyle=FormBorderStyle.FixedDialog, StartPosition=FormStartPosition.CenterParent, MaximizeBox=false, MinimizeBox=false };
-        var label=new Label { Text="Paste a Meadow Peaks 1.6 or 1.7 deal code. Your current hand will be replaced.", Left=18, Top=16, Width=550, Height=35 };
+        var label=new Label { Text="Paste an MP16 or MP18 deal code. Your current hand will be replaced.", Left=18, Top=16, Width=550, Height=35 };
         var input=new TextBox { Left=18, Top=57, Width=550, MaxLength=80 };
         var open=new Button { Text="Open", Left=295, Top=105, Width=130, DialogResult=DialogResult.OK };
         var cancel=new Button { Text="Cancel", Left=438, Top=105, Width=130, DialogResult=DialogResult.Cancel };

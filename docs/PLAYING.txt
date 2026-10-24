@@ -130,3 +130,12 @@ The +5 rescue helper creates five cards with a 10-second use window. Unused
 rescue cards disappear; ordinary stock and card-gift rewards do not expire.
 Effect clocks pause on menus, guides and inactive windows. No level countdown.
 Browser: Settings can export/import compatible progress JSON files.
+
+STORY FORMATIONS AND GEM GARDEN (1.8)
+New hands use rotated fans, rings, ribbons, butterfly wings, tower groups and
+other overlapping formations. Clear the cards covering a card to expose it.
+Old saved boards and deal codes remain compatible.
+Helpers appear as you discover their mechanics. Ice/lock/bomb/vine/phase helpers
+are hidden from a level toolbar when that obstacle is absent or already cleared.
+Fresh Garden recharges for ONE HOUR in real time. The board, moves and deadline
+survive closing/reopening. Gem matches highlight before clearing and falling.

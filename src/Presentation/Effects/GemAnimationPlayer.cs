@@ -14,7 +14,7 @@ internal sealed class GemAnimationPlayer
         double elapsed = time - started; int previous = FrameIndex;
         for (int i = 0; i < frames.Count; i++)
         {
-            double duration = frames[i].Kind == GemFrameKind.Match ? .24 : .2;
+            double duration = frames[i].Kind == GemFrameKind.Match ? .48 : .30;
             if (elapsed < duration) { FrameIndex = i; Progress = (float)(elapsed / duration); return previous != i; }
             elapsed -= duration;
         }

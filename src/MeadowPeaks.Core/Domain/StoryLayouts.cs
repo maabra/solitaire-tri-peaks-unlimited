@@ -18,15 +18,15 @@ public sealed class StoryLayouts : ILayoutProvider
             // Center first, ends last, so both ends of a fan can open.
             foreach(double a in split?arc.OrderBy(a=>Math.Abs(a)):arc.AsEnumerable()){double t=a*Math.PI/180;Add(cx+rx*Math.Sin(t),cy-ry*Math.Cos(t),a);}
         }
-        double bend=(variation%5-2)*5;
+        double bend=((variation*48271L+12345)%32749)/32749.0*24-12;
         if(family==0)
         {
             var classic=new PeakLayouts().Create(21);
-            foreach(var s in classic)Add(78+s.X*81,48+s.Row*57);
+            foreach(var s in classic)Add(500+(78+s.X*81-500)*(1+bend*.004),48+s.Row*(55+bend*.15));
         }
         else if(family is 1 or 10 or 12)
         {
-            Arc(500,170,300+bend,112,16,-68,68);
+            Arc(500,170,(family==10?320:300)+bend,family==10?86:112,16,family==10?-80:-68,family==10?80:68);
             int stacks=family==12?5:3;
             for(int i=0;i<stacks;i++)Stack(90+i*820.0/(stacks-1),195,stacks==5?3:4,(i%2==0?1:-1)*(variation%3));
         }
@@ -35,7 +35,7 @@ public sealed class StoryLayouts : ILayoutProvider
             int n=20;
             for(int i=0;i<n;i++){
                 double t=(i*360.0/n-90)*Math.PI/180,x,y;
-                if(family==6){double a=i*4.0/n;int edge=(int)a;double f=a-edge;var corners=new[]{(500d,46d),(770d,155d),(500d,263d),(230d,155d),(500d,46d)};x=corners[edge].Item1+(corners[edge+1].Item1-corners[edge].Item1)*f;y=corners[edge].Item2+(corners[edge+1].Item2-corners[edge].Item2)*f;}
+                if(family==6){double a=i*4.0/n;int edge=(int)a;double f=a-edge;var corners=new[]{(500d,46+bend*.3),(770+bend,155d),(500d,263-bend*.3),(230-bend,155d),(500d,46+bend*.3)};x=corners[edge].Item1+(corners[edge+1].Item1-corners[edge].Item1)*f;y=corners[edge].Item2+(corners[edge+1].Item2-corners[edge].Item2)*f;}
                 else {x=500+(family==14?Math.Sin(t*2):Math.Cos(t))*(230+bend);y=155+Math.Sin(t)*100;}
                 Add(x,y,t*180/Math.PI+90);
             }
@@ -43,7 +43,8 @@ public sealed class StoryLayouts : ILayoutProvider
         }
         else if(family is 3 or 4 or 9)
         {
-            Arc(282,157,176,95,12,-65,65);Arc(718,157,176,95,12,-65,65);
+            if(family==4){Arc(380,170,220+bend,108,12,-112,-5);Arc(620,170,220+bend,108,12,5,112);}
+            else{Arc(282,157,176+bend,family==9?65:95,12,-65,65);Arc(718,157,176+bend,family==9?65:95,12,-65,65);}
             Stack(110,207,3);Stack(500,207,3);Stack(890,207,3);
         }
         else if(family is 5 or 11 or 15)
@@ -53,12 +54,12 @@ public sealed class StoryLayouts : ILayoutProvider
         }
         else if(family==7)
         {
-            for(int arm=0;arm<6;arm++)for(int i=0;i<5;i++){double a=(arm*60-90)*Math.PI/180;Add(500+Math.Cos(a)*(48+i*48),155+Math.Sin(a)*(24+i*20),arm*60);}
+            for(int arm=0;arm<6;arm++)for(int i=0;i<5;i++){double a=(arm*60-90)*Math.PI/180;Add(500+Math.Cos(a)*(48+i*(48+bend*.25)),155+Math.Sin(a)*(24+i*(20+bend*.1)),arm*60);}
         }
         else
         {
             int stacks=family==13?8:5+variation%3;
-            for(int i=0;i<stacks;i++)Stack(80+i*840.0/(stacks-1),80+(i%2)*28,4+(i<variation%3?1:0),(i%2==0?1:-1)*(2+variation%4));
+            for(int i=0;i<stacks;i++)Stack(80+i*(840+bend)/(stacks-1),80+(i%2)*28,4+(i<variation%3?1:0),(i%2==0?1:-1)*(2+variation%4));
         }
         // Rotated-rectangle SAT: only genuine intersections block a card.
         bool Overlap(int a,int b)

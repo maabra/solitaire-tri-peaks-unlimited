@@ -96,11 +96,11 @@ internal sealed class FlyingGem : TimedEffect
 {
     readonly int kind;
     readonly PointF from, to;
-    public FlyingGem(int kind, PointF from, PointF to) : base(.2f) { this.kind = kind; this.from = from; this.to = to; }
+    public FlyingGem(int kind, PointF from, PointF to) : base(.30f) { this.kind = kind; this.from = from; this.to = to; }
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         float p = Progress * Progress * (3 - 2 * Progress), x = from.X + (to.X - from.X) * p, y = from.Y + (to.Y - from.Y) * p;
-        artwork.DrawGem(g, new(x - 18, y - 18, 36, 36), kind);
+        var state=g.Save();g.SetClip(new RectangleF(425,180,530,500));artwork.DrawGem(g, new(x - 18, y - 18, 36, 36), kind);g.Restore(state);
     }
 }
 

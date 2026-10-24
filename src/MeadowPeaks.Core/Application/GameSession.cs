@@ -167,8 +167,8 @@ public sealed class GameSession
         if (bonus)
         {
             var discovered=Powerups.All.Where(p=>HelperDiscovered(p.Id)).ToArray();
-            string item = discovered[(Level / 25) % discovered.Length].Id;
-            Inventory.Add(item, 1);
+            string? item = discovered.Length>0 ? discovered[(Level / 25) % discovered.Length].Id : null;
+            if(item!=null)Inventory.Add(item, 1);
             result = result with { Coins = checked(result.Coins + 125), BonusCoins = 125, BonusItem = item };
         }
         Chapter chapter = Campaign.ForLevel(Level);
