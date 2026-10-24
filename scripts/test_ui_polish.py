@@ -27,6 +27,7 @@ async def main():
      assert await page.locator('.event-panel').evaluate('e=>getComputedStyle(e).display')=='block'
      assert await page.locator('.event-tile').first.evaluate('e=>e.clientWidth')>(110 if width>700 else 85)
     assert await page.locator('.shell-close').is_visible(),name
+    assert await page.locator('#modal .info-button').evaluate_all('buttons=>buttons.every(e=>Math.abs(e.getBoundingClientRect().width-e.getBoundingClientRect().height)<2)'),(name,width,'distorted info button')
     clipping=await page.locator('#modal').evaluate("""root=>[...root.querySelectorAll('button,h2,h3,strong')].filter(e=>e.getClientRects().length&&!e.closest('.activity-tabs')&&(e.scrollWidth>e.clientWidth+2||e.scrollHeight>e.clientHeight+3)).map(e=>[e.tagName,e.innerText,e.scrollWidth,e.clientWidth,e.scrollHeight,e.clientHeight])""")
     assert not clipping,(name,width,clipping)
     overflow=await page.locator('#modal').evaluate("root=>{let r=root.getBoundingClientRect();return [...root.querySelectorAll('*')].filter(e=>e.getClientRects().length&&e.getBoundingClientRect().right>r.right+2).slice(0,10).map(e=>[e.tagName,e.className,e.innerText])}")
@@ -51,6 +52,13 @@ async def main():
   await page.set_viewport_size({'width':1280,'height':800});await page.locator('#app [data-action=events]').click()
   assert await page.locator('.menu-arrival').first.evaluate('e=>getComputedStyle(e).animationName')=='menu-item'
   await page.emulate_media(reduced_motion='reduce');assert await page.locator('.menu-arrival').first.evaluate('e=>getComputedStyle(e).animationName')=='none'
+  await page.locator('#modal [data-action="ev:regatta"]').click()
+  assert await page.locator('.field-notes').count()==1
+  await page.locator('.field-notes summary').click()
+  assert 'CPU' in await page.locator('.field-notes').inner_text()
+  assert await page.locator('.field-notes').evaluate('e=>e.open')
+  await page.locator('.panel-heading .info-button').click();assert 'Consecutive' in await page.locator('#context-help').inner_text()
+  await page.keyboard.press('Escape')
   assert not errors,errors;await browser.close()
  print('PASS: six shared menus at four sizes, text containment, accessible layered help, close controls, motion preferences and saved-hand navigation.')
 asyncio.run(main())

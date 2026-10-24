@@ -1,5 +1,6 @@
-import {gameIcon} from './game-art.mjs';
-import {features} from './journey-guide.mjs';
+import {visualizeMenu} from './visual-cues.mjs';
+import {gameIcon,kindIcon} from './game-art.mjs';
+import {features,mechanicLessons} from './journey-guide.mjs';
 import {helpers} from './core.mjs';
 
 const explanations={
@@ -17,7 +18,7 @@ const explanations={
  default:['Your next little step','Use the navigation above to move between your cards, map, activities and helper shop. Your unfinished hand stays saved as you explore.','You can return to the same cards whenever you are ready.','compass']
 };
 export function infoButton(topic,label='How this works'){return `<button type="button" class="info-button" data-ui-info="${topic}" aria-label="${label}" title="${label}">i</button>`;}
-function helpData(topic){if(topic==='overview')topic='hub';if(topic.startsWith('helper-')){const h=helpers.find(h=>h.Id===topic.slice(7));if(h)return [h.Name,h.Description,'Buy with coins in the helper shop. Each use consumes one; effects are temporary.',h.Id];}const f=features.find(f=>f.id===topic);return explanations[topic]??(f?[f.title,f.text,'Continue playing cards to earn progress, then return here to collect or use it.',f.icon]:explanations.default);}
+function helpData(topic){if(topic.startsWith('mechanic')){const kind=Number(topic.slice(8)),lesson=mechanicLessons[kind];if(lesson)return [lesson[0],lesson[1],'Watch the badge on this card.',kindIcon[kind]];}if(topic==='overview')topic='hub';if(topic.startsWith('helper-')){const h=helpers.find(h=>h.Id===topic.slice(7));if(h)return [h.Name,h.Description,'Buy with coins in the helper shop. Each use consumes one; effects are temporary.',h.Id];}const f=features.find(f=>f.id===topic);return explanations[topic]??(f?[f.title,f.text,'Continue playing cards to earn progress, then return here to collect or use it.',f.icon]:explanations.default);}
 export function installHelp(){
  const help=document.createElement('dialog');help.id='context-help';help.className='context-help';help.setAttribute('aria-labelledby','help-title');document.body.append(help);
  document.addEventListener('click',e=>{const info=e.target.closest('[data-ui-info]');if(info){e.preventDefault();e.stopImmediatePropagation();const [title,text,flow,icon]=helpData(info.dataset.uiInfo);help.innerHTML=`<div class="help-art">${gameIcon(icon,72)}</div><small class="eyebrow">PIP’S FIELD NOTES</small><h2 id="help-title">${title}</h2><p>${text}</p><div class="help-flow">${gameIcon('compass',28)}<span>${flow}</span></div><button class="primary" data-ui-dismiss>Got it</button>`;if(!help.open)help.showModal();help.querySelector('[data-ui-dismiss]').focus();return;}if(e.target.closest('[data-ui-dismiss]'))help.close();},true);
@@ -29,9 +30,10 @@ export function frameModal(modal){
  const topic=event?classes.split(' ').find(c=>c.startsWith('event-')&&c!=='event-panel')?.slice(6)??'hub':modal.querySelector('.shop')?'shop':modal.querySelector('.wheel-panel')?'wheel':modal.querySelector('[data-setting]')?'settings':modal.querySelector('.favorite-list')?'journal':modal.querySelector('.guide-grid')?'guide':modal.querySelector('.level-preview')?'cards':'default';
  const heading=modal.querySelector('h2');if(heading){heading.classList.remove('panel-ribbon');const wrap=document.createElement('div');wrap.className='panel-heading';heading.before(wrap);wrap.innerHTML=`<span class="heading-art">${gameIcon(helpData(topic)[3],48)}</span>`;wrap.append(heading);wrap.insertAdjacentHTML('beforeend',infoButton(topic));}
  const content=document.createElement('div');content.className='dialog-content';while(modal.firstChild)content.append(modal.firstChild);modal.append(content);
- const nav=document.createElement('nav');nav.className='menu-navigation';nav.setAttribute('aria-label','Game places');nav.innerHTML=`<span class="menu-location">MEADOW PEAKS <span> / ${event?'Activities':topic==='shop'?'Helper shop':topic==='settings'?'Settings':'Your adventure'}</span></span><div>${[['map','travel','Map'],['continue','play','My cards'],['events','compass','Activities'],['shop','bag','Shop']].map(([action,icon,label])=>`<button data-action="${action}" ${action==='shop'&&topic==='shop'||action==='events'&&event?'aria-current="page"':''}>${gameIcon(icon,24)}<span>${label}</span></button>`).join('')}</div>`;nav.insertAdjacentHTML('beforeend','<button class="close shell-close" data-action="close" aria-label="Close menu">×</button>');modal.prepend(nav);
+ const nav=document.createElement('nav');nav.className='menu-navigation';nav.setAttribute('aria-label','Game places');nav.innerHTML=`<span class="menu-location" aria-hidden="true"></span><div>${[['map','travel','Map'],['continue','play','Play'],['events','compass','Activities'],['shop','bag','Shop']].map(([action,icon,label])=>`<button data-action="${action}" ${action==='shop'&&topic==='shop'||action==='events'&&event?'aria-current="page"':''}>${gameIcon(icon,36)}<span>${label}</span></button>`).join('')}</div>`;nav.insertAdjacentHTML('beforeend','<button class="close shell-close" data-action="close" aria-label="Close menu">×</button>');modal.prepend(nav);
  // Explanations belong beside the item they describe, without nesting buttons.
  modal.querySelectorAll('.shop article').forEach(article=>{const action=article.querySelector('[data-action^="buy:"]')?.dataset.action;if(action)article.insertAdjacentHTML('afterbegin',infoButton('helper-'+action.slice(4)));});
  modal.querySelectorAll('.event-hub .event-tile,.album-category,.reward-track>article,.skin-card').forEach((el,i)=>{el.style.setProperty('--item-delay',Math.min(i,10)*25+'ms');el.classList.add('menu-arrival');});
+ visualizeMenu(modal);
  modal.closest('dialog').scrollTop=0;
 }

@@ -26,3 +26,17 @@ Browser verification covers six general menus at four window sizes, all thirteen
 activity panels at three sizes, individual label containment, layered help,
 saved-hand continuity, keyboard dismissal and motion preferences. Existing game,
 garden, map, timers, persistence and chapter-art regressions are also run.
+
+
+## Visual-first pass 2.3.1
+
+visual-cues.mjs supplies compact, accessible destination controls and a pictorial
+Play → Earn → Collect strip. Illustrated navigation, red title ribbons, gold
+selection states and larger activity art establish the hierarchy. Short labels
+and numeric badges replace long activity names and explanations.
+
+Shop items show helper artwork, quantity and coin price. Their i buttons retain
+the complete helper rules. Long activity instructions move into an accessible
+Details disclosure, preserving rules on the same screen. Pip gives one brief
+next step; its information button opens the full explanation, including special
+card mechanics. Accessible names preserve the intent of compact buttons.
