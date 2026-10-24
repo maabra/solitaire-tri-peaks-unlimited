@@ -112,3 +112,6 @@ balloon banking, live mutation persistence, undo, consent, all activity panels a
 Full campaign validation: all 480,000 MP21 campaign seeds passed mutation-aware
 winning-witness replay. Another 3,000 alternate-seed/balloon deals passed.
 Completed album volumes remain available in the album gallery.
+
+2.1.1: TNT, Joker and Remove collect key and gift effects, preventing cleared keys
+from leaving lower locks impossible. Clear counters include helper removals.

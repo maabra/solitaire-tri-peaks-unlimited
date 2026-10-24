@@ -8,7 +8,7 @@ campaign levels**, 32 formation families, an endless mode and a match-three coin
 ## Play
 
 [Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
-[download MeadowPeaks-2.1.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.1.0/MeadowPeaks-2.1.exe).
+[download MeadowPeaks-2.1.1.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.1.1/MeadowPeaks-2.1.1.exe).
 
 The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
 no installer, administrator access, existing browser or network connection is
@@ -80,7 +80,7 @@ Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
 ```powershell
 ./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.1.exe
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.1.1.exe
 python scripts/package_web.py
 python scripts/package_source.py
 ```

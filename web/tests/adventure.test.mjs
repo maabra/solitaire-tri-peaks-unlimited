@@ -44,3 +44,7 @@ console.log('PASS: album rarity/duplicates, 24h missions, monthly costs, regatta
 let safe=new Session(new ProfileStore(null));safe.start(1);const oldHand=safe.hand;assert.throws(()=>safe.start(1,false,-1));assert.equal(safe.hand,oldHand);
 let damaged=clone(restored.p);damaged.Coins=987;damaged.Adventure.Hunt.Open=[1,1];memory.set('meadow-peaks-profile',JSON.stringify(damaged));let recovered=new Session(new ProfileStore(adapter),undefined,()=>now);assert.equal(recovered.p.Coins,987);assert.deepEqual(recovered.events.a.Hunt.Open,[]);
 console.log('PASS: malformed event recovery retains the wallet; invalid starts preserve the existing hand.');
+
+// Destructive helpers collect keys/gifts instead of making lower locks impossible.
+for(const helper of ['tnt','joker','remove']){let d=board([card(9,K.Lock),card(2,K.Key),card(12,K.Gift)]);d.Layout[0].BlockedBy=[1];const h=new AdventureHand(d);assert.ok(h.use(helper,1));assert.equal(h.s.Keys,1);assert.equal(h.s.HasKey,true);assert.ok(h.allows(h.face(0)));}
+console.log('PASS: TNT, Joker and Remove preserve key/lock progression.');
