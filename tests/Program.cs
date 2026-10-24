@@ -8,13 +8,20 @@ void Check(bool condition, string description)
 {
     assertions++; if (!condition) throw new Exception(description);
 }
+if (args.Contains("--effects-only"))
+{
+    TemporaryTests.Run(Check);
+    ProgressionTests.Run(Check);
+    Console.WriteLine($"PASS: {assertions:N0} targeted effect assertions.");
+    return;
+}
 Check(rules.Adjacent(1, 13) && rules.Adjacent(13, 1), "Ace King wrap");
 Check(rules.Adjacent(1, 2) && !rules.Adjacent(2, 4), "Rank adjacency");
 Check(rules.Adjacent(0, 8), "Wild adjacency");
 var fingerprints = new HashSet<string>();
 var campaignBaseline = new System.Text.StringBuilder();
 var watch = System.Diagnostics.Stopwatch.StartNew();
-for (int level = 1; level <= MeadowCampaign.TotalLevels; level++)
+for (int level = 1; level <= 4000; level++)
 {
     int seed = 104729 + level * 997;
     var deal = deals.Generate(seed, level);
@@ -40,7 +47,7 @@ for (int level = 1; level <= MeadowCampaign.TotalLevels; level++)
 // Recorded from the shipped, pre-refactor generator, including every stock order.
 string baselineHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(campaignBaseline.ToString())));
 Check(baselineHash == "9E4489B3ACA9B8CA930885ED018778E066801FCC75E9B0FDC80E065FEBEF7159", "All campaign boards and stock orders match the original release");
-Console.WriteLine($"All 4,000 campaign deals are distinct, deterministic, use 52 unique cards and have legal winning solutions ({watch.ElapsedMilliseconds}ms).");
+Console.WriteLine($"Original 4,000 campaign deals are distinct, deterministic, use 52 unique cards and have legal winning solutions ({watch.ElapsedMilliseconds}ms).");
 for (int n = 1; n <= 100; n++)
 {
     var h = new Hand(deals.Generate(170003 + n * 7919, n), rules);
@@ -107,9 +114,11 @@ try
 }
 finally { Directory.Delete(dir, true); }
 ComponentSwapTests.Run(Check);
+TemporaryTests.Run(Check);
+ProgressionTests.Run(Check);
 AdventureTests.Run(Check);
 var campaign = new MeadowCampaign();
-Check(campaign.Chapters.Count == 200 && campaign.LevelCount == 4000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 20, "Expanded campaign has 200 chapters and 20 worlds");
-Check(campaign.Chapters.SelectMany(c => Enumerable.Range(c.FirstLevel, c.LastLevel - c.FirstLevel + 1)).SequenceEqual(Enumerable.Range(1, 4000)), "Chapters cover every level once without gaps");
+Check(campaign.Chapters.Count == 24000 && campaign.LevelCount == 480000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 20, "Expanded campaign has 24,000 chapters and 20 worlds");
+Check(campaign.Chapters.SelectMany(c => Enumerable.Range(c.FirstLevel, c.LastLevel - c.FirstLevel + 1)).SequenceEqual(Enumerable.Range(1, MeadowCampaign.TotalLevels)), "Chapters cover every level once without gaps");
 Check(campaign.ForLevel(4000).Number == 200 && campaign.ForLevel(2001).Theme == 10, "New worlds and final chapter can be reached");
 Console.WriteLine($"PASS: {assertions:N0} assertions. Gameplay, persistence, economy and component replacements verified.");

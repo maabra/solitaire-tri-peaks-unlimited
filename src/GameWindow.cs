@@ -18,6 +18,7 @@ public sealed partial class GameWindow : Form
     int reward, stars;
     float scale = 1, offsetX, offsetY;
     Action? confirmAction;
+    readonly ToolTip iconTips = new() { AutoPopDelay = 12000 };
     readonly System.Windows.Forms.Timer toastTimer = new() { Interval = 5000 };
     readonly System.Windows.Forms.Timer animation = new() { Interval = 33 };
     bool rebuilding;
@@ -63,6 +64,8 @@ public sealed partial class GameWindow : Form
     GameButton Button(string name, string text, float x, float y, float w, float h, Action action, Color? fill = null, bool enabled = true)
     {
         var b = new GameButton(artwork) { Name = name, Text = text, AccessibleName = text.Replace("\n", " "), Bounds = Rect(x, y, w, h), Fill = fill ?? artwork.Cream, Enabled = enabled, TabIndex = Controls.Count };
+        string description = name switch { "mechanics" => "Special cards guide", "hint" => "Show a match for 3 seconds. Recharges in 15 seconds.", "remix" => "Deal fresh cards at this level. Current hand is replaced.", _ => name.StartsWith("power-") ? session.Powerups.Find(name.Substring(6))?.Description ?? "" : "" };
+        if (description.Length > 0) { b.AccessibleName = description; iconTips.SetToolTip(b, description); }
         b.Advance(effects.Time, profile.ReducedMotion);
         b.Click += (_, _) => action(); Controls.Add(b); return b;
     }
@@ -121,7 +124,7 @@ public sealed partial class GameWindow : Form
             int n = mapPage * 20 + i + 1;
             var p = MapPoint(i);
             bool unlocked = n <= profile.Unlocked;
-            Button("level" + n, n.ToString(), p.X - 32, p.Y - 29, 64, 64, () => StartAdventure(n), n == profile.Unlocked ? artwork.Gold : profile.Stars.ContainsKey(n) ? Color.FromArgb(207, 226, 177) : WorldPalette.Mix(artwork.Cream, WorldPalette.For(CurrentChapter.Theme).Accent, .12f), unlocked);
+            Button("level" + n, n % 25 == 0 ? "\U0001f381\n" + n : n.ToString(), p.X - 32, p.Y - 29, 64, 64, () => StartAdventure(n), n == profile.Unlocked ? artwork.Gold : profile.Stars.ContainsKey(n) ? Color.FromArgb(207, 226, 177) : WorldPalette.Mix(artwork.Cream, WorldPalette.For(CurrentChapter.Theme).Accent, .12f), unlocked);
         }
         Button("prev", "‹  Previous", 70, 685, 160, 50, () => { mapPage--; Build(); PresentSceneEntrance(); }, enabled: mapPage > 0);
         Button("next", "Next  ›", 1050, 685, 160, 50, () => { mapPage++; Build(); PresentSceneEntrance(); }, enabled: mapPage < campaign.Chapters.Count - 1);
@@ -163,7 +166,7 @@ public sealed partial class GameWindow : Form
         session.StartHand(n, infinite);
         cardHint = -1; selectedPowerup = null; overlay = ""; screen = "play"; Save(); Build(); PresentSceneEntrance();
         if (!infinite && (n - 1) % campaign.LevelsPerChapter == 0) effects.Burst(new(1100, 179), WorldPalette.For(CurrentChapter.Theme).Accent, 20);
-        Tell(n == 1 && !infinite ? "Play a card one higher or lower than the large card below. Suits do not matter." : n switch { 5 => "Gift cards add stock! Open the Special cards guide for details.", 10 => "Ice melts as you clear other cards. Watch its number fall!", 20 => "Find the key to open the locks. You can still replay for free.", 35 => "Bombs count moves, not seconds. Clear them before their fuse reaches zero!", 50 => "UP and DOWN cards reward the matching rank direction with extra stock.", _ => "A fresh path through the peaks. Enjoy the journey." });
+        Tell(n == 1 && !infinite ? "\u2660 \u2191 / \u2193     \U0001f50e 3s" : n % 100 == 0 ? $"\u2b06 {hand?.Deal.Difficulty?.Badge}" : hand?.Deal.Bonus == true && !profile.Stars.ContainsKey(n) && !infinite ? "\U0001f381 +125 \U0001fa99 +1 \u2728" : $"\u2660 {hand?.Deal.Layout.Max(s => s.Row) + 1} \u2195    \u2728");
     }
     void BuildHand()
     {
@@ -173,10 +176,11 @@ public sealed partial class GameWindow : Form
             if (hand.Removed[i]) continue;
             int index = i; var slot = hand.Deal.Layout[i]; bool face = hand.IsExposed(i);
             if (!face) continue;
-            var b = Button("card" + i, "", 140 + slot.X * 87, 208 + slot.Row * 59, 79, 111, () => PlayCard(index));
+            var bounds = CardBounds(i);
+            var b = Button("card" + i, "", bounds.X, bounds.Y, bounds.Width, bounds.Height, () => PlayCard(index));
             b.CardValue = hand.Deal.Cards[i]; b.Face = face;
             b.CardBadge = (hand as IAdventureHand)?.CardStatus(i) ?? "";
-            b.Hint = face && ((profile.Hints && hand.CanPlay(i)) || cardHint == i || selectedPowerup != null);
+            b.Hint = face && (selectedPowerup != null || (hand as ITemporaryHand)?.Effects.HintSeconds > 0 && ((profile.Hints && hand.CanPlay(i)) || cardHint == i));
             b.AccessibleName = face ? $"{Art.Rank(b.CardValue.Rank)} of {new[] { "spades", "hearts", "diamonds", "clubs" }[b.CardValue.Suit]}, {b.CardBadge}{(hand.CanPlay(i) ? ", playable" : "")}" : "Covered card";
             b.TabStop = face; b.Enabled = face;
             b.BringToFront();
@@ -187,15 +191,16 @@ public sealed partial class GameWindow : Form
         waste.CardValue = hand.Waste; waste.TabStop = false; waste.AccessibleName = "Waste pile " + Art.Rank(hand.Waste.Rank);
         Button("hint", "Hint · free", 742, 551, 156, 47, Hint);
         Button("retry", "Replay deal", 742, 609, 156, 43, () => { confirmAction = () => { session.Replay(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("retry"); });
+        Button("remix", "\U0001f3b2", 140, 609, 230, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); });
         Button("undo", hand.FreeUndos > 0 ? $"↶  Undo · {hand.FreeUndos} free" : $"↶  Undo · {session.Economy.UndoCost} coins", 158, 698, 210, 57, Undo, enabled: hand.CanUndo);
         var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
         for (int i = 0; i < helpers.Length; i++)
         {
             var helper = helpers[i];
-            Button("power-" + helper.Id, $"{helper.Name}  ×{session.Inventory.Count(helper.Id)}", 383 + i * 225, 698, 210, 57, () => ActivatePowerup(helper.Id), enabled: helper.CanUse(hand));
+            Button("power-" + helper.Id, $"{helper.Name}  ×{session.Inventory.Count(helper.Id)}", 383 + i * 225, 698, 210, 57, () => ActivatePowerup(helper.Id), enabled: helper.CanUse(hand) && (hand as ITemporaryHand)?.Effects.HelperCooldown <= 0);
         }
         BuildPowerupPages(698);
-        Button("mechanics", "Special cards guide", 140, 551, 230, 47, () => ShowOverlay("mechanics"));
+        Button("mechanics", "\u2753 \u2660", 140, 551, 230, 47, () => ShowOverlay("mechanics"));
         Button("help", "?", 1163, 108, 49, 46, () => ShowOverlay("help"));
         if (hand.Won) Button("finishedNext", "Next hand  →", 920, 566, 230, 53, () => NewHand(endless ? profile.EndlessDeal : Math.Min(level + 1, campaign.LevelCount), endless || level == campaign.LevelCount), artwork.Gold);
         if (!hand.Moves.Any() && hand.Stock.Count == 0 && !hand.Won) Button("earn", "Earn free coins  ◆", 920, 566, 230, 53, OpenGems, artwork.Gold);
@@ -216,11 +221,22 @@ public sealed partial class GameWindow : Form
         var previous = ExposedCards(); int oldScore = hand.Score; int oldStock = hand.Stock.Count;
         var card = hand.Deal.Cards[i]; var origin = CardCenter(i);
         if (!session.PlayCard(i)) { Tell((hand as IAdventureHand)?.BlockReason(i) ?? $"That card needs a {Art.Rank(card.Rank == 1 ? 13 : card.Rank - 1)} or {Art.Rank(card.Rank == 13 ? 1 : card.Rank + 1)} on the pile."); return; }
+        if (!hand.Removed[i])
+        {
+            effects.Burst(origin, Color.SlateGray, 28); effects.Cheer("\u25c6 \U0001f4a5", origin); cardHint = -1; Changed(); return;
+        }
         if (card.Kind != CardKind.Normal)
         {
             effects.Burst(origin, card.Kind == CardKind.Ice ? Color.LightSkyBlue : artwork.Gold, 18);
-            effects.Cheer(card.Kind switch { CardKind.Key => "Locks open!", CardKind.Bomb => "Bomb defused!", CardKind.Ice => "Ice melted!", CardKind.Gift => "+3 stock cards!", CardKind.Up => hand.Stock.Count > oldStock ? "Upward bonus!" : "Up card cleared!", CardKind.Down => hand.Stock.Count > oldStock ? "Downward bonus!" : "Down card cleared!", _ => "Unlocked!" }, new(1000, 550));
+            effects.Cheer(card.Kind switch { CardKind.Key => "\U0001f511 \U0001f513", CardKind.Bomb => "\U0001f4a3 \u2713", CardKind.Ice => "\u2744 \u2728", CardKind.Gift => "\u2660 +3", CardKind.Up or CardKind.Down => hand.Stock.Count > oldStock ? "\u2660 +2" : "\u2728", CardKind.Vine => "\U0001f33f \u2728", CardKind.Lucky => "\U0001f340 +1 6s", CardKind.Lantern => "\U0001f526 4s", CardKind.Shield => "\U0001f6e1 6s", _ => "\u2728" }, new(1000, 550));
         }
+        if (hand.Stock.Count > oldStock)
+        {
+            effects.Fly(hand.Stock[^1], origin, new(465, 593));
+            effects.Burst(new(465, 593), Color.LightGreen, 12);
+        }
+        if (card.Kind == CardKind.Key)
+            foreach (int locked in Enumerable.Range(0, hand.Deal.Cards.Count).Where(n => !hand.Removed[n] && hand.Deal.Cards[n].Kind == CardKind.Lock)) effects.Burst(CardCenter(locked), artwork.Gold, 8);
         effects.Fly(card, origin, new(604, 593)); effects.Burst(origin, artwork.Gold, 10);
         effects.Cheer($"+{hand.Score - oldScore}", new(origin.X, origin.Y - 35), Color.FromArgb(69, 139, 118));
         if (hand.Streak >= 3 && hand.Streak % 3 == 0)
@@ -256,7 +272,7 @@ public sealed partial class GameWindow : Form
     void ActivatePowerup(string id)
     {
         var helper = session.Powerups.Find(id);
-        if (hand == null || helper == null || !helper.CanUse(hand)) return;
+        if (hand == null || helper == null || (hand as ITemporaryHand)?.Effects.HelperCooldown > 0 || !helper.CanUse(hand)) return;
         if (session.Inventory.Count(id) == 0) { ShowOverlay("shop"); return; }
         if (helper.RequiresTarget)
         {
@@ -268,8 +284,10 @@ public sealed partial class GameWindow : Form
         if (session.UsePowerup(id) == CommandResult.Applied)
         {
             effects.Burst(new(604, 593), Color.FromArgb(203, 155, 244), 35);
-            effects.Cheer("A little magic!", new(980, 537), Color.FromArgb(149, 108, 175));
-            selectedPowerup = null; Tell(helper.Name + " used."); Chime(SoundCue.Combo); Changed();
+            effects.Cheer("\u2728 \u23f3", new(980, 537), Color.FromArgb(149, 108, 175));
+            if (id == "thaw" || id == "shield")
+                foreach (int special in Enumerable.Range(0, hand.Deal.Cards.Count).Where(n => !hand.Removed[n] && hand.Deal.Cards[n].Kind == (id == "thaw" ? CardKind.Ice : CardKind.Bomb))) effects.Burst(CardCenter(special), id == "thaw" ? Color.LightSkyBlue : Color.Turquoise, 14);
+            selectedPowerup = null; Tell(helper.Name + " \u23f3"); Chime(SoundCue.Combo); Changed();
         }
     }
     void BuildPowerupPages(float y)
@@ -281,8 +299,9 @@ public sealed partial class GameWindow : Form
     void Hint()
     {
         if (hand == null) return;
+        if (hand is ITemporaryHand timed && !timed.RequestHint()) { Tell("\U0001f50e \u23f3"); return; }
         cardHint = hand.Moves.FirstOrDefault(-1);
-        if (cardHint >= 0) { Tell("Follow the golden outline. That card is one higher or lower."); Build(); Controls.Find("card" + cardHint, false).FirstOrDefault()?.Focus(); }
+        if (cardHint >= 0) { Tell("\U0001f50e \u2728 3s"); Build(); Controls.Find("card" + cardHint, false).FirstOrDefault()?.Focus(); }
         else Tell(hand.Stock.Count > 0 ? "No cards fit right now. Draw from the stock (D)." : "No moves left. Use a helper, earn coins in Gem Garden, or replay for free.");
     }
     void OpenGems() { session.OpenCoinGame(); selectedGem = -1; gemHint = -1; Navigate("gems"); }
@@ -433,19 +452,20 @@ public sealed partial class GameWindow : Form
         Art.Text(g, "SCORE", 565, 108, 12, artwork.Teal, true); Art.Text(g, hand.Score.ToString("N0"), 565, 131, 25, artwork.Ink, true);
         Art.Text(g, "STREAK", 733, 108, 12, artwork.Teal, true); Art.Text(g, $"{hand.Streak}  ✦", 733, 131, 25, artwork.Ink, true);
         Art.Text(g, "CARDS LEFT", 914, 108, 12, artwork.Teal, true); Art.Text(g, hand.Removed.Count(x => !x).ToString(), 914, 131, 25, artwork.Ink, true);
-        Art.Text(g, hand.Deal.Formation, 150, 179, 11, artwork.Cream, true);
+        Art.Text(g, (hand.Deal.Bonus ? "\U0001f381 " : "") + hand.Deal.Formation + (hand.Deal.Difficulty is { Tier: > 0 } difficulty ? "  |  " + difficulty.Badge : ""), 150, 179, 11, artwork.Cream, true);
         var liveBombs = hand.Deal.Cards.Select((c, i) => new { c, i }).Where(x => x.c.Kind == CardKind.Bomb && !hand.Removed[x.i]).Select(x => (hand as IAdventureHand)?.CardStatus(x.i)).ToArray();
         if ((hand as IAdventureHand)?.Failed == true)
-            Art.Text(g, "A bomb burst. Undo your last move or replay for free.", 160, 508, 13, Color.LightGoldenrodYellow, true, 960, true);
+            Art.Text(g, "\U0001f4a3 \U0001f4a5     \u21b6 / \u21bb", 160, 508, 13, Color.LightGoldenrodYellow, true, 960, true);
         else if (liveBombs.Length > 0)
-            Art.Text(g, "Bomb fuses: " + string.Join(" / ", liveBombs) + "  |  Each draw or clear uses a move", 160, 508, 12, artwork.Cream, true, 960, true);
+            Art.Text(g, string.Join("   ", liveBombs), 160, 508, 12, artwork.Cream, true, 960, true);
         Art.Box(g, new(113, 193, 1055, 327), Color.FromArgb(50, 12, 65, 47), 26);
         for (int i = 0; i < hand.Removed.Count; i++)
         {
             if (hand.Removed[i] || hand.IsExposed(i)) continue;
-            var slot = hand.Deal.Layout[i];
-            artwork.DrawCard(g, new(141 + slot.X * 87, 209 + slot.Row * 59, 76, 104), hand.Deal.Cards[i], false, false, false);
+            var r = CardBounds(i);
+            artwork.DrawCard(g, new(r.X + 1, r.Y + 1, r.Width - 3, r.Height - 7), hand.Deal.Cards[i], false, false, false);
         }
+        PaintTemporaryEffects(g);
         Art.Box(g, new(390, 527, 540, 146), Color.FromArgb(175, 244, 240, 215), 22);
         Art.Box(g, new(403, 660, 130, 25), Color.FromArgb(200, artwork.Ink), 12);
         Art.Box(g, new(541, 660, 130, 25), Color.FromArgb(200, artwork.Ink), 12);
@@ -499,7 +519,15 @@ public sealed partial class GameWindow : Form
         else if (overlay == "mechanics")
         {
             Art.Text(g, "Little cards. Big adventures.", 280, 175, 34, artwork.Ink, true, 720, true);
-            Art.Text(g, "ICE: Clear the number of other cards shown to melt it. Draws\ndo not thaw ice. Ice numbers fall with each board clear.\n\nKEY / LOCK: Clear the key to open every lock. Ranks still apply.\n\nBOMB: Every successful clear or draw costs one move of fuse.\nClear bombs before zero! Undo can rescue a burst; replay is free.\nBomb fuses count even while covered. No real-time countdown.\n\n+3 CARDS: Clear to add three cards to the end of your stock.\nUP +2 / DOWN +2: Clear in that rank direction to add two cards.\nKing to Ace is UP; Ace to King is DOWN. Wilds give no direction.\n\nThe Remove helper bypasses ice and locks and defuses a bomb.", 292, 238, 18, artwork.Teal, false, 711);
+            string[] entries = {
+                "\u2744  Clear others to thaw", "\U0001f511 \U0001f512  Keys open locks", "\U0001f4a3  Clear before fuse = 0",
+                "\u2660+3  Bonus stock", "\u2191+2 / \u2193+2  Rank direction", "\u25c6  Tap the displayed hit count",
+                "\U0001f33f2  Build the displayed clear streak", "\U0001f526  Show matches briefly", "\U0001f340+1  Stock per clear, briefly",
+                "\U0001f525  Ignore ice, briefly", "\U0001f6e1  Pause fuses, briefly", "\U0001f381  Bonus coins + consumable"
+            };
+            for (int i = 0; i < entries.Length; i++)
+                Art.Text(g, entries[i], 280 + i % 2 * 360, 251 + i / 2 * 43, 18, artwork.Teal, true);
+            Art.Text(g, "\U0001f50e 3s / 15s recharge    \u2605 12s    \u23f3 Helpers: 5s recharge\nEffects pause in menus. No level countdown. No permanent boosts.", 280, 525, 16, artwork.Teal, false, 720, true);
         }
         else if (overlay == "help")
         {
@@ -570,26 +598,48 @@ public sealed partial class GameWindow : Form
             Click("motion"); AdvancePresentation(.04f);
             if (!effects.ReducedMotion || effects.Count != 0) throw new Exception("Reduced motion did not suppress effects");
             Click("motion"); Click("closeOverlay"); Click("adventure"); mapPage = campaign.Chapters.Count - 1; Build(); Shot("12-celebration-island");
-            if (Controls.Find("level4000", false).Length != 1) throw new Exception("Final chapter is missing");
+            if (Controls.Find("level" + campaign.LevelCount, false).Length != 1) throw new Exception("Final chapter is missing");
             for (int n = 1; n < 20; n++) profile.Stars[n] = 1;
             profile.Unlocked = 20; NewHand(20, false);
             foreach (var step in hand!.Deal.Solution) Click(step.Index < 0 ? "draw" : "card" + step.Index);
             if (lastVictory?.ChapterBonus != 150 || !profile.ChapterGifts.Contains(1)) throw new Exception("Chapter celebration or gift failed");
             Shot("13-chapter-celebration", 1.2f);
-            overlay = ""; profile.Unlocked = Math.Max(profile.Unlocked, 50); NewHand(50, false);
+            overlay = ""; profile.Unlocked = Math.Max(profile.Unlocked, 900); NewHand(900, false);
             if (!hand!.Deal.Cards.Any(c => c.Kind == CardKind.Bomb) || !hand.Deal.Cards.Any(c => c.Kind == CardKind.Ice)) throw new Exception("Special cards missing");
             Shot("14-special-cards"); Click("mechanics"); Shot("15-special-guide"); Click("gotit");
             foreach (var step in hand.Deal.Solution) Click(step.Index < 0 ? "draw" : "card" + step.Index);
             if (!hand.Won || ((IAdventureHand)hand).Failed) throw new Exception("Special-card UI witness failed");
             Shot("16-special-victory");
+            for (int n = 2101; n <= 2104; n++)
+            {
+                overlay = ""; profile.Unlocked = n; NewHand(n, false);
+                int rows = hand!.Deal.Layout.Max(s => s.Row)+1;
+                if (rows != n-2096) throw new Exception("Deep board depth failed");
+                foreach (var button in Controls.OfType<GameButton>().Where(b => b.Name.StartsWith("card")))
+                    if (button.Bottom > Rect(0, 0, 0, 521).Bottom) throw new Exception("Deep cards overlap stock");
+                Shot("18-depth-"+rows);
+                foreach (var step in hand.Deal.Solution) Click(step.Index < 0 ? "draw" : "card"+step.Index);
+                if (!hand.Won) throw new Exception("Deep board UI path failed");
+            }
+            overlay = ""; profile.Unlocked = 3000; NewHand(3000, false);
+            Shot("20-advanced-tier");
+            foreach (var step in hand!.Deal.Solution) Click(step.Index < 0 ? "draw" : "card"+step.Index);
+            if (!hand.Won) throw new Exception("Advanced progression UI path failed");
+            overlay = ""; profile.Unlocked = 130; NewHand(130, false);
+            session.Inventory.Add("lucky", 1); powerupPage=1; Build(); Click("power-lucky");
+            Shot("19-temporary-effects", .2f);
+            if (((ITemporaryHand)hand!).Effects.LuckySeconds <= 0) throw new Exception("Temporary boost did not start");
+            AdvancePresentation(11);
+            if (((ITemporaryHand)hand!).Effects.LuckySeconds != 0) throw new Exception("Temporary boost did not expire");
+            powerupPage=0; Build();
             SaveFormationAtlas(Path.Combine(outputDirectory, "screenshots", "17-formations.png"));
-            File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), "PASS: special cards, ice, keys, locks, bombs, bonus stock, new formations, guide,  home, 200 chapters, solitaire win, rewards, shop, animated gem cascades, card flight, effects, reduced motion, chapter gift, resize.");
+            File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), "PASS: special cards, ice, keys, locks, bombs, bonus stock, new formations, guide,  home, 24,000 chapters, 480,000 levels, 5-8 rows, temporary effects, solitaire win, rewards, shop, animated gem cascades, card flight, effects, reduced motion, chapter gift, resize.");
         }
         catch (Exception ex) { File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), ex.ToString()); Environment.ExitCode = 1; }
         finally { Close(); }
     }
     protected override void Dispose(bool disposing)
     {
-        if (disposing) { toastTimer.Dispose(); animation.Dispose(); effectsWindow?.Dispose(); backdrop?.Dispose(); } base.Dispose(disposing);
+        if (disposing) { iconTips.Dispose(); toastTimer.Dispose(); animation.Dispose(); effectsWindow?.Dispose(); backdrop?.Dispose(); } base.Dispose(disposing);
     }
 }

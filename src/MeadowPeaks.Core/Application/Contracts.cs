@@ -10,7 +10,7 @@ public interface IGameClock { DateTime Today { get; } }
 public interface IRandomSource { int NextSeed(); }
 
 public record WinContext(int BestStreak, int StockRemaining, bool Replay);
-public record WinReward(int Stars, int Coins, int ChapterBonus = 0, string? ChapterName = null);
+public record WinReward(int Stars, int Coins, int ChapterBonus = 0, string? ChapterName = null, int BonusCoins = 0, string? BonusItem = null);
 
 public interface IEconomyPolicy
 {

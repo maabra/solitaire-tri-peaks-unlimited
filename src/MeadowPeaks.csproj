@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>MeadowPeaks</AssemblyName>
-    <Version>1.3.0</Version>
+    <Version>1.5.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/MeadowPeaks.ico</ApplicationIcon>
   </PropertyGroup>

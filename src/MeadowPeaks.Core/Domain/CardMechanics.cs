@@ -7,7 +7,11 @@ public interface IAdventureHand
     string CardStatus(int index);
     string BlockReason(int index);
 }
-public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = false, bool Failed = false);
+public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = false, bool Failed = false,
+    int Run = 0, int FuseDelay = 0, ulong Peeled = 0,
+    double HintSeconds = 0, double HintCooldown = 0, double HelperCooldown = 0,
+    double LuckySeconds = 0, double ThawSeconds = 0, double ShieldSeconds = 0,
+    double WildSeconds = 0, Card? WildReturn = null, int Keys = 0, IReadOnlyDictionary<int, int>? ArmorDamage = null);
 
 // Stateless policy. All mutable state lives in snapshots, so saves and undo agree.
 public interface ICardMechanics
@@ -21,25 +25,31 @@ public sealed class CardMechanics : ICardMechanics
 {
     public bool Allows(Card card, MechanicState state) => card.Kind switch
     {
-        CardKind.Ice => state.Clears >= card.Strength,
-        CardKind.Lock => state.HasKey,
+        CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength,
+        CardKind.Lock => Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength),
+        CardKind.Vine => state.Run >= Math.Max(2, card.Strength),
         _ => true
     };
     public string Status(Card card, MechanicState state) => card.Kind switch
     {
-        CardKind.Ice => state.Clears < card.Strength ? $"ICE {card.Strength - state.Clears}" : "THAWED",
-        CardKind.Key => "KEY",
-        CardKind.Lock => state.HasKey ? "UNLOCKED" : "LOCKED",
-        CardKind.Bomb => $"BOMB {Math.Max(0, card.Strength - state.Turns)}",
-        CardKind.Gift => "+3 CARDS",
-        CardKind.Up => "UP +2",
-        CardKind.Down => "DOWN +2",
+        CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength ? "\u2744\u2713" : $"\u2744{card.Strength - state.Clears}",
+        CardKind.Key => "\U0001f511",
+        CardKind.Lock => Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength) ? "\U0001f513" : $"\U0001f512{Math.Max(1, card.Strength)-Math.Max(state.Keys, state.HasKey ? 1 : 0)}",
+        CardKind.Bomb => $"\U0001f4a3{Math.Max(0, card.Strength + state.FuseDelay - state.Turns)}",
+        CardKind.Gift => "\u2660+3",
+        CardKind.Up => "\u2191+2",
+        CardKind.Down => "\u2193+2",
+        CardKind.Stone => "\u25c6\u00d72",
+        CardKind.Vine => state.Run >= Math.Max(2, card.Strength) ? "\U0001f33f\u2713" : $"\U0001f33f{Math.Max(2, card.Strength)}",
+        CardKind.Lantern => "\U0001f5264s",
+        CardKind.Lucky => "\U0001f340+1",
+        CardKind.Shield => "\U0001f6e16s",
         _ => ""
     };
     public MechanicState Advance(MechanicState state, Deal deal, IReadOnlyList<bool> removed, Card? played)
     {
-        var next = state with { Turns = state.Turns + 1, Clears = state.Clears + (played == null ? 0 : 1), HasKey = state.HasKey || played?.Kind == CardKind.Key };
-        return next with { Failed = deal.Cards.Where((c, i) => !removed[i]).Any(c => c.Kind == CardKind.Bomb && c.Strength <= next.Turns) };
+        var next = state with { Turns = state.Turns + 1, Clears = state.Clears + (played == null ? 0 : 1), HasKey = state.HasKey || played?.Kind == CardKind.Key, Keys = Math.Max(state.Keys, state.HasKey ? 1 : 0) + (played?.Kind == CardKind.Key ? 1 : 0), Run = played == null ? 0 : state.Run + 1, FuseDelay = state.FuseDelay + (state.ShieldSeconds > 0 ? 1 : 0) };
+        return next with { Failed = deal.Cards.Where((c, i) => !removed[i]).Any(c => c.Kind == CardKind.Bomb && c.Strength + next.FuseDelay <= next.Turns) };
     }
     public int Bonus(Card played, Card previous) => played.Kind switch
     {
@@ -53,26 +63,50 @@ public sealed class CardMechanics : ICardMechanics
 public sealed class AdventureDealProvider : IDealProvider
 {
     readonly IDealProvider source;
-    public AdventureDealProvider(IDealProvider source) => this.source = source;
+    readonly IDifficultyProgression progression;
+    public AdventureDealProvider(IDealProvider source, IDifficultyProgression? progression = null)
+    { this.source = source; this.progression = progression ?? new CampaignProgression(); }
     public Deal Generate(int seed, int level)
     {
         var deal = source.Generate(seed, level);
+        var profile = progression.ForLevel(level);
         var cards = deal.Cards.ToArray();
-        int clears = 0; bool key = false; Card previous = deal.Waste;
-        for (int turn = 0; turn < deal.Solution.Count; turn++)
+        var solution = new List<Step>(); int run = 0, clears = 0, keys = 0, draws = 0, hazards = 0;
+        var available = new[] { CardKind.Ice, CardKind.Lock, CardKind.Bomb, CardKind.Stone, CardKind.Vine }.Where(k => progression.Unlocked(k, level)).ToArray();
+        Card previous = deal.Waste;
+        foreach (var step in deal.Solution)
         {
-            int i = deal.Solution[turn].Index;
-            if (i < 0) { previous = deal.Stock[deal.Solution.Take(turn + 1).Count(s => s.Index < 0) - 1]; continue; }
-            var kind = CardKind.Normal; int strength = 0;
-            if (level >= 20 && clears == 1) { kind = CardKind.Key; key = true; }
-            else if (level >= 20 && key && clears > 4 && clears % 7 == 0) kind = CardKind.Lock;
-            else if (level >= 35 && clears % 8 == 4) { kind = CardKind.Bomb; strength = turn + 5; }
-            else if (level >= 10 && clears >= 3 && clears % 5 == 3) { kind = CardKind.Ice; strength = Math.Max(1, clears - 1); }
-            else if (level >= 5 && clears % 7 == 2) kind = CardKind.Gift;
-            else if (level >= 50 && clears % 4 == 0) kind = cards[i].Rank == previous.Rank % 13 + 1 ? CardKind.Up : CardKind.Down;
+            int i = step.Index;
+            if (i < 0) { solution.Add(step); run = 0; previous = deal.Stock[draws++]; continue; }
+            CardKind kind = CardKind.Normal; int strength = 0;
+            if (progression.Unlocked(CardKind.Key, level) && keys < profile.KeysRequired && clears == 1 + keys*3)
+            { kind = CardKind.Key; keys++; }
+            else if (clears >= 3 && hazards < profile.HazardBudget && clears % 2 == 1 && available.Length > 0)
+            {
+                kind = hazards == 0 && available.Contains(profile.Focus) ? profile.Focus : available[(hazards + profile.Tier) % available.Length];
+                if (kind == CardKind.Lock && keys < profile.KeysRequired || kind == CardKind.Vine && run < profile.VineRun) kind = CardKind.Ice;
+                strength = kind switch {
+                    CardKind.Ice => Math.Max(1, clears-profile.IceLead),
+                    CardKind.Lock => profile.KeysRequired,
+                    CardKind.Bomb => solution.Count + profile.BombSlack,
+                    CardKind.Stone => profile.ArmorHits,
+                    CardKind.Vine => profile.VineRun, _ => 0 };
+                hazards++;
+            }
+            else if (progression.Unlocked(CardKind.Lantern, level) && clears % 17 == 8) kind = CardKind.Lantern;
+            else if (progression.Unlocked(CardKind.Lucky, level) && clears % 19 == 12) kind = CardKind.Lucky;
+            else if (progression.Unlocked(CardKind.Shield, level) && clears % 17 == 10) kind = CardKind.Shield;
+            else if (progression.Unlocked(CardKind.Gift, level) && clears % 11 == 2) kind = CardKind.Gift;
+            else if (progression.Unlocked(CardKind.Up, level) && clears % 8 == 0) kind = cards[i].Rank == previous.Rank%13+1 ? CardKind.Up : CardKind.Down;
             cards[i] = cards[i] with { Kind = kind, Strength = strength };
+            if (kind == CardKind.Stone)
+                for (int hit = 1; hit < profile.ArmorHits; hit++) { solution.Add(new(i)); run = 0; }
+            solution.Add(new(i)); run++;
             previous = cards[i]; clears++;
         }
-        return new Deal { Layout = deal.Layout, Cards = cards, Stock = deal.Stock, Waste = deal.Waste, Solution = deal.Solution, Formation = AdventureLayouts.NameFor(level) };
+        // Only remove reserve draws after the witness prefix; never its solution draws.
+        int keep = Math.Max(draws, deal.Stock.Count-profile.ReserveTrim);
+        return new Deal { Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
+            Solution = solution, TemporaryRules = true, Bonus = level%25==0, Formation = AdventureLayouts.NameFor(level), Difficulty = profile };
     }
 }

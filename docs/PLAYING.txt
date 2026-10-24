@@ -1,99 +1,90 @@
-MEADOW PEAKS — SOLITAIRE UNLIMITED
+MEADOW PEAKS - SOLITAIRE UNLIMITED 1.5
 
-Single EXE: double-click MeadowPeaks.exe. No installation or other files needed.
-Its bundled runtime extracts to a local cache automatically on first launch.
+RUN
+Double-click MeadowPeaks.exe. No installer, internet or runtime download needed.
+Windows 10/11 x64. The single EXE extracts its runtime cache automatically.
+For the portable ZIP, extract the whole folder before launching its EXE.
 
-Extract the entire ZIP to a folder, then double-click MeadowPeaks.exe.
-Windows 10/11, x64. No installation, internet, account, or runtime download needed.
-Keep the executable together with its bundled files and language folders.
+PLAY
+Clear an exposed card one rank above or below the pile. Suits do not matter.
+Ace connects King and Two. Clear covering cards to expose the next cards.
+Clear the whole board to win. Draw from stock for another rank.
+There is NO level countdown. Take your time when no effect is active.
+Hints show matches for 3 seconds, then need 15 seconds to recharge.
+The initial match glow is brief. Hints and scout effects also expire.
 
-ADVENTURE
-Continue adventure opens a map of 4,000 levels. Pick the golden next level.
-You can replay any completed level. Previous/Next and Go to level browse the map.
-The levels are reproducible seeded deals with 4,096 distinct generated formations and classic opening boards.
-There are 200 chapters across 20 themed worlds. Completing all 20 levels in a
-chapter adds a one-time gift of 150 coins and one Wild. Old saves continue into
-the expanded campaign, including players who completed the original 2,000 levels.
+ADVENTURE & REPLAY
+480,000 generated levels, 24,000 chapters, 20 world palettes, 4-8 card rows.
+The first four levels introduce the rules. Five-row boards arrive at 300, six at 700, seven at 1,300 and eight at 2,100.
+Smaller boards stay in the rotation.
+Every new campaign formation after the introduction is distinct, even after
+normalizing horizontal translations and mirrors. All levels have tested paths.
+Replay starts the same board for free. The dice button remixes fresh cards at
+this level, also for free. Starting either replaces the current hand.
+Scores and stars retain personal bests. Replays still pay smaller coin rewards.
+Every 20 completed levels gives one chapter gift: 150 coins and one Wild.
+Every 25th campaign level is a bonus level: +125 coins and one consumable on its
+first completion. Replaying/remixing cannot farm its bonus reward.
 
-Pip, the meadow's bird guide, cheers you along the path. Cards fly to the waste,
-newly revealed cards turn into view, and long runs sparkle. Coins trail into the
-wallet and victories earn confetti and popping stars. Gem Garden animates its
-swaps, matches and falling cascades. Input waits briefly while a gem swap resolves.
-Enable sound for original musical chimes. Reduced motion removes these effects,
-ambient butterflies/fireflies, card reveals and the animated victory counter.
+PLAYTIME BUDGET
+480,000 levels at an assumed one minute each = 8,000 campaign hours.
+Up to 2,000 endless hours count toward the requested 10,000-hour content target.
+This is an estimate, not a playtested duration guarantee or an endless lockout.
+Real time depends on player speed, replays, helpers and time in Gem Garden.
 
-Play any uncovered card one rank above or below the waste card. Suits do not
-matter. Ace wraps around to King. Clear covering cards to expose new cards.
-Clear the entire board to win. Draw from the stock when you need another rank.
-There is no timer. Every level has a legal solution without buying helpers.
+COINS & CONSUMABLES
+Start with 300 coins, two Wilds, two +5 helpers and one Remove helper.
+Wild: 75 coins. Play any rank once within 12 seconds; unused Wilds expire.
++5 cards: 60 coins. Available when stock is empty.
+Remove: 90 coins. Remove an exposed card, bypassing ice/lock/armor/vines.
+Clover +1: 85 coins. Each rank clear adds one stock card for 10 seconds.
+Fire: 70 coins. Ignore ice for 8 seconds; remaining ice returns afterward.
+Shield: 80 coins. Bomb fuses stop advancing on moves for 10 seconds.
+Scout: 35 coins. Show playable matches for 5 seconds.
+Helpers share a 5-second recharge. Switch pages with the toolbar arrows.
+Effects never carry into a new hand and there are no permanent power upgrades.
+Menu, minimized-window and focus-loss time does not consume an effect.
+Using a helper clears undo history. Failed actions do not consume inventory.
+Three free undos per hand, then 15 coins each. Undo cannot rewind effect timers.
+Effect durations, fuses and bonus stock are saved with the active hand.
+Rank-created bonus stock is appended behind the existing stock.
 
-ENDLESS MEADOW
-An ongoing sequence of new seeded hands. Each completed hand grows your garden
-and pays coins. No final level, lives, energy, or entry fee.
+SPECIAL CARDS & 100-LEVEL PROGRESSION
+50: Gift cards. A rank clear appends three stock cards.
+100: Ice. Clear its displayed number of other cards to thaw it.
+200: Keys/locks. Collect the keys a lock requires; ranks still apply.
+300: Bombs. Draws, clears and armor hits use a move of fuse, even while covered.
+Clear before zero. Undo can rescue a burst, or replay free. No level countdown.
+400: Up/down cards. Clear in that rank direction to append two stock cards.
+King to Ace is up; Ace to King is down. Wild has no direction bonus.
+500: Armor. Legal taps peel layers; the final legal tap clears by rank.
+600: Lanterns. A clear shows playable matches for 4 seconds.
+700: Clovers. A clear starts +1 stock per clear for 6 seconds.
+800: Vines. Build the displayed consecutive clear streak before playing.
+900: Shields. A clear pauses bomb fuses for 6 seconds.
 
-COINS & HELPERS
-Start with 300 coins, two Wilds, two +5 helpers, and one Remove helper.
-Wild (75 coins): any exposed card can be played on it; your streak continues.
-More cards (60 coins): adds five cards, usable only when your stock is empty.
-Remove (90 coins): choose any exposed card to remove. Click again to cancel.
-Helpers are inventory items: buy in the shop, then use from the bottom toolbar.
-Using a helper clears undo history so it cannot be reclaimed by undoing.
-Three free undos per hand; further undos cost 15 coins each.
-First level win: 100 + 10 per star + 2 per stock card left.
-Replay win: 30 + 10 per star + 2 per stock card left.
-Endless win: 100 + 10 per star + 2 per stock card left.
-Stars: one for clearing, two for a best streak of 5+, three for 9+.
-Collect a 75-coin daily gift on the home screen. Every five cleared hands earns
-an 80-coin garden gift, also collected on the home screen.
+Every 100 levels advances a tier. From 1,000, the emphasis rotates through
+ice, locks, bombs, armor, vines and reserve-stock pressure. Early upgrades:
+1,000 thicker ice; 1,100 two-key locks; 1,200 tighter bomb fuses;
+1,300 three-hit armor; 1,400 three-clear vines; 1,500 fewer surplus draws.
+Later cycles strengthen these within caps: three keys, four armor hits,
+three-clear vines, two moves of fuse margin, ten hazard cards and eight trimmed
+reserve draws. Once capped, tiers keep rotating stronger combinations instead
+of escalating a single mechanic without limit. Individual deals still vary.
+The tier icon and number appear beside the formation name.
+Only stock after the guaranteed-path draws may be trimmed.
+Remove bypasses ice, locks, armor and vines, and can trigger key/lantern/clover/
+shield effects. It does not give bonus stock. Ranks still apply to normal plays.
 
-GEM GARDEN
-Always free, including at zero coins. Swap two neighboring gems to make a line
-of three or more. Matches disappear, gems fall, and cascades can follow.
-Each removed gem earns 2 coins times its cascade depth. Coins enter your wallet
-immediately. Invalid swaps cost no moves. Play 20 successful swaps per round,
-then start another free round. The free hint identifies a legal swap.
-Open it through the home screen, the coin shop, or the empty-stock prompt.
-Your solitaire hand waits while you play. Return using Back to my hand.
+FREE COIN GARDEN
+Swap adjacent gems to match 3+. Cascades pay immediately into the shared wallet.
+Each round has 20 successful swaps. Invalid swaps cost no move. No entry fee,
+level timer or life limit. Hints and dead-board recovery are free.
 
-KEYBOARD
-Tab / Shift+Tab: move focus. Enter / Space: activate the focused button.
-D: draw. U: undo. W: Wild. H: hint. Escape: close dialog / return home.
-F11: maximize or restore the window. Settings include sound, card glow,
-and reduced motion. Sound is off by default and is never required.
-
-SAVING
-Your wallet, inventory, level scores/stars, garden, settings and current
-solitaire hand save automatically to:
-  %LOCALAPPDATA%\MeadowPeaks\progress.json
-A .bak file holds the previous valid save. Undo history and an unfinished
-Gem Garden round are session-only; earned coins save immediately.
-Starting a different solitaire hand asks before replacing your current hand.
-Replay restarts the same deal; spent coins and helpers stay spent.
-
-This is an original offline game. It does not contain the reference games,
-their characters, music, artwork, or assets. Game source/artwork: MIT license.
-Bundled Microsoft runtime files retain their own licenses and notices.
-
-SPECIAL CARDS (introduced gradually)
-Level 5: Gift cards append 3 bonus stock cards when played by rank.
-Level 10: Ice cards cannot be played until their displayed number reaches zero.
-Each board clear melts one layer; draws do not. Thawed cards still need a matching rank.
-Level 20: Clear the key card to open every lock. Locks still need a matching rank.
-Level 35: Bomb fuses tick on every successful draw or board clear, even while covered.
-Clear each bomb before zero. A burst stops the hand; undo can rescue it, or replay
-for free. There is no real-time timer. The fuse summary includes covered bombs.
-Level 50: UP +2 and DOWN +2 cards append two stock cards when played in that
-rank direction. King to Ace counts up; Ace to King counts down. Wilds give no
-up/down reward. All bonus cards go behind existing stock.
-Remove bypasses ice and locks and defuses bombs, but does not grant bonus stock.
-Keys, thaw progress, fuses and earned stock are saved and restored together.
-Undo reverses these effects; replay starts them fresh. Helpers clear undo history.
-The Special cards guide on the play screen explains every badge.
-Existing saved boards keep their original rules and formations until completed.
-
-FORMATION VARIETY
-After the four introductory levels, each campaign level has its own formation.
-Formations vary in card count (18-30), clusters, gaps, branches and coverage.
-The catalog rejects mirrored and horizontally shifted duplicates. Endless mode
-also uses the 4,096-pattern catalog. Existing saved hands keep their old layout;
-new hands use the expanded catalog.
+PRESENTATION & CONTROLS
+Cards fly, armor shatters, vines bloom, ice cracks, matches sparkle, coins fly
+and victories celebrate. Sound is optional. Reduced motion removes animations.
+Tab/Enter: select/play. D: draw. U: undo. W: Wild. H: 3-second hint.
+Esc: close/home. F11: maximize. Buttons work with mouse or keyboard.
+Saves: %LOCALAPPDATA%\MeadowPeaks\progress.json (plus backup).
+Old saves keep their original active board. New hands use the new generator.

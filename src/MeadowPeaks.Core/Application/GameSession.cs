@@ -80,6 +80,14 @@ public sealed class GameSession
         Hand = solitaire.Restore(fresh) ?? throw new InvalidOperationException("Unable to replay this deal.");
     }
 
+    public void Remix()
+    {
+        if (Hand == null) return;
+        int nextSeed = random.NextSeed();
+        var next = solitaire.Create(nextSeed, Level);
+        Hand = next; Seed = nextSeed;
+    }
+
     public bool PlayCard(int index) => Hand?.Play(index) == true;
     public bool Draw() => Hand?.Draw() == true;
 
@@ -96,10 +104,11 @@ public sealed class GameSession
     public CommandResult UsePowerup(string id, int? target = null)
     {
         var powerup = Powerups.Find(id);
-        if (Hand == null || powerup == null || !powerup.CanUse(Hand)) return CommandResult.Unavailable;
+        if (Hand == null || powerup == null || (Hand is ITemporaryHand timed && timed.Effects.HelperCooldown > 0) || !powerup.CanUse(Hand)) return CommandResult.Unavailable;
         if (Inventory.Count(id) == 0) return CommandResult.MissingItem;
         if (!powerup.Apply(Hand, target, random.NextSeed())) return CommandResult.Unavailable;
         Inventory.Add(id, -1);
+        (Hand as ITemporaryHand)?.StartHelperCooldown();
         return CommandResult.Applied;
     }
 
@@ -117,6 +126,13 @@ public sealed class GameSession
         if (Hand == null || !Hand.Won || Hand.Paid) return null;
         var result = Economy.Reward(new(Hand.BestStreak, Hand.Stock.Count, !Endless && Profile.Stars.ContainsKey(Level)));
         if (result.Coins < 0 || result.Stars < 1 || result.Stars > 3) throw new InvalidOperationException("Invalid win reward.");
+        bool bonus = !Endless && Hand.Deal.Bonus && !Profile.Stars.ContainsKey(Level);
+        if (bonus)
+        {
+            string item = Powerups.All[(Level / 25) % Powerups.All.Count].Id;
+            Inventory.Add(item, 1);
+            result = result with { Coins = checked(result.Coins + 125), BonusCoins = 125, BonusItem = item };
+        }
         Chapter chapter = Campaign.ForLevel(Level);
         bool chapterComplete = !Endless && !Profile.ChapterGifts.Contains(chapter.Number) && Enumerable.Range(chapter.FirstLevel, chapter.LastLevel - chapter.FirstLevel + 1).All(n => n == Level || Profile.Stars.ContainsKey(n));
         if (chapterComplete) result = result with { Coins = checked(result.Coins + Economy.ChapterGift), ChapterBonus = Economy.ChapterGift, ChapterName = chapter.World + " · " + chapter.Name };

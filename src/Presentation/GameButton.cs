@@ -65,7 +65,7 @@ internal sealed class GameButton : Button
         {
             Art.Box(g, new(r.X, r.Y + 4, r.Width, r.Height), Color.FromArgb(40, 0, 30, 20), 14);
             Art.Box(g, r, !Enabled ? WorldPalette.Mix(Fill, Color.FromArgb(170, 187, 169), .4f) : WorldPalette.Mix(Fill, Color.White, hoverAmount * .23f), 14);
-            using var font = new Font("Segoe UI", Math.Max(11, Height * .27f), FontStyle.Bold, GraphicsUnit.Pixel);
+            using var font = new Font(Text.Any(char.IsSurrogate) ? "Segoe UI Emoji" : "Segoe UI", Math.Max(11, Height * .27f), Text.Any(char.IsSurrogate) ? FontStyle.Regular : FontStyle.Bold, GraphicsUnit.Pixel);
             TextRenderer.DrawText(g, Text, font, Rectangle.Round(r), Enabled ? Fore : Color.FromArgb(88, 111, 99), TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
             if (Focused) { using var p = new Pen(artwork.Gold, 2); using var path = Art.Round(new(4, 4, Width - 10, Height - 14), 11); g.DrawPath(p, path); }
         }

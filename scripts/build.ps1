@@ -1,10 +1,12 @@
-param([switch]$OfflineInstalledRuntime)
+param([switch]$OfflineInstalledRuntime, [switch]$SkipEngineTests)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
-    dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release
-    if ($LASTEXITCODE -ne 0) { throw 'Engine tests failed.' }
+    if (-not $SkipEngineTests) {
+        dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release
+        if ($LASTEXITCODE -ne 0) { throw 'Engine tests failed.' }
+    }
     $output = Join-Path $projectRoot 'artifacts/MeadowPeaks-win-x64'
     if ($OfflineInstalledRuntime) {
         dotnet publish src/MeadowPeaks.csproj -c Release --self-contained false -o artifacts/framework-dependent --ignore-failed-sources

@@ -14,7 +14,7 @@ internal static class Art
     { using var p = Round(r, radius); using var b = new SolidBrush(color); g.FillPath(b, p); }
     public static void Text(Graphics g, string text, float x, float y, float size, Color color, bool bold = false, float width = 0, bool center = false)
     {
-        using var font = new Font("Segoe UI", size, bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
+        using var font = new Font(text.Any(char.IsSurrogate) ? "Segoe UI Emoji" : "Segoe UI", size, text.Any(char.IsSurrogate) ? FontStyle.Regular : bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
         using var brush = new SolidBrush(color);
         using var format = new StringFormat { Alignment = center ? StringAlignment.Center : StringAlignment.Near, LineAlignment = StringAlignment.Near };
         if (width > 0) g.DrawString(text, font, brush, new RectangleF(x, y, width, 1000), format); else g.DrawString(text, font, brush, x, y);
@@ -88,13 +88,26 @@ internal static class Art
     public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);
-        var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), _ => Cream };
+        var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), CardKind.Stone => Color.FromArgb(220, 223, 230), CardKind.Vine => Color.FromArgb(211, 237, 196), CardKind.Lantern => Color.FromArgb(255, 245, 190), CardKind.Lucky => Color.FromArgb(221, 247, 212), CardKind.Shield => Color.FromArgb(210, 245, 242), _ => Cream };
         Box(g, r, face ? paper : Color.FromArgb(44, 110, 97), 9);
         if (face && card.Kind == CardKind.Ice)
         {
             using var frost = new Pen(Color.FromArgb(110, 110, 180, 230), 2);
             g.DrawLine(frost, r.X + r.Width * .7f, r.Y + 4, r.X + r.Width * .45f, r.Y + r.Height * .7f);
             g.DrawLine(frost, r.X + r.Width * .53f, r.Y + r.Height * .4f, r.Right - 3, r.Y + r.Height * .5f);
+        }
+        if (face && card.Kind == CardKind.Stone)
+        {
+            using var crack = new Pen(Color.FromArgb(100, 91, 105, 125), 2);
+            g.DrawLines(crack, new[] { new PointF(r.X+r.Width*.7f,r.Y+3), new PointF(r.X+r.Width*.5f,r.Y+r.Height*.25f), new PointF(r.X+r.Width*.65f,r.Y+r.Height*.4f), new PointF(r.X+r.Width*.4f,r.Y+r.Height*.7f) });
+        }
+        if (face && card.Kind == CardKind.Vine)
+        {
+            using var vine = new Pen(Color.FromArgb(120, 76, 142, 58), 3);
+            g.DrawBezier(vine, r.X+5,r.Y+2,r.X+r.Width*.5f,r.Y+r.Height*.2f,r.X,r.Y+r.Height*.6f,r.X+8,r.Bottom-6);
+            using var leaf = new SolidBrush(Color.FromArgb(140, 91, 155, 65));
+            g.FillEllipse(leaf,r.X+6,r.Y+r.Height*.25f,r.Width*.2f,r.Height*.1f);
+            g.FillEllipse(leaf,r.X+2,r.Y+r.Height*.55f,r.Width*.2f,r.Height*.1f);
         }
         using var outline = new Pen(hint ? Gold : face ? Color.FromArgb(220, 211, 184) : Color.FromArgb(138, 183, 156), hint ? 3 : 1);
         using var path = Round(new(r.X + 2, r.Y + 2, r.Width - 4, r.Height - 4), 8); g.DrawPath(outline, path);

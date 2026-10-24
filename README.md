@@ -1,7 +1,7 @@
 # Meadow Peaks — Solitaire Unlimited
 
 A free, offline Windows solitaire game with an original illustrated countryside,
-large cards, **4,000 adventure levels**, an endless mode, and a match-three coin garden.
+large cards, **480,000 adventure levels**, an endless mode, and a match-three coin garden.
 No accounts, ads, entry fees, energy systems, or real-money purchases.
 
 ![Meadow Peaks](docs/home.png)
@@ -23,11 +23,18 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 
 ## What's included
 
-- 4,000 distinct, reproducible adventure deals across 200 map chapters and 20 themed worlds.
-- 4,096 distinct generated adventure formations plus classic opening boards, with a complete 52-card base deck per deal. The first four levels introduce the rules; every later campaign level has its own formation. Mirrored and horizontally shifted duplicates are rejected.
-- Ice cards that thaw through clears, keys and locks, move-count bombs, +3 stock gifts, and upward/downward +2 stock rewards. Mechanics arrive gradually at levels 5, 10, 20, 35 and 50.
-- Colored special cards, live fuse/ice badges, a special-card guide and free replay. Undo restores mechanical state as well as cards.
-- Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not 4,000 hand-authored puzzles.
+- 480,000 distinct, reproducible adventure deals across 24,000 map chapters and 20 themed worlds.
+- 480,000 distinct generated adventure formations plus classic opening boards, drawn from a standard 52-card base deck. Later tiers trim only surplus stock. The first four levels introduce the rules; every later campaign level has its own formation. Mirrored and horizontally shifted duplicates are rejected.
+- 4-8 overlapping card rows with adaptive card placement and readable exposed cards.
+- Armored cards start at two hits and cap at four; vines start at two consecutive clears and cap at three. Lantern, clover and shield cards start temporary effects.
+- Ice cards that thaw through clears, keys and locks, move-count bombs, +3 stock gifts, and upward/downward +2 stock rewards. Gift cards arrive at 50, then ice at 100, locks at 200, bombs at 300, directional cards at 400, armor at 500, lanterns at 600, clovers at 700, vines at 800 and shields at 900.
+- Every 100 levels introduces or emphasizes a component. After level 900, rotating upgrades add thicker ice, multi-key locks, tighter fuses, layered armor, longer vine streaks and smaller stock reserves. Strength caps keep the endgame fair; later tiers vary combinations.
+- Deeper boards arrive at levels 300, 700, 1,300 and 2,100.
+- Icon badges, live fuse/ice counters, an illustrated guide, hover explanations, free replay and fresh-deck remix. Undo restores card state without restoring elapsed effect time.
+- Hints show matches for 3 seconds and recharge in 15 seconds. Helpers share a 5-second recharge. Wilds expire after 12 seconds if unused.
+- Consumable +1 stock-per-clear (10s), thaw (8s), shield (10s) and scout (5s) helpers. No permanent upgrades or level countdowns.
+- Every 25th campaign level grants a one-time 125-coin bonus and one consumable on first completion.
+- Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not hand-authored puzzles.
 - Endless Meadow: new seeded hands, unlimited retries, coins, and a growing garden.
 - Wild cards, five extra stock cards, targeted removal, free hints and three free undos per hand.
 - A shared coin wallet, helper shop, daily gifts and garden milestones.
@@ -41,6 +48,17 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 
 See [the player guide](docs/PLAYING.txt) for rules, costs, rewards, controls and saves.
 
+
+## Replay and playtime
+
+480,000 campaign levels provide an estimated 8,000 hours at one minute per level.
+This is a content planning assumption, not a measured or guaranteed playtime.
+For the requested 10,000-hour target, at most 2,000 hours are attributed to
+Endless Meadow. Endless is still freely playable; the budget is not a lockout.
+Free remix creates fresh reproducible card deals at the current level. Scores,
+stars, repeat payouts and Gem Garden support replay without permanent power boosts.
+All campaign winning paths are tested without relying on temporary effects.
+
 ## Replaceable components
 
 The game core is a separate, UI-independent class library. Deals, layouts,
@@ -53,6 +71,8 @@ See [the architecture and extension guide](docs/ARCHITECTURE.md) for the compone
 map, replacement examples, compatibility contracts and legacy-save behavior.
 
 ![Solitaire](docs/solitaire.png)
+![Deep board](docs/deep-board.png)
+![Temporary effects](docs/temporary-effects.png)
 ![Formation examples](docs/formations.png)
 ![Special cards](docs/special-cards.png)
 ![Gem Garden](docs/gems.png)
@@ -99,7 +119,7 @@ policy: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1`
 
 ## Validation
 
-The dependency-free test runner checks all 4,000 level solutions, deck uniqueness,
+The dependency-free test runner checks all 480,000 adventure winning paths with timed effects expired, all formation fingerprints, the original 4,000 legacy deals, deck uniqueness,
 deal reproducibility, covered-card rules, Ace/King wrap, undo, helpers, 100 complete
 match-three rounds, wallet spending, in-progress saves and corrupt-save recovery.
 It also installs alternative components and exercises the complete purchase,

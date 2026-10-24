@@ -19,6 +19,7 @@ public sealed partial class GameWindow
     void AnimationTick(object? sender, EventArgs args)
     {
         double now = presentationClock.Elapsed.TotalSeconds;
+        AdvanceTemporaryEffects(Math.Max(0, now - lastFrame));
         float elapsed = (float)Math.Clamp(now - lastFrame, 0, .08); lastFrame = now;
         AdvancePresentation(elapsed);
         if (!smoke && effectsWindow != null)
@@ -30,6 +31,7 @@ public sealed partial class GameWindow
     }
     void AdvancePresentation(float elapsed)
     {
+        if (smoke) AdvanceTemporaryEffects(elapsed);
         effects.ReducedMotion = profile.ReducedMotion;
         effects.Ambient = overlay.Length == 0;
         effects.Theme = CurrentChapter.Theme;
@@ -53,9 +55,43 @@ public sealed partial class GameWindow
         int i = 0;
         foreach (var button in Controls.OfType<GameButton>().Where(b => b.Name.StartsWith("card") || b.Name.StartsWith("level") || b.Name.StartsWith("gem"))) button.BeginEntrance(effects.Time, i++ * .018f);
     }
+    RectangleF CardBounds(int index)
+    {
+        var slot = hand!.Deal.Layout[index];
+        int rows = hand.Deal.Layout.Max(s => s.Row) + 1;
+        if (!hand.Deal.TemporaryRules && rows <= 4) return new(140 + slot.X * 87, 208 + slot.Row * 59, 79, 111);
+        float height = Math.Min(111, 310f / (1 + (rows - 1) * .54f)), width = height * .72f;
+        float min = hand.Deal.Layout.Min(s => s.X), max = hand.Deal.Layout.Max(s => s.X);
+        float step = width / .6f;
+        float shrink = Math.Min(1, 1000f / ((max-min)*step+width));
+        height *= shrink; width *= shrink; step *= shrink;
+        float stride = rows > 1 ? Math.Min(height * .7f, (310 - height) / (rows - 1)) : 0;
+        return new(640 - ((min+max)*step+width)/2 + slot.X*step, 201 + slot.Row * stride, width, height);
+    }
     PointF CardCenter(int index)
     {
-        var slot = hand!.Deal.Layout[index]; return new(179 + slot.X * 87, 260 + slot.Row * 59);
+        var r = CardBounds(index); return new(r.X + r.Width / 2, r.Y + r.Height / 2);
+    }
+    double timerPaint, timerSave;
+    void AdvanceTemporaryEffects(double seconds)
+    {
+        if (screen != "play" || overlay.Length > 0 || (!smoke && (!ContainsFocus || WindowState == FormWindowState.Minimized)) || hand is not ITemporaryHand timed || hand.Won) return;
+        int rank = hand.Waste.Rank; timed.AdvanceTime(seconds);
+        timerPaint += seconds; timerSave += seconds;
+        if (rank != hand.Waste.Rank) { Build(); return; }
+        foreach (var button in Controls.OfType<GameButton>())
+        {
+            if (button.Name.StartsWith("card") && int.TryParse(button.Name.Substring(4), out int i))
+            {
+                bool highlight = selectedPowerup != null || timed.Effects.HintSeconds > 0 && (profile.Hints && hand.CanPlay(i) || cardHint == i);
+                string badge = (hand as IAdventureHand)?.CardStatus(i) ?? "";
+                if (button.Hint != highlight || button.CardBadge != badge) { button.Hint = highlight; button.CardBadge = badge; button.Invalidate(); }
+            }
+            if (button.Name.StartsWith("power-")) button.Enabled = timed.Effects.HelperCooldown <= 0 && session.Powerups.Find(button.Name.Substring(6))?.CanUse(hand) == true;
+            if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"\U0001f50e {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e 3s"; }
+        }
+        if (timerPaint >= .2) { timerPaint = 0; backdropDirty = true; Invalidate(); }
+        if (timerSave >= 5) { timerSave = 0; Save(); }
     }
     HashSet<int> ExposedCards() => hand == null ? new() : Enumerable.Range(0, hand.Removed.Count).Where(hand.IsExposed).ToHashSet();
     void RevealCards(HashSet<int> previous)
@@ -125,7 +161,7 @@ public sealed partial class GameWindow
     void PaintVictory(Graphics g)
     {
         float progress = profile.ReducedMotion ? 1 : Math.Clamp((float)(effects.Time - victoryStarted) / 1.1f, 0, 1);
-        string heading = lastVictory?.ChapterName != null ? "A whole chapter of happiness!" : "You made the meadow smile!";
+        string heading = lastVictory?.BonusCoins > 0 ? "\U0001f381 \U0001fa99 \u2728" : lastVictory?.ChapterName != null ? "A whole chapter of happiness!" : "You made the meadow smile!";
         Art.Text(g, heading, 260, 183, lastVictory?.ChapterName != null ? 32 : 37, artwork.Ink, true, 760, true);
         for (int i = 0; i < 3; i++)
         {
@@ -134,10 +170,31 @@ public sealed partial class GameWindow
             FestiveArt.Star(g, 552 + i * 88, 291, Math.Max(1, size), i < stars ? artwork.Gold : Color.FromArgb(221, 219, 198), i < stars ? (1 - appear) * -30 : 0);
         }
         Art.Text(g, $"+{(int)(reward * (1 - MathF.Pow(1 - progress, 3)))} coins", 280, 348, 37, artwork.Teal, true, 720, true);
-        string detail = lastVictory?.ChapterName != null ? $"Chapter complete! Includes {lastVictory.ChapterBonus} bonus coins + {session.Economy.ChapterWilds} Wild.\nA new little adventure is waiting for you." : $"Score {hand?.Score:N0} · Best streak {hand?.BestStreak}\nOne more blossom in your growing garden. Beautifully done!";
+        string detail = lastVictory?.BonusCoins > 0 ? $"+{lastVictory.BonusCoins} \U0001fa99    +1 {session.Powerups.Find(lastVictory.BonusItem ?? "")?.Name}\n\u23f3 Consumable" : lastVictory?.ChapterName != null ? $"Chapter complete! Includes {lastVictory.ChapterBonus} bonus coins + {session.Economy.ChapterWilds} Wild.\nA new little adventure is waiting for you." : $"Score {hand?.Score:N0} · Best streak {hand?.BestStreak}\nOne more blossom in your growing garden. Beautifully done!";
         Art.Text(g, detail, 310, 410, 19, artwork.Teal, false, 660, true);
         FestiveArt.Pip(g, 320, 337, .7f, true); FestiveArt.Pip(g, 960, 337, .7f, true);
         Art.Text(g, "Your progress is saved. Your next smile is just a card away.", 280, 480, 14, artwork.Teal, false, 720, true);
+    }
+    void PaintTemporaryEffects(Graphics g)
+    {
+        if (hand is not ITemporaryHand timed || hand.Won) return;
+        var e = timed.Effects;
+        var active = new[] {
+            ("\U0001f50e", e.HintSeconds), ("\U0001f340+1", e.LuckySeconds), ("\U0001f525", e.ThawSeconds),
+            ("\U0001f6e1", e.ShieldSeconds), ("\u2605", hand.Waste.Rank == 0 ? e.WildSeconds : 0), ("\u23f3", e.HelperCooldown)
+        }.Where(x => x.Item2 > 0).ToArray();
+        for (int i = 0; i < active.Length; i++)
+        {
+            float x = 935 + i % 2 * 108, y = 533 + i / 2 * 42;
+            Art.Box(g, new(x, y, 101, 35), Color.FromArgb(230, artwork.Cream), 10);
+            Art.Text(g, $"{active[i].Item1} {Math.Ceiling(active[i].Item2)}s", x+4, y+6, 16, artwork.Ink, true, 93, true);
+            Art.Box(g, new(x+7, y+30, (float)(87 * Math.Min(1, active[i].Item2 / 12)), 3), artwork.Gold, 1);
+        }
+        if (e.ThawSeconds > 0 || e.ShieldSeconds > 0 || e.LuckySeconds > 0)
+        {
+            using var pen = new Pen(e.ThawSeconds > 0 ? Color.LightSkyBlue : e.ShieldSeconds > 0 ? Color.Turquoise : artwork.Gold, 3);
+            using var path = Art.Round(new(115, 195, 1051, 322), 24); g.DrawPath(pen, path);
+        }
     }
     void SaveFormationAtlas(string path)
     {
@@ -145,15 +202,15 @@ public sealed partial class GameWindow
         using var g = Graphics.FromImage(image);
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         g.Clear(artwork.Cream);
-        Art.Text(g, "32 examples from 4,096 distinct formations", 24, 12, 24, artwork.Ink, true);
+        Art.Text(g, "32 examples from 480,000 distinct formations", 24, 12, 24, artwork.Ink, true);
         var layouts = new AdventureLayouts();
         for (int n = 0; n < 32; n++)
         {
             float x = n % 4 * 320, y = 55 + n / 4 * 143;
             Art.Box(g, new(x + 8, y, 304, 135), Color.FromArgb(223, 235, 213), 12);
-            Art.Text(g, AdventureLayouts.NameFor(n + 5), x + 18, y + 6, 14, artwork.Ink, true);
-            foreach (var slot in layouts.Create(n + 5))
-                artwork.DrawCard(g, new(x + 18 + slot.X * 25, y + 30 + slot.Row * 22, 22, 33), new Card(1, 0), false, false, false);
+            Art.Text(g, AdventureLayouts.NameFor(2100 + n), x + 18, y + 6, 14, artwork.Ink, true);
+            foreach (var slot in layouts.Create(2100 + n))
+                artwork.DrawCard(g, new(x + 18 + slot.X * 25, y + 30 + slot.Row * (75f / (AdventureLayouts.DepthFor(2100 + n) - 1)), 22, 24), new Card(1, 0), false, false, false);
         }
         image.Save(path, System.Drawing.Imaging.ImageFormat.Png);
     }

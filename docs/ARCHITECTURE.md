@@ -111,7 +111,7 @@ must agree with the deal provider. The built-in generator assumes a standard
 52-card deck and ranks 1–13; sufficiently different rules need a matching deal
 provider. Win stars remain 1–3 and coin amounts must be non-negative.
 
-The current board view uses four overlapping rows, ranks 1–13 and four suits.
+The current board view uses four to eight overlapping rows, ranks 1–13 and four suits.
 `ICoinGame` alternatives can reuse the current view when they expose an 8×8
 board with gem kinds 0–5 and neighboring swaps. Different board geometry or
 interaction needs a matching presentation change. The core library can be
@@ -157,20 +157,19 @@ actual buttons. `scripts/build.ps1` runs both sets of checks before packaging.
 
 ## Adventure mechanics (1.2)
 
-`AdventureLayouts : ILayoutProvider` supplies a lazy catalog of 4,096 distinct
-four-row formations. A fixed-seed weighted connected-growth algorithm uses 32
-shape envelopes and varies board size, gaps, branches and overlap. Catalog
-validation requires all four rows, substantial coverage, bounded initial moves,
-18-30 cards, and a unique fingerprint normalized against horizontal translation
-and mirroring. Returned lists are copies. Campaign levels 5-4000 each select a
-different catalog entry; endless levels cycle the catalog. `NameFor` labels the
-same entry selected by `Create`. The first four tutorial layouts stay classic.
-Tests check the entire catalog for duplicates, determinism, bounds and row
-spacing, then solve all campaign deals and another 100 late endless deals.
+`AdventureLayouts : ILayoutProvider` generates formations on demand. A fixed
+asymmetric anchor set and a permuted combinatorial rank select 11 of 22 optional
+positions (705,432 combinations). Each of the 480,000 campaign indices therefore
+has its own occupancy pattern. Four to eight rows are introduced gradually.
+There is no startup catalog build or persistent shape cache. Tests normalize
+horizontal translations and mirrors and check every formation for uniqueness,
+determinism, bounds and row spacing. The first four tutorial layouts stay classic.
+`CardBounds` shares geometry between rendering, controls and effects; card width
+and row spacing adjust to depth without rendering overlaps outside rule coverage.
 `AdventureDealProvider : IDealProvider` decorates a seeded legal witness with
 special cards. Keys precede locks, ice thresholds allow the witness, bomb fuses
 include a move margin, and bonus stock appends behind the original stock. All
-4,000 adventure witnesses are executed against the actual hand in tests.
+480,000 adventure witnesses are executed against the actual hand in tests.
 
 `CardKind` and `Strength` are optional card metadata. `ICardMechanics` is an
 injectable stateless policy for eligibility, badges, per-move effects and stock
@@ -185,3 +184,49 @@ boards retain their metadata. The original first-2,000 fingerprint test applies
 to that legacy provider, while adventure tests cover new-generation boards.
 New mechanics require coordinated metadata validation and a policy; new card
 kinds should also add a readable badge and an explanation to the player guide.
+
+
+## Temporary effects and replay (1.4)
+
+`ITemporaryHand` is an optional capability for effect ticking, hints and effect
+activation. `MechanicState` persists durations, cooldowns, armor bits, clear runs
+and bomb fuse delay. `TemporaryPowerup` strategies are registered in Composition.
+`AdvanceTime` never ends a level. The view supplies elapsed focused play time;
+menus, minimization and loss of focus pause it. Undo restores moves and stock
+but never restores elapsed duration. Replay/remix reset all effect state.
+The core tests expire every effect between witness steps, proving the route
+never depends on clicking before an effect expires. Dedicated tests cover expiry,
+recharge, saved durations, armor, vines, shield/fuse behavior and Wild/undo expiry.
+
+`GameSession.Remix` creates a fresh seeded deal at the same level. First-completion
+bonus payouts are gated by the existing stars record, so replay and remix do not
+farm the 25-level gifts. Gifts are coins and inventory consumables only. Rewards
+are committed with the hand and profile through the existing atomic save store.
+
+The 480,000-level scope targets 8,000 hours at an assumed minute per level; only
+2,000 endless hours are credited to the requested 10,000-hour design budget.
+These are estimates requiring player timing data, not measured duration claims.
+
+
+## Stretched progression (1.5)
+
+`IDifficultyProgression` is an optional dependency of `AdventureDealProvider`.
+`CampaignProgression` contains the complete unlock schedule and 100-level profiles.
+Card introductions span levels 50-900. From level 1,000 a six-tier rotation grades
+ice, lock keys, bomb margins, armor layers, vine runs and reserve stock. Values
+are capped; late tiers rotate component combinations at the difficulty ceiling.
+Nothing is added to permanent player power. `Deal.Difficulty` stores the profile
+with the board, so continuing/replaying a saved deal preserves its version.
+
+The decorator inserts all required armor-hit steps into the winning witness,
+places enough keys before reinforced locks, and only places vines when the
+witness clear run meets their requirement. Ice thresholds and bomb deadlines
+are derived from that same path. Stock trimming removes only the unused tail,
+never the witness draw prefix. The legacy generator and its golden fingerprint
+remain unchanged. The UI shows the stored profile as an icon/tier badge.
+
+`MechanicState.Keys` and its optional armor-damage map persist advanced state.
+Armor updates copy the map before recording a hit, preserving undo snapshots.
+Older saves fall back to `HasKey` and the original `Peeled` bitset. Tests cover
+JSON persistence, mixed legacy armor state, unlock boundaries and every tier's
+caps and baseline pressure, followed by all 480,000 actual winning paths.
