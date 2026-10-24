@@ -115,3 +115,9 @@ Completed album volumes remain available in the album gallery.
 
 2.1.1: TNT, Joker and Remove collect key and gift effects, preventing cleared keys
 from leaving lower locks impossible. Clear counters include helper removals.
+
+
+## Journey expansion 2.2
+
+See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
+Pip navigation, MP22 formation generation and compatibility details.

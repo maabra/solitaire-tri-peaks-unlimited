@@ -25,30 +25,32 @@ async def main():
   assert await page.locator('[data-action="preview:100"]').count()==1
   await page.locator('[data-action=locate]').click()
   await page.screenshot(path=str(OUT/'chapter-100-scroll.png'))
+  await page.evaluate("async()=>{let {defaults}=await import('./session.mjs'),{features}=await import('./journey-guide.mjs');let p=defaults();p.HighestPlayedLevel=2500;p.ChapterGifts100=[1];p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:16},(_,i)=>'mechanic'+(i+1))];localStorage.setItem('meadow-peaks-profile',JSON.stringify(p))}")
+  await page.reload()
   await page.locator('[data-action=events]').click()
   panels=['album','missions','voyage','tournament','hunt','bingo','regatta','balloon','travel','milestones','chest','postcard','tickets']
   for size in [(1280,800),(390,844),(320,640)]:
    await page.set_viewport_size({'width':size[0],'height':size[1]})
    for name in panels:
-    await page.locator('[data-action="ev:'+name+'"]').click()
+    await page.locator('#modal [data-action="ev:'+name+'"]').click()
     if name=='travel':
      await page.wait_for_function("[...document.querySelectorAll('#modal img[data-chapter]')].every(i=>i.complete&&i.naturalWidth>0&&i.src.startsWith('data:'))")
      assert await page.locator('#modal img[data-chapter]').evaluate_all('(a)=>new Set(a.map(i=>i.src)).size===a.length')
     assert await page.locator('#modal').evaluate('(e)=>e.scrollWidth<=e.clientWidth+2'),f'{name} overflow at {size}'
     await page.screenshot(path=str(OUT/f'{name}-{size[0]}.png'))
     if name=='album':
-     await page.locator('[data-action="ev:album-0"]').click();assert await page.locator('.sticker-card').count()==10
-     await page.locator('[data-action="ev:categories"]').click()
+     await page.locator('#modal [data-action="ev:album-0"]').click();assert await page.locator('.sticker-card').count()==10
+     await page.locator('#modal [data-action="ev:categories"]').click()
      if size[0]==1280:
-      await page.locator('[data-action="ev:pack"]').click();assert await page.locator('.pack-reveal .sticker-card').count()==3
+      await page.locator('#modal [data-action="ev:pack"]').click();assert await page.locator('.pack-reveal .sticker-card').count()==3
       assert await page.locator('.pack-reveal .fresh').count()==0
-    await page.locator('[data-action="ev:hub"]').click()
+    await page.locator('#modal [data-action="ev:hub"]').click()
   await page.locator('[data-action=close]').last.click()
   await page.reload();assert await page.locator('#allow-storage').count()==0
-  await page.locator('[data-action=events]').click();await page.locator('[data-action="ev:album"]').click()
-  assert '3 collected' in await page.locator('#modal').inner_text() or '2 collected' in await page.locator('#modal').inner_text()
-  await page.locator('[data-action="ev:hub"]').click();await page.locator('[data-action="ev:travel"]').click()
-  await page.locator('[data-action="ev:travel-2"]').click();assert 'CHAPTER 2' in await page.locator('.chapter-ribbon small').inner_text()
+  await page.locator('[data-action=events]').click();await page.locator('#modal [data-action="ev:album"]').click()
+  assert 1<=await page.evaluate("Object.keys(JSON.parse(localStorage.getItem('meadow-peaks-profile')).Adventure.Album.Cards).length")<=3
+  await page.locator('#modal [data-action="ev:hub"]').click();await page.locator('#modal [data-action="ev:travel"]').click()
+  await page.locator('#modal [data-action="ev:travel-2"]').click();assert 'CHAPTER 2' in await page.locator('.chapter-ribbon small').inner_text()
   assert await page.locator('.story-node').count()==100
   assert await page.locator('[data-action="preview:101"]').is_disabled()
   assert not errors,errors

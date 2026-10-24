@@ -1,20 +1,20 @@
 # Meadow Peaks
 
 An illustrated solitaire adventure for Windows and the browser, with **480,000
-campaign levels**, 32 formation families, an endless mode and a match-three coin garden.
+campaign levels**, 64 formation families, an endless mode and a match-three coin garden.
 
 ![Meadow Peaks adventure map](docs/adventure-map.png)
 
 ## Play
 
 [Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
-[download MeadowPeaks-2.1.1.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.1.1/MeadowPeaks-2.1.1.exe).
+[download MeadowPeaks-2.2.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.2.0/MeadowPeaks-2.2.exe).
 
 The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
 no installer, administrator access, existing browser or network connection is
 needed. First launch unpacks the bundled runtimes into a local cache. The download
 is larger because the complete renderer is included. Windows 10 or 11 x64 is required.
-Older EXEs retain their older interface; use version 2.1 for the unified UI.
+Older EXEs retain their older interface; use version 2.2 for the current unified UI.
 
 The portable ZIP contains the same game. Extract the entire archive before opening
 MeadowPeaks.exe. Source archives contain source and original art, rather than an EXE.
@@ -36,10 +36,16 @@ moves cards, coins, inventory, progress and the saved garden between them.
 ## Features
 
 - 480,000 seeded levels across 4,800 chapters of 100 levels, with explicit cover graphs and verified solutions.
-- 32 formation families: peaks, fans, rings, ribbons, spirals, tilted packets,
+- 64 formation families: peaks, fans, rings, ribbons, spirals, tilted packets,
   bouquets, and five to eight separate stacks or islands.
-- 4,800 uniquely named chapter compositions, a matching illustrated Travel Hub,
-  100 scrollable map stops per chapter, and 16 card-table surfaces.
+- 51 independently painted, narrow portrait chapter worlds with distinct names, matching
+  Travel Hub pictures and 100 scrollable stops along a thick, winding road. Later
+  journeys reuse these worlds with numbered names. No color filters create variation.
+- 64 table surfaces and 56 original card-back motifs. Completing each chapter earns
+  a selectable back and table; later backs add distinct ornamental seals. Existing
+  completed chapters unlock their cosmetics automatically.
+- Pip the bird introduces activities and special cards as they unlock. Direct map,
+  activity and reward-screen links connect the garden, albums, flight and other events.
 - 80 original illustrated icons, plus transparent ice, lock-and-chain and vine
   overlays. Suit and rank remain readable under special-card artwork.
 - Ice, keys, locks, bombs, directional stock bonuses, armor, vines, lanterns,
@@ -64,7 +70,14 @@ There are no purchases, ads, accounts, leaderboards or online reward dependencie
 Reference videos, example games and extracted reference frames are excluded from
 Git and distribution packages. Original project artwork is included.
 
-## New adventures in 2.1
+## Connected journeys in 2.2
+
+MP22 deals add interwoven formations, boxes, circles, arches, braids and linked
+shapes. Existing saved hands and MP16/18/19/21 deal codes keep their original rules.
+The fitted table surrounds the actual card board and preserves its corners during
+resizing. See [journey and customization details](docs/JOURNEY.md).
+
+## Adventures
 
 Albums with 100 stickers, rarity packs and duplicate tokens; daily missions;
 lifetime milestones; a monthly voyage; trophy tournaments; offline CPU regatta;
@@ -80,7 +93,7 @@ Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
 ```powershell
 ./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.1.1.exe
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.2.exe
 python scripts/package_web.py
 python scripts/package_source.py
 ```
@@ -91,7 +104,7 @@ never in the source archive. See [architecture](docs/ARCHITECTURE.md) for the ho
 [web notes](docs/WEB.md) for shared presentation and [player guide](docs/PLAYING.txt).
 
 ```powershell
-node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs
+node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs web/tests/journey.test.mjs
 dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --effects-only
 # Exhaustive formation and solution verification:
 dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all

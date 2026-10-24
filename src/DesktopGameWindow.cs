@@ -18,8 +18,9 @@ internal sealed partial class DesktopGameWindow:Form
         else {var restored=Composition.CreateSession(store);profile=restored.Profile;loadWarning=restored.LoadWarning;
         if(profile.Active!=null)profile.Active=restored.Hand?.Capture(restored.Seed,restored.Level,restored.Endless);
         if(profile.ActiveGarden!=null)profile.ActiveGarden=(restored.CoinGame as IPersistentCoinGame)?.Capture();
-        if(smoke)profile.ReducedMotion=true;
+        if(smoke){profile.ReducedMotion=true;profile.HighestPlayedLevel=2500;}
         initialProfile=JsonSerializer.Serialize(profile);}
+        if(smoke){var data=System.Text.Json.Nodes.JsonNode.Parse(initialProfile)!;data["GuideSeen"]=JsonSerializer.SerializeToNode(new[]{"welcome","cards","garden","missions","wheel","album","tournament","balloon","hunt","bingo","regatta","voyage","travel","chest","postcard","tickets","milestones","customize"});initialProfile=data.ToJsonString();}
         Text="Meadow Peaks";ClientSize=new(1280,800);MinimumSize=new(800,600);StartPosition=FormStartPosition.CenterScreen;Icon=Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
         Controls.Add(browser);Controls.Add(loading);Shown+=async(_,_)=>await Initialize();
         FormClosing+=async(_,e)=>{if(smoke||checking||closing||!loaded)return;e.Cancel=true;closing=true;try{await browser.CoreWebView2.ExecuteScriptAsync("window.dispatchEvent(new Event('pagehide'))");await Task.Delay(80);}catch{}Close();};

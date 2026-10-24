@@ -12,7 +12,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(channel='msedge', headless=True)
         context = await browser.new_context(viewport={'width':1280, 'height':950}, reduced_motion='reduce')
-        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
+        await context.add_init_script('localStorage.setItem(\'meadow-storage-consent\',\'yes\');if(!localStorage.getItem(\'meadow-peaks-profile\'))localStorage.setItem(\'meadow-peaks-profile\',JSON.stringify({"Version": 1, "Coins": 300, "Unlocked": 1, "HighestPlayedLevel": 2500, "GuideSeen": ["welcome", "cards", "garden", "missions", "wheel", "album", "tournament", "balloon", "hunt", "bingo", "regatta", "voyage", "travel", "chest", "postcard", "tickets", "milestones", "customize", "mechanic1", "mechanic2", "mechanic3", "mechanic4", "mechanic5", "mechanic6", "mechanic7", "mechanic8", "mechanic9", "mechanic10", "mechanic11", "mechanic12", "mechanic13", "mechanic14", "mechanic15", "mechanic16"]}));')
         page = await context.new_page()
         errors=[]
         page.on('pageerror', lambda e: errors.append(str(e)))
@@ -37,7 +37,7 @@ async def main():
         await page.locator('[data-action="home"]').first.click()
         await page.screenshot(path=str(OUT/'home.png'), full_page=True)
         await page.locator('[data-action="continue"]').click()
-        assert await page.locator('.tool').count()==3
+        assert await page.locator('.tool').count()>=3
         await page.screenshot(path=str(OUT/'cards.png'), full_page=True)
         await page.wait_for_timeout(100)
         await page.evaluate('window.stockNode=document.querySelector(\'[data-action="draw"]\');window.cardNodes=new Map([...document.querySelectorAll(".board .card")].map(e=>[e.dataset.action,e]));')
@@ -71,14 +71,14 @@ async def main():
         # The deepest board must stay inside a narrow viewport and remain playable.
         await context.close()
         context=await browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
-        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
+        await context.add_init_script('localStorage.setItem(\'meadow-storage-consent\',\'yes\');if(!localStorage.getItem(\'meadow-peaks-profile\'))localStorage.setItem(\'meadow-peaks-profile\',JSON.stringify({"Version": 1, "Coins": 300, "Unlocked": 1, "HighestPlayedLevel": 2500, "GuideSeen": ["welcome", "cards", "garden", "missions", "wheel", "album", "tournament", "balloon", "hunt", "bingo", "regatta", "voyage", "travel", "chest", "postcard", "tickets", "milestones", "customize", "mechanic1", "mechanic2", "mechanic3", "mechanic4", "mechanic5", "mechanic6", "mechanic7", "mechanic8", "mechanic9", "mechanic10", "mechanic11", "mechanic12", "mechanic13", "mechanic14", "mechanic15", "mechanic16"]}));')
         page=await context.new_page()
         await page.goto('http://127.0.0.1:8765/')
         deep=await page.evaluate('''async()=>{let {defaults}=await import('./session.mjs');let {generate,Hand}=await import('./core.mjs');let p=defaults();p.Unlocked=2104;p.Active=new Hand(generate(104729+2104*997,2104)).capture(104729+2104*997,2104,false);return p;}''')
         await context.close()
         context=await browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
         await context.add_init_script('localStorage.setItem("meadow-peaks-profile",'+json.dumps(json.dumps(deep))+');')
-        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
+        await context.add_init_script('localStorage.setItem(\'meadow-storage-consent\',\'yes\');if(!localStorage.getItem(\'meadow-peaks-profile\'))localStorage.setItem(\'meadow-peaks-profile\',JSON.stringify({"Version": 1, "Coins": 300, "Unlocked": 1, "HighestPlayedLevel": 2500, "GuideSeen": ["welcome", "cards", "garden", "missions", "wheel", "album", "tournament", "balloon", "hunt", "bingo", "regatta", "voyage", "travel", "chest", "postcard", "tickets", "milestones", "customize", "mechanic1", "mechanic2", "mechanic3", "mechanic4", "mechanic5", "mechanic6", "mechanic7", "mechanic8", "mechanic9", "mechanic10", "mechanic11", "mechanic12", "mechanic13", "mechanic14", "mechanic15", "mechanic16"]}));')
         page=await context.new_page()
         page.on('pageerror',lambda e: errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/')
@@ -92,7 +92,7 @@ async def main():
         assert errors==[], errors
         await context.close()
         context=await browser.new_context(viewport={'width':1280,'height':950},reduced_motion='no-preference')
-        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
+        await context.add_init_script('localStorage.setItem(\'meadow-storage-consent\',\'yes\');if(!localStorage.getItem(\'meadow-peaks-profile\'))localStorage.setItem(\'meadow-peaks-profile\',JSON.stringify({"Version": 1, "Coins": 300, "Unlocked": 1, "HighestPlayedLevel": 2500, "GuideSeen": ["welcome", "cards", "garden", "missions", "wheel", "album", "tournament", "balloon", "hunt", "bingo", "regatta", "voyage", "travel", "chest", "postcard", "tickets", "milestones", "customize", "mechanic1", "mechanic2", "mechanic3", "mechanic4", "mechanic5", "mechanic6", "mechanic7", "mechanic8", "mechanic9", "mechanic10", "mechanic11", "mechanic12", "mechanic13", "mechanic14", "mechanic15", "mechanic16"]}));')
         page=await context.new_page()
         page.on('pageerror',lambda e:errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/')

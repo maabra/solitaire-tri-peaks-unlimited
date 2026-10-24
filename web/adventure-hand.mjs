@@ -1,8 +1,9 @@
+import {storyLayoutV3,storyNameV3} from './story-layouts-v3.mjs';
 import {Hand,generate,SeededRandom,K,clone,adjacent} from './core.mjs';
 export const specialGoal=level=>level%75===0?{name:'Clear all gold cards',suit:null,gold:true}:level%40===0?{name:'Clear all diamond cards',suit:2}:level%60===0?{name:'Clear all spade cards',suit:0}:null;
-export function adventureDeal(seed,level,balloon=false){for(let attempt=0;attempt<16;attempt++){try{return buildAdventureDeal((seed+attempt*7919)%2147483647,level,balloon)}catch(error){if(attempt===15)throw error;}}}
-function buildAdventureDeal(seed,level,balloon=false){
- const d=generate(seed,level,'MP19'),rng=new SeededRandom(seed+71);d.Generation='MP21';d.AdventureSeed=seed;const originalSolution=clone(d.Solution),originalRanks=d.Cards.map(c=>c.Rank);d.AdventureRules=true;d.Objective=specialGoal(level);d.Balloon=balloon;
+export function adventureDeal(seed,level,balloon=false,generation="MP21"){for(let attempt=0;attempt<16;attempt++){try{return buildAdventureDeal((seed+attempt*7919)%2147483647,level,balloon,generation)}catch(error){if(attempt===15)throw error;}}}
+function buildAdventureDeal(seed,level,balloon=false,generation="MP21"){
+ const d=generate(seed,level,'MP19',generation==='MP22'?storyLayoutV3(level):null),rng=new SeededRandom(seed+71);d.Generation=generation;if(generation==='MP22')d.Formation=storyNameV3(level);d.AdventureSeed=seed;const originalSolution=clone(d.Solution),originalRanks=d.Cards.map(c=>c.Rank);d.AdventureRules=true;d.Objective=specialGoal(level);d.Balloon=balloon;
  d.Cards=d.Cards.map((c,i)=>({...c,Pack:level>=15&&i===d.Solution.filter(x=>x.Index!=null).at(-1)?.Index?1+Math.min(4,Math.floor(level/300)%5):0,Trophy:level>=25&&i%13===7?20+10*(i%4):0,Arrow:balloon&&i%7===3?1:0,Gold:d.Objective?.gold&&i%5===2||false,Motion:level>=400&&[K.Up,K.Down].includes(c.Kind)?c.Kind===K.Up?1:-1:0,Kind:level>=1100&&i%23===11&&c.Kind===0?15:level>=1400&&i%19===9&&c.Kind===0?16:c.Kind}));
  d.GoalCards=d.Cards.map(c=>d.Objective?(d.Objective.gold?c.Gold:c.Suit===d.Objective.suit):true);
  if(d.Objective)d.Cards.forEach((c,i)=>c.Goal=d.GoalCards[i]);

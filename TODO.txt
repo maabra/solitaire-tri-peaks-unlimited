@@ -1,8 +1,7 @@
 Clarification needed after the implemented adventure features:
 
-1. Card/player customisation: the request explicitly leaves its scope undefined.
-   Decide whether to add earned card backs, face themes, avatars, hats or all four;
-   decide their unlock milestones. Do not add purchases or permanent stat boosts.
+Earned card backs and tables are implemented in 2.2 following the subsequent request.
+
 2. The unspecified minigames consisting of twelve levels: need their actual rules.
 3. The large coin game made from three different activities: need the three rules
    and how they connect. Do not invent a replacement for the requested game.

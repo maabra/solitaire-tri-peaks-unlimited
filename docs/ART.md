@@ -28,3 +28,9 @@ event-icons.png: transparent 8x4 atlas, 32 new event/helper icons.
 sticker-atlas.png: original 10x10 collectible tile painting.
 card-tables.png: 4x4 atlas of sixteen uncluttered playing surfaces.
 chapter-worlds.png: original 4x4 destination overview artwork.
+
+
+## Journey expansion 2.2
+
+See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
+Pip navigation, MP22 formation generation and compatibility details.

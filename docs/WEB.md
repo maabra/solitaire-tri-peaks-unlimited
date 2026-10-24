@@ -51,3 +51,9 @@ preserve valid wallet/map data. Invalid saves cannot replace a valid stored prof
 Future UI and gameplay features belong in the shared modules, rather than a separate
 Windows renderer. Update the build stamp, cache-busting imports, documentation and
 relevant fixtures together when shipping a new version.
+
+
+## Journey expansion 2.2
+
+See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
+Pip navigation, MP22 formation generation and compatibility details.

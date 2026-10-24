@@ -90,3 +90,9 @@ The map route contains 100 stops per chapter on a 6,800-unit scrolling world.
 DesktopProfileBridge preserves raw shared JSON atomically, avoiding data loss
 through the legacy typed model. Browser consent runs before Session loads a save.
 See ADVENTURES.md for the complete rules and TODO.txt for deferred undefined scope.
+
+
+## Journey expansion 2.2
+
+See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
+Pip navigation, MP22 formation generation and compatibility details.

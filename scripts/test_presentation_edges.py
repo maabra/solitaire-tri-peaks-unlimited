@@ -20,7 +20,7 @@ async def main():
   for width,height in [(2555,1274),(1058,1263),(1280,800),(800,600),(390,844),(320,640)]:
    ctx,page=await context(width,height,profile)
    assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
-   assert await page.evaluate("""async()=>{let {route}=await import('./adventure-map.mjs');let svg=document.querySelector('.map-trail'),m=svg.getScreenCTM();return [...document.querySelectorAll('.story-node')].every((node,i)=>{let p=svg.createSVGPoint();[p.x,p.y]=route[i];p=p.matrixTransform(m);let r=node.parentElement.getBoundingClientRect();return Math.abs(p.x-r.x-r.width/2)<1&&Math.abs(p.y-r.y-r.height/2)<1&&node.scrollWidth<=node.clientWidth})}"""),f'Route mismatch or clipped label: {width}x{height}'
+   assert await page.evaluate("""async()=>{let {roadFor}=await import('./adventure-map.mjs');let route=roadFor(+document.querySelector('.adventure-map').dataset.chapter).stops;let svg=document.querySelector('.map-trail'),m=svg.getScreenCTM();return [...document.querySelectorAll('.story-node')].every((node,i)=>{let p=svg.createSVGPoint();[p.x,p.y]=route[i];p=p.matrixTransform(m);let r=node.parentElement.getBoundingClientRect();return Math.abs(p.x-r.x-r.width/2)<1&&Math.abs(p.y-r.y-r.height/2)<1&&node.scrollWidth<=node.clientWidth})}"""),f'Route mismatch or clipped label: {width}x{height}'
    await page.screenshot(path=str(OUT/f'edge-map-{width}.png'))
    await page.locator('[data-action="wheel"]').click();await page.locator('[data-action="spinWheel"]').click();await page.wait_for_timeout(80);assert await page.locator('[data-action="spinWheel"]').is_disabled();await page.locator('[data-action="close"]').last.click()
    await ctx.close()
