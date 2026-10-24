@@ -43,7 +43,7 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         if (run.Level < 1 || (!run.Endless && run.Level > MeadowCampaign.TotalLevels) || run.Seed < 0 || run.Removed == null || run.Stock == null || run.Waste == null || run.Score < 0 || run.Streak < 0 || run.BestStreak < run.Streak || run.FreeUndos < 0 || run.FreeUndos > 3 || run.Waste.Rank < 0 || run.Waste.Rank > 13 || run.Waste.Suit < 0 || run.Waste.Suit > 3 || run.Stock.Count > 100 || run.Stock.Any(c => c == null || c.Rank < 1 || c.Rank > 13 || c.Suit < 0 || c.Suit > 3)) return null;
         var h = new Hand(deal, rules, mechanics);
         if (run.Removed.Length != h.removed.Length || (run.Paid && run.Removed.Any(x => !x))) return null;
-        if (run.Mechanics is { } m && (m.Turns < 0 || m.Clears < 0 || m.Clears > deal.Cards.Count || m.Run < 0 || m.FuseDelay < 0 || m.Keys < 0 || m.Keys > deal.Cards.Count || (m.ArmorDamage != null && m.ArmorDamage.Any(x => x.Key < 0 || x.Key >= deal.Cards.Count || x.Value < 1 || x.Value > 3)) || new[] { m.HintSeconds, m.HintCooldown, m.HelperCooldown, m.LuckySeconds, m.ThawSeconds, m.ShieldSeconds, m.WildSeconds, m.KeySeconds, m.PruneSeconds, m.PhaseSeconds, m.PeekSeconds, m.FreshSeconds }.Any(t => !double.IsFinite(t) || t < 0 || t > 120) || (m.WildReturn != null && (m.WildReturn.Rank < 1 || m.WildReturn.Rank > 13 || m.WildReturn.Suit < 0 || m.WildReturn.Suit > 3)))) return null;
+        if (run.Mechanics is { } m && (m.Turns < 0 || m.Clears < 0 || m.Clears > deal.Cards.Count || m.Run < 0 || m.FuseDelay < 0 || m.Keys < 0 || m.Keys > deal.Cards.Count || (m.ArmorDamage != null && m.ArmorDamage.Any(x => x.Key < 0 || x.Key >= deal.Cards.Count || x.Value < 1 || x.Value > 3)) || new[] { m.HintSeconds, m.HintCooldown, m.HelperCooldown, m.LuckySeconds, m.ThawSeconds, m.ShieldSeconds, m.WildSeconds, m.KeySeconds, m.PruneSeconds, m.PhaseSeconds, m.PeekSeconds, m.FreshSeconds, m.DrawCooldown }.Any(t => !double.IsFinite(t) || t < 0 || t > 120) || (m.WildReturn != null && (m.WildReturn.Rank < 1 || m.WildReturn.Rank > 13 || m.WildReturn.Suit < 0 || m.WildReturn.Suit > 3)))) return null;
         h.state = run.Mechanics ?? h.state;
         h.removed = (bool[])run.Removed.Clone(); h.stock = run.Stock.ToList(); h.Waste = run.Waste; h.Score = run.Score; h.Streak = run.Streak; h.BestStreak = run.BestStreak; h.FreeUndos = run.FreeUndos; h.Paid = run.Paid;
         return h;
@@ -73,8 +73,8 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     }
     public bool Draw()
     {
-        if (stock.Count == 0 || Won || Failed) return false;
-        Remember(); Waste = stock[0]; stock.RemoveAt(0); Streak = 0; state = mechanics.Advance(state, Deal, removed, null); return true;
+        if (stock.Count == 0 || Won || Failed || state.DrawCooldown>0) return false;
+        Remember(); Waste = stock[0]; stock.RemoveAt(0); Streak = 0; state = mechanics.Advance(state, Deal, removed, null) with {DrawCooldown=2}; return true;
     }
     public bool Undo()
     {
@@ -82,6 +82,7 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         var current = state; var s = history.Pop(); removed = s.Removed; stock = s.Stock; Waste = s.Waste; Score = s.Score; Streak = s.Streak; state = (s.Mechanics ?? new()) with {
             HintSeconds = Math.Min(s.Mechanics?.HintSeconds ?? 0, current.HintSeconds),
             HintCooldown = Math.Max(s.Mechanics?.HintCooldown ?? 0, current.HintCooldown),
+            DrawCooldown = Math.Max(s.Mechanics?.DrawCooldown ?? 0,current.DrawCooldown),
             HelperCooldown = Math.Max(s.Mechanics?.HelperCooldown ?? 0, current.HelperCooldown),
             LuckySeconds = Math.Min(s.Mechanics?.LuckySeconds ?? 0, current.LuckySeconds),
             ThawSeconds = Math.Min(s.Mechanics?.ThawSeconds ?? 0, current.ThawSeconds),

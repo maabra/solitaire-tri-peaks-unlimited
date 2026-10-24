@@ -11,7 +11,7 @@ public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = 
     int Run = 0, int FuseDelay = 0, ulong Peeled = 0,
     double HintSeconds = 0, double HintCooldown = 0, double HelperCooldown = 0,
     double LuckySeconds = 0, double ThawSeconds = 0, double ShieldSeconds = 0,
-    double WildSeconds = 0, Card? WildReturn = null, int Keys = 0, IReadOnlyDictionary<int, int>? ArmorDamage = null, double KeySeconds = 0, double PruneSeconds = 0, double PhaseSeconds = 0, double PeekSeconds = 0, double FreshSeconds = 0);
+    double WildSeconds = 0, Card? WildReturn = null, int Keys = 0, IReadOnlyDictionary<int, int>? ArmorDamage = null, double KeySeconds = 0, double PruneSeconds = 0, double PhaseSeconds = 0, double PeekSeconds = 0, double FreshSeconds = 0, double DrawCooldown = 0);
 
 // Stateless policy. All mutable state lives in snapshots, so saves and undo agree.
 public interface ICardMechanics

@@ -33,7 +33,7 @@ static class ProgressionTests
             check(deal.Cards.All(c => progression.Unlocked(c.Kind,level)), "No premature special card: " + level);
             check(deal.Stock.Count==Math.Max(deal.Solution.Count(s=>s.Index<0),original.Stock.Count-progression.ForLevel(level).ReserveTrim), "Only nonessential reserve draws are trimmed");
             var hand=new Hand(deal,rules);
-            foreach (var step in deal.Solution) { hand.AdvanceTime(60); check(step.Index<0 ? hand.Draw() : hand.Play(step.Index), "Milestone is solvable without active effects"); }
+            foreach (var step in deal.Solution) { hand.AdvanceTime(60); check(step.Index<0 ? TimedMoves.Draw(hand) : hand.Play(step.Index), "Milestone is solvable without active effects"); }
             check(hand.Won, "Milestone solved");
         }
         Deal Board(params Card[] cards) => new() { TemporaryRules=true, Cards=cards, Layout=cards.Select((_,i)=>new Slot(i*2,0)).ToArray(), Waste=new(5,0) };

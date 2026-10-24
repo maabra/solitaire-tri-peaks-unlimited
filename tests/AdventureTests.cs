@@ -30,7 +30,7 @@ static class AdventureTests
             foreach (var step in hand.Deal.Solution)
             {
                 ((ITemporaryHand)hand).AdvanceTime(30);
-                check(step.Index < 0 ? hand.Draw() : hand.Play(step.Index), $"Adventure witness {level}/{step.Index}");
+                check(step.Index < 0 ? TimedMoves.Draw(hand) : hand.Play(step.Index), $"Adventure witness {level}/{step.Index}");
             }
             check(hand.Won && !((IAdventureHand)hand).Failed, "Adventure solved without helpers");
             var restored = factory.Restore(hand.Capture(level, level, false));
@@ -40,7 +40,7 @@ static class AdventureTests
         {
             var endless = factory.Create(170003 + n * 7919, n);
             foreach (var step in endless.Deal.Solution)
-                check(step.Index < 0 ? endless.Draw() : endless.Play(step.Index), "Endless formation has a winning path");
+                check(step.Index < 0 ? TimedMoves.Draw(endless) : endless.Play(step.Index), "Endless formation has a winning path");
             check(endless.Won, "Endless formation solved");
         }
         check(kinds.Count == 15 && formations.Count == MeadowCampaign.TotalLevels - 3, "Every special card and formation generated");
@@ -52,7 +52,7 @@ static class AdventureTests
         check(!locks.CanPlay(0) && locks.Play(1) && locks.Effects.HasKey, "Key opens lock");
         check(locks.Undo() && !locks.CanPlay(0), "Undo restores key state");
         var bomb = new Hand(Board(new Card(6, 0) { Kind = CardKind.Bomb, Strength = 1 }, new Card(9, 1)), rules);
-        check(bomb.Draw() && bomb.Failed && !bomb.Draw() && !bomb.Play(0), "Bomb expires and stops hand");
+        check(TimedMoves.Draw(bomb) && bomb.Failed && !TimedMoves.Draw(bomb) && !bomb.Play(0), "Bomb expires and stops hand");
         check(bomb.Undo() && !bomb.Failed && bomb.Play(0), "Undo rescues bomb and clearing defuses it");
         var gift = new Hand(Board(new Card(6, 0) { Kind = CardKind.Up }, new Card(7, 0) { Kind = CardKind.Gift }), rules);
         check(gift.Play(0) && gift.Stock.Count == 4 && gift.Stock[0].Rank == 7, "Up card appends stock without replacing next draw");

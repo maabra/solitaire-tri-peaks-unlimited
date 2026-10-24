@@ -8,11 +8,11 @@ static class ExpansionTests
         var rules=new TriPeaksRules();
         Deal Board(params Card[] cards) => new() { TemporaryRules=true, Generation="MP16", Layout=cards.Select((_,i)=>new Slot(i*2,0)).ToArray(), Cards=cards, Waste=new(5,0), Stock=new[] {new Card(7,1),new Card(8,0)} };
         var h=new Hand(Board(new Card(6,0){Kind=CardKind.Gate,Strength=1},new(6,1)),rules);
-        check(!h.CanPlay(0) && h.Draw() && h.CanPlay(0), "Successful draws flip phase gates");
+        check(!h.CanPlay(0) && TimedMoves.Draw(h) && h.CanPlay(0), "Successful draws flip phase gates");
         check(h.Undo() && !h.CanPlay(0) && h.UseEffect("phase") && h.CanPlay(0), "Phase bypass temporarily opens a closed gate");
         h.AdvanceTime(7);check(!h.CanPlay(0), "Phase bypass expires");
         h=new Hand(Board(new Card(6,0){Kind=CardKind.ColorSeal,Strength=1},new(6,1)),rules);
-        check(!h.CanPlay(0) && h.Draw() && h.CanPlay(0), "Red seal requires red waste as well as adjacent rank");
+        check(!h.CanPlay(0) && TimedMoves.Draw(h) && h.CanPlay(0), "Red seal requires red waste as well as adjacent rank");
         check(h.Undo() && h.Wild() && h.CanPlay(0), "Wild bypasses a color seal");
         h=new Hand(Board(new Card(6,0){Kind=CardKind.Lock,Strength=3},new(7,0)),rules);
         check(!h.CanPlay(0)&&h.UseEffect("keypass")&&h.CanPlay(0), "Temporary keypass bypasses reinforced locks");

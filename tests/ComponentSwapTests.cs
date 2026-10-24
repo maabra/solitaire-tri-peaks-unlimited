@@ -63,8 +63,8 @@ internal static class ComponentSwapTests
         var poor = Open(new MemoryProfileStore(new Progress { Coins = 0 }), originalHands, helpers: catalog);
         poor.StartHand(1, false);
         check(poor.BuyPowerup("wild") == CommandResult.InsufficientCoins && poor.Inventory.Count("wild") == 2, "Failed purchase cannot grant inventory");
-        for (int i = 0; i < 3; i++) { poor.Draw(); check(poor.Undo() == CommandResult.Applied, "Free undo through coordinator"); }
-        poor.Draw();
+        for (int i = 0; i < 3; i++) { TimedMoves.Draw(poor); check(poor.Undo() == CommandResult.Applied, "Free undo through coordinator"); }
+        TimedMoves.Draw(poor);
         int stockBefore = poor.Hand!.Stock.Count;
         check(poor.Undo() == CommandResult.InsufficientCoins && poor.Hand.Stock.Count == stockBefore, "Paid undo checks funds before changing the board");
 

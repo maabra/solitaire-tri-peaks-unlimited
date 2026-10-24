@@ -194,7 +194,7 @@ public sealed partial class GameWindow : Form
         }
         if (!endless) Button("favorite", profile.Favorites.Contains(level) ? "\u2605 Saved" : "\u2606 Save", 449, 117, 88, 42, () => { session.ToggleFavorite(level); Save(); Build(); }, artwork.Gold);
         var draw = Button("draw", "", 426, 540, 86, 119, Draw);
-        draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
+        draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = (hand as ITemporaryHand)?.Effects.DrawCooldown<=0 && hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
         var waste = Button("waste", "", 561, 540, 86, 119, () => Tell("Play one rank higher or lower. Aces connect Kings and Twos."));
         waste.CardValue = hand.Waste; waste.TabStop = false; waste.AccessibleName = "Waste pile " + Art.Rank(hand.Waste.Rank);
         Button("hint", "\U0001f50e Hint 3s", 742, 551, 156, 47, Hint, enabled:(hand as ITemporaryHand)?.Effects.HintCooldown<=0);
@@ -591,7 +591,7 @@ public sealed partial class GameWindow : Form
                 }
                 image.Save(Path.Combine(outputDirectory, "screenshots", name + ".png"));
             }
-            void Click(string name) { var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); b.PerformClick(); }
+            void Click(string name) { if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); b.PerformClick(); }
             Shot("01-home"); Click("adventure"); Shot("02-adventure"); Click("level1"); Shot("03-solitaire");
             var path = hand!.Deal.Solution.ToArray();
             Click("card" + path[0].Index);

@@ -49,9 +49,9 @@ for (int level = 1; level <= 4000; level++)
     int startCovered = Enumerable.Range(0, hand.Removed.Count).First(i => !rules.Exposed(deal.Layout, hand.Removed, i));
     Check(!hand.Play(startCovered), "Covered card cannot play");
     foreach (var step in deal.Solution)
-        Check(step.Index == -1 ? hand.Draw() : hand.Play(step.Index), $"Level {level}: legal solution step {step.Index}");
+        Check(step.Index == -1 ? TimedMoves.Draw(hand) : hand.Play(step.Index), $"Level {level}: legal solution step {step.Index}");
     Check(hand.Won, $"Level {level}: solvable");
-    Check(!hand.Draw() && !hand.Wild() && !hand.Remove(0), "Finished hand rejects mutations");
+    Check(!TimedMoves.Draw(hand) && !hand.Wild() && !hand.Remove(0), "Finished hand rejects mutations");
 }
 // Recorded from the shipped, pre-refactor generator, including every stock order.
 string baselineHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(campaignBaseline.ToString())));
@@ -60,7 +60,7 @@ Console.WriteLine($"Original 4,000 campaign deals are distinct, deterministic, u
 for (int n = 1; n <= 100; n++)
 {
     var h = new Hand(deals.Generate(170003 + n * 7919, n), rules);
-    foreach (var s in h.Deal.Solution) Check(s.Index < 0 ? h.Draw() : h.Play(s.Index), "Endless legal solution");
+    foreach (var s in h.Deal.Solution) Check(s.Index < 0 ? TimedMoves.Draw(h) : h.Play(s.Index), "Endless legal solution");
     Check(h.Won, "Endless clears");
 }
 {
@@ -68,12 +68,12 @@ for (int n = 1; n <= 100; n++)
     var original = h.Waste; var move = h.Moves.First();
     Check(h.Play(move), "Play exposed move"); Check(h.Undo(), "Undo play");
     Check(h.Waste == original && !h.Removed[move] && h.Score == 0 && h.FreeUndos == 2, "Undo restores state");
-    int count = h.Stock.Count; Check(h.Draw() && h.Undo() && h.Stock.Count == count, "Undo draw");
+    int count = h.Stock.Count; Check(TimedMoves.Draw(h) && h.Undo() && h.Stock.Count == count, "Undo draw");
     Check(!h.Extra(12), "Cannot add cards to nonempty stock");
     Check(h.Wild() && !h.CanUndo && h.Moves.Any(), "Wild clears history and permits moves");
     Check(!h.Wild(), "Cannot waste repeated Wild");
     Check(h.Play(h.Moves.First()) && h.Undo() && h.Waste.Rank == 0, "Undo after wild");
-    while (h.Draw()) { }
+    while (TimedMoves.Draw(h)) { }
     Check(h.Extra(44) && h.Stock.Count == 5 && !h.CanUndo, "Extra stock");
     int exposed = Enumerable.Range(0, h.Removed.Count).First(i => rules.Exposed(h.Deal.Layout, h.Removed, i));
     Check(h.Remove(exposed) && h.Removed[exposed] && !h.CanUndo, "Targeted remove");
