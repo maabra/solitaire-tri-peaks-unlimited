@@ -6,6 +6,7 @@ public sealed class TriPeaksRules : ISolitaireRules
     {
         if (removed[i]) return false;
         var slot = layout[i];
+        if(slot.BlockedBy!=null) return slot.BlockedBy.All(j=>j>=0 && j<removed.Count && removed[j]);
         for (int j = 0; j < layout.Count; j++)
             if (!removed[j] && layout[j].Row == slot.Row + 1 && Math.Abs(layout[j].X-slot.X) < .6f) return false;
         return true;

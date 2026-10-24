@@ -19,7 +19,7 @@ async def main():
         await page.screenshot(path=str(OUT/'home.png'), full_page=True)
         await page.locator('[data-action="continue"]').click()
         await page.screenshot(path=str(OUT/'cards.png'), full_page=True)
-        fixture=json.loads((ROOT/'shared'/'engine-fixtures.json').read_text('utf-8'))['Deals'][0]
+        fixture=json.loads((ROOT/'shared'/'engine-fixtures.json').read_text('utf-8'))['StoryDeals'][0]
         for step in fixture['Deal']['Solution']:
             action='draw' if step['Index']<0 else 'card:'+str(step['Index'])
             if step['Index']<0: await page.wait_for_function('!document.querySelector(\'[data-action="draw"]\').disabled')
@@ -37,6 +37,8 @@ async def main():
         for action in hints: await page.locator('[data-action="'+action+'"]').click()
         await page.wait_for_timeout(350)
         assert (await page.evaluate('JSON.parse(localStorage.getItem("meadow-peaks-profile")).Coins'))>saved['Coins']
+        assert await page.locator('#garden-refresh').is_disabled()
+        assert '00:' in await page.locator('#garden-refresh').inner_text() or '01:00:00' in await page.locator('#garden-refresh').inner_text()
         await page.screenshot(path=str(OUT/'gems.png'),full_page=True)
         await page.locator('[data-action="settings"]').click()
         await page.locator('[data-setting="ReducedMotion"]').check()

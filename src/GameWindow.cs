@@ -176,22 +176,7 @@ public sealed partial class GameWindow : Form
     void BuildHand()
     {
         if (hand == null) { screen = "home"; BuildHome(); return; }
-        for (int i = 0; i < hand.Removed.Count; i++)
-        {
-            if (hand.Removed[i]) continue;
-            int index = i; var slot = hand.Deal.Layout[i]; bool face = hand.IsExposed(i);
-            if (!face) continue;
-            var bounds = CardBounds(i);
-            var b = Button("card" + i, "", bounds.X, bounds.Y, bounds.Width, bounds.Height, () => PlayCard(index));
-            b.CardValue = hand.Deal.Cards[i]; b.Face = face;
-            b.CardBadge = (hand as IAdventureHand)?.CardStatus(i) ?? "";
-            b.Hint = face && (selectedPowerup != null || (hand as ITemporaryHand)?.Effects.HintSeconds > 0 && ((profile.Hints && hand.CanPlay(i)) || cardHint == i));
-            b.AccessibleName = face ? $"{Art.Rank(b.CardValue.Rank)} of {new[] { "spades", "hearts", "diamonds", "clubs" }[b.CardValue.Suit]}, {b.CardBadge}{(hand.CanPlay(i) ? ", playable" : "")}" : "Covered card";
-            iconTips.SetToolTip(b, CardGuide.Describe(hand,i));
-            b.AccessibleDescription=CardGuide.Describe(hand,i);
-            b.TabStop = face; b.Enabled = face;
-            b.BringToFront();
-        }
+        for(int i=0;i<hand.Removed.Count;i++) EnsureCardControl(i);
         if (!endless) Button("favorite", profile.Favorites.Contains(level) ? "\u2605 Saved" : "\u2606 Save", 449, 117, 88, 42, () => { session.ToggleFavorite(level); Save(); Build(); }, artwork.Gold);
         var draw = Button("draw", "", 426, 540, 86, 119, Draw);
         draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = ((hand as ITemporaryHand)?.Effects.DrawCooldown ?? 0)<=0 && hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
@@ -201,8 +186,8 @@ public sealed partial class GameWindow : Form
         Button("retry", "Replay deal", 742, 609, 156, 43, () => { confirmAction = () => { session.Replay(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("retry"); });
         Button("remix", profile.FreshDealCooldown>0 ? $"Fresh in {Math.Ceiling(profile.FreshDealCooldown)}s" : "\U0001f3b2 Remix", 140, 609, 110, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); },enabled:profile.FreshDealCooldown<=0);
         Button("shareDeal", "\U0001f517 Share", 260, 609, 110, 43, () => ShowOverlay("share"));
-        Button("undo", hand.FreeUndos > 0 ? $"↶  Undo · {hand.FreeUndos} free" : $"↶  Undo · {session.Economy.UndoCost} coins", 158, 698, 210, 57, Undo, enabled: hand.CanUndo);
-        var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
+        Button("undo", hand.FreeUndos > 0 ? $"↶  Undo · {hand.FreeUndos} left" : $"↶  Undo · {session.Economy.UndoCost} coins", 158, 698, 210, 57, Undo, enabled: hand.CanUndo);
+        var helpers = VisibleHelpers().Skip(powerupPage * 3).Take(3).ToArray();
         for (int i = 0; i < helpers.Length; i++)
         {
             var helper = helpers[i];
@@ -213,7 +198,41 @@ public sealed partial class GameWindow : Form
         Button("mechanics", "\u2753 Card guide", 140, 551, 230, 47, () => ShowOverlay("mechanics"));
         Button("help", "?", 1163, 108, 49, 46, () => ShowOverlay("help"));
         if (hand.Won) Button("finishedNext", "Next hand  →", 920, 566, 230, 53, () => NewHand(endless ? profile.EndlessDeal : Math.Min(level + 1, campaign.LevelCount), endless || level == campaign.LevelCount), artwork.Gold);
-        if (!hand.Moves.Any() && hand.Stock.Count == 0 && !hand.Won) Button("earn", "Earn free coins  ◆", 920, 566, 230, 53, OpenGems, artwork.Gold);
+        if (!hand.Moves.Any() && hand.Stock.Count == 0 && !hand.Won) Button("earn", "Earn coins  ◆", 920, 566, 230, 53, OpenGems, artwork.Gold);
+    }
+    void EnsureCardControl(int i)
+    {
+            if (hand==null) return;
+            int index = i; var slot = hand.Deal.Layout[i]; bool face = hand.IsExposed(i);
+            if (!face || hand.Removed[i]) { if(Controls.Find("card"+i,false).FirstOrDefault() is Control old){Controls.Remove(old);old.Dispose();}return;}
+            var bounds = CardBounds(i);
+            var b = Controls.Find("card"+i,false).FirstOrDefault() as GameButton; if(b==null) b = Button("card" + i, "", bounds.X, bounds.Y, bounds.Width, bounds.Height, () => PlayCard(index));
+            b.CardValue = hand.Deal.Cards[i]; b.Face = face;
+            if(slot.DrawX.HasValue && b.CardSize.Width==0)
+            {
+                b.CardAngle=slot.Angle;b.CardSize=new(76,106);
+                using var hit=new GraphicsPath();hit.AddRectangle(new RectangleF(-37,-52,74,104));
+                using var matrix=new Matrix();matrix.Rotate(slot.Angle);matrix.Translate(b.Width/2f,b.Height/2f,MatrixOrder.Append);hit.Transform(matrix);b.Region=new Region(hit);
+            }
+            b.CardBadge = (hand as IAdventureHand)?.CardStatus(i) ?? "";
+            b.Hint = face && (selectedPowerup != null || (hand as ITemporaryHand)?.Effects.HintSeconds > 0 && ((profile.Hints && hand.CanPlay(i)) || cardHint == i));
+            b.AccessibleName = face ? $"{Art.Rank(b.CardValue.Rank)} of {new[] { "spades", "hearts", "diamonds", "clubs" }[b.CardValue.Suit]}, {b.CardBadge}{(hand.CanPlay(i) ? ", playable" : "")}" : "Covered card";
+            iconTips.SetToolTip(b, CardGuide.Describe(hand,i));
+            b.AccessibleDescription=CardGuide.Describe(hand,i);
+            b.TabStop = face; b.Enabled = face;
+            b.BringToFront();
+    }
+    void RefreshHandView()
+    {
+        if(hand==null||screen!="play"||overlay.Length>0){Build();return;}
+        for(int i=0;i<hand.Removed.Count;i++)EnsureCardControl(i);
+        if(Controls.Find("waste",false).FirstOrDefault() is GameButton waste){waste.CardValue=hand.Waste;waste.Invalidate();}
+        if(Controls.Find("draw",false).FirstOrDefault() is GameButton draw){draw.Enabled=hand.Stock.Count>0&&!hand.Won&&!((hand as IAdventureHand)?.Failed??false)&&((hand as ITemporaryHand)?.Effects.DrawCooldown??0)<=0;draw.Invalidate();}
+        if(Controls.Find("undo",false).FirstOrDefault() is GameButton undo){undo.Enabled=hand.CanUndo;undo.Text=hand.FreeUndos>0?$"Undo - {hand.FreeUndos} left":$"Undo - {session.Economy.UndoCost} coins";}
+        foreach(var old in Controls.OfType<GameButton>().Where(b=>b.Name.StartsWith("power-")||b.Name is "prevPowerups" or "nextPowerups").ToArray()){Controls.Remove(old);old.Dispose();}
+        var helpers=VisibleHelpers().Skip(powerupPage*3).Take(3).ToArray();
+        for(int i=0;i<helpers.Length;i++){var h=helpers[i];var b=Button("power-"+h.Id,$"{h.Name} x{session.Inventory.Count(h.Id)}",383+i*225,698,210,57,()=>ActivatePowerup(h.Id),enabled:h.CanUse(hand)&&((hand as ITemporaryHand)?.Effects.HelperCooldown??0)<=0);b.Subtitle=PowerupCaption(h);}
+        BuildPowerupPages(698);UpdatePeekControls();backdropDirty=true;RefreshBackdrop();Invalidate();
     }
     void PlayCard(int i)
     {
@@ -268,10 +287,10 @@ public sealed partial class GameWindow : Form
             overlay = "win"; lastVictory = result; victoryStarted = effects.Time;
             effects.Celebrate(); effects.Coins(result.Coins, new(640, 373)); Chime(SoundCue.Victory);
         }
-        Save(); Build();
-        if ((hand as IAdventureHand)?.Failed == true) Tell("A bomb burst! Undo your last move or replay this deal for free.");
+        Save(); if(overlay.Length>0)Build();else RefreshHandView();
+        if ((hand as IAdventureHand)?.Failed == true) Tell("A bomb burst! Undo your last move or replay this deal.");
     }
-    void Draw() { if (session.Draw()) { effects.Fly(hand!.Waste, new(465, 593), new(604, 593)); selectedPowerup = null; cardHint = -1; Chime(); Changed(); } else Tell("The stock is empty. Try a Wild, five more cards, or replay this deal for free."); }
+    void Draw() { if (session.Draw()) { effects.Fly(hand!.Waste, new(465, 593), new(604, 593)); selectedPowerup = null; cardHint = -1; Chime(); Changed(); } else Tell("The stock is empty. Try a Wild, five more cards, or replay this deal."); }
     void Undo()
     {
         var result = session.Undo();
@@ -300,19 +319,20 @@ public sealed partial class GameWindow : Form
             selectedPowerup = null; Tell(helper.Name + " \u23f3"); Chime(SoundCue.Combo); Changed();
         }
     }
+    IPowerup[] VisibleHelpers() {var visible=session.Powerups.All.Where(h=>session.HelperDiscovered(h.Id)&&(overlay=="shop"||screen!="play"||session.HelperRelevant(h.Id))).ToArray();powerupPage=Math.Clamp(powerupPage,0,Math.Max(0,(visible.Length-1)/3));return visible;}
     void BuildPowerupPages(float y)
     {
-        if (session.Powerups.All.Count <= 3) return;
+        int count=VisibleHelpers().Length; if (count <= 3) return;
         Button("prevPowerups", "‹", overlay == "shop" ? 233 : 105, y, 40, 48, () => { powerupPage--; Build(); }, enabled: powerupPage > 0);
-        Button("nextPowerups", "›", overlay == "shop" ? 1008 : 1060, y, 40, 48, () => { powerupPage++; Build(); }, enabled: (powerupPage + 1) * 3 < session.Powerups.All.Count);
+        Button("nextPowerups", "›", overlay == "shop" ? 1008 : 1060, y, 40, 48, () => { powerupPage++; Build(); }, enabled: (powerupPage + 1) * 3 < count);
     }
     void Hint()
     {
         if (hand == null) return;
         if (hand is ITemporaryHand timed && !timed.RequestHint()) { Tell("Hint is recharging, or there is no matching card."); return; }
         cardHint = hand.Moves.FirstOrDefault(-1);
-        if (cardHint >= 0) { Tell("Match highlighted for 3 seconds. Hints recharge in 15 seconds."); Build(); Controls.Find("card" + cardHint, false).FirstOrDefault()?.Focus(); }
-        else Tell(hand.Stock.Count > 0 ? "No cards fit right now. Draw from the stock (D)." : "No moves left. Use a helper, earn coins in Gem Garden, or replay for free.");
+        if (cardHint >= 0) { Tell("Match highlighted for 3 seconds. Hints recharge in 15 seconds."); RefreshHandView(); Controls.Find("card" + cardHint, false).FirstOrDefault()?.Focus(); }
+        else Tell(hand.Stock.Count > 0 ? "No cards fit right now. Draw from the stock (D)." : "No moves left. Use a helper, earn coins in Gem Garden, or replay the deal.");
     }
     void OpenGems() { session.OpenCoinGame(); selectedGem = -1; gemHint = -1; Navigate("gems"); }
     void BuildGems()
@@ -327,8 +347,8 @@ public sealed partial class GameWindow : Form
             b.AccessibleName = $"{new[] { "Ruby diamond", "Blue pearl", "Violet triangle", "Gold star", "Jade square", "Amber hexagon" }[b.Gem]} row {i / 8 + 1} column {i % 8 + 1}";
             b.Enabled = gems.Moves > 0 && gemAnimation == null;
         }
-        Button("gemhint", "Show a match · free", 84, 524, 270, 52, () => { var hint = gems.Hint(); if (hint.HasValue) { selectedGem = hint.Value.Item1; gemHint = hint.Value.Item2; Build(); Tell("Swap the two golden gems."); } }, enabled: gems.Moves > 0 && gemAnimation == null);
-        Button("gemnew", gems.Moves == 0 ? "Play again · free" : "New garden · free", 84, 591, 270, 52, () => { session.NewCoinGame(); selectedGem = -1; gemHint = -1; Build(); PresentSceneEntrance(); }, artwork.Gold, gemAnimation == null);
+        Button("gemhint", "Show a match", 84, 524, 270, 52, () => { var hint = gems.Hint(); if (hint.HasValue) { selectedGem = hint.Value.Item1; gemHint = hint.Value.Item2; Build(); Tell("Swap the two golden gems."); } }, enabled: gems.Moves > 0 && gemAnimation == null);
+        Button("gemnew", GardenRefreshCaption(), 84, 591, 270, 52, () => { if(!session.NewCoinGame()) return; selectedGem = -1; gemHint = -1; Build(); PresentSceneEntrance(); }, artwork.Gold, gemAnimation == null && session.GardenRefreshRemaining<=0);
         Button("backhand", hand != null && !hand.Won ? "Back to my hand  →" : "Back to adventure  →", 432, 702, 508, 53, () => Navigate(hand != null && !hand.Won ? "play" : "map"));
     }
     void SelectGem(int i)
@@ -340,7 +360,7 @@ public sealed partial class GameWindow : Form
         if (Math.Abs(a / 8 - i / 8) + Math.Abs(a % 8 - i % 8) != 1) { selectedGem = i; Build(); return; }
         if (session.PlayGems(a, i))
         {
-            Save(); Tell($"Lovely match! +{gems.LastGain} coins{(gems.Moves == 0 ? ". Play again for free whenever you like!" : "")}"); Chime(SoundCue.Gems);
+            Save(); Tell($"Lovely match! +{gems.LastGain} coins{(gems.Moves == 0 ? ". Start another round when Fresh Garden is ready." : "")}"); Chime(SoundCue.Gems);
             effects.Coins(gems.LastGain, new(686, 395));
             effects.Cheer($"Sparkling! +{gems.LastGain} coins", new(688, 142), Color.FromArgb(149, 108, 175));
             StartGemAnimation();
@@ -350,7 +370,7 @@ public sealed partial class GameWindow : Form
     }
     void Buy(string id)
     {
-        if (session.BuyPowerup(id) != CommandResult.Applied) { Tell("Need more coins? Gem Garden is always free."); return; }
+        if (session.BuyPowerup(id) != CommandResult.Applied) { Tell("Need more coins? Earn coins in Gem Garden."); return; }
         Save(); Tell("Helper added to your collection."); Build(); effects.Burst(new(640, 440), artwork.Gold, 20); Chime(SoundCue.Coins);
     }
     void BuildOverlay()
@@ -358,7 +378,7 @@ public sealed partial class GameWindow : Form
         Button("closeOverlay", "×", 1004, 148, 46, 44, () => { overlay = ""; Build(); });
         if (overlay == "shop")
         {
-            var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
+            var helpers = VisibleHelpers().Skip(powerupPage * 3).Take(3).ToArray();
             for (int i = 0; i < helpers.Length; i++)
             {
                 var helper = helpers[i];
@@ -393,7 +413,7 @@ public sealed partial class GameWindow : Form
         }
         else
         {
-            Button("confirm", overlay == "retry" ? "Replay for free" : "Start a new hand", 419, 460, 442, 60, () => { overlay = ""; var a = confirmAction; confirmAction = null; a?.Invoke(); }, artwork.Gold);
+            Button("confirm", overlay == "retry" ? "Replay deal" : "Start a new hand", 419, 460, 442, 60, () => { overlay = ""; var a = confirmAction; confirmAction = null; a?.Invoke(); }, artwork.Gold);
             Button("cancel", "Keep my current hand", 419, 540, 442, 49, () => { overlay = ""; confirmAction = null; Build(); });
         }
     }
@@ -452,7 +472,7 @@ public sealed partial class GameWindow : Form
     {
         Art.Box(g, new(205, 93, 870, 112), Color.FromArgb(225, artwork.Cream), 24);
         Art.Text(g, CurrentChapter.World + " / " + CurrentChapter.Name, 225, 105, 28, artwork.Ink, true, 830, true);
-        Art.Text(g, $"Chapter {mapPage + 1} / {campaign.Chapters.Count}   ·   Levels {mapPage * 20 + 1}–{mapPage * 20 + 20}   ·   Free to play, always", 290, 158, 17, artwork.Teal, false, 700, true);
+        Art.Text(g, $"Chapter {mapPage + 1} / {campaign.Chapters.Count}   ·   Levels {mapPage * 20 + 1}–{mapPage * 20 + 20}", 290, 158, 17, artwork.Teal, false, 700, true);
         Art.Box(g, new(190, 207, 900, 443), Color.FromArgb(135, 247, 244, 214), 28);
         using var path = new Pen(Color.FromArgb(193, 177, 133), 12) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
         g.DrawLines(path, Enumerable.Range(0, 20).Select(MapPoint).ToArray());
@@ -484,7 +504,9 @@ public sealed partial class GameWindow : Form
         {
             if (hand.Removed[i] || hand.IsExposed(i)) continue;
             var r = CardBounds(i);
-            artwork.DrawCard(g, new(r.X + 1, r.Y + 1, r.Width - 3, r.Height - 7), hand.Deal.Cards[i], false, false, false);
+            var slot=hand.Deal.Layout[i];
+            if(slot.DrawX.HasValue){var state=g.Save();g.TranslateTransform(r.X+r.Width/2,r.Y+r.Height/2);g.RotateTransform(slot.Angle);artwork.DrawCard(g,new(-38,-53,73,99),hand.Deal.Cards[i],false,false,false);g.Restore(state);}
+            else artwork.DrawCard(g, new(r.X + 1, r.Y + 1, r.Width - 3, r.Height - 7), hand.Deal.Cards[i], false, false, false);
         }
         Art.Text(g,"Clear all cards to win",143,530,13,artwork.Cream,true);
         PaintTemporaryEffects(g);
@@ -507,13 +529,13 @@ public sealed partial class GameWindow : Form
         Art.Text(g, "THE GEM GARDEN", 84, 172, 13, artwork.Teal, true);
         Art.Text(g, "A little sparkle.\nA few more coins.", 81, 203, 29, artwork.Ink, true);
         Art.Text(g, "Swap neighboring gems to match\n3 or more in a row or column.\nCascades earn extra coins.\n\nEvery coin goes straight to\nyour solitaire wallet.", 84, 298, 18, artwork.Teal);
-        Art.Text(g, "No entry fee. No timer. Play again\nas often as you like.", 84, 453, 15, artwork.Teal);
+        Art.Text(g, "Fresh Garden: 1-hour recharge.\nYour current round is saved.", 84, 453, 15, artwork.Teal);
         Art.Box(g, new(414, 171, 540, 503), Color.FromArgb(220, 26, 77, 62), 23);
         Art.Box(g, new(995, 192, 225, 300), Color.FromArgb(220, 255, 248, 227), 22);
         Art.Text(g, "MOVES LEFT", 1019, 222, 14, artwork.Teal, true); Art.Text(g, gems.Moves.ToString(), 1014, 246, 55, artwork.Ink, true);
         Art.Text(g, "COINS THIS ROUND", 1019, 334, 14, artwork.Teal, true); Art.Text(g, "+" + gems.Earned, 1014, 363, 41, Color.FromArgb(158, 109, 33), true);
         Art.Box(g, new(995, 510, 225, 140), Color.FromArgb(220, artwork.Cream), 20);
-        Art.Text(g, gems.Moves == 0 ? "Beautifully done!\nYour coins are saved.\nPlay another free round." : "Tip: four and five gems\nmake bigger matches.\nLook for cascades!", 1008, 526, 19, artwork.Teal, true, 210, true);
+        Art.Text(g, gems.Moves == 0 ? "Beautifully done!\nYour coins are saved.\nFresh Garden: 1 hour." : "Tip: four and five gems\nmake bigger matches.\nLook for cascades!", 1008, 526, 19, artwork.Teal, true, 210, true);
     }
     void PaintOverlay(Graphics g)
     {
@@ -523,7 +545,7 @@ public sealed partial class GameWindow : Form
         {
             Art.Text(g, "A little help along the way", 260, 177, 35, artwork.Ink, true, 760, true);
             Art.Text(g, $"Your wallet: {profile.Coins:N0} coins  ·  All helpers are bought with earned coins", 260, 230, 17, artwork.Teal, false, 760, true);
-            var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
+            var helpers = VisibleHelpers().Skip(powerupPage * 3).Take(3).ToArray();
             for (int i = 0; i < helpers.Length; i++)
             {
                 var helper = helpers[i];
@@ -532,7 +554,7 @@ public sealed partial class GameWindow : Form
                 Art.Text(g, helper.Description, x + 3, 361, 15, artwork.Teal, false, 224, true);
                 Art.Text(g, $"In your bag: {session.Inventory.Count(helper.Id)}", x, 420, 15, artwork.Teal, true, 230, true);
             }
-            Art.Text(g, "Running low? There’s always a free way to earn more.", 270, 547, 17, artwork.Teal, false, 740, true);
+            Art.Text(g, "Earn more coins in Gem Garden.", 270, 547, 17, artwork.Teal, false, 740, true);
         }
         else if (overlay == "win")
         {
@@ -551,7 +573,7 @@ public sealed partial class GameWindow : Form
         {
             Art.Text(g, "Make yourself comfortable", 280, 190, 36, artwork.Ink, true, 720, true);
             Art.Text(g, "Everything saves automatically on this Windows account.", 280, 251, 18, artwork.Teal, false, 720, true);
-            Art.Text(g, "Offline · No accounts · No purchases · Original artwork", 280, 624, 15, artwork.Teal, false, 720, true);
+            Art.Text(g, "Progress is saved on this device.", 280, 624, 15, artwork.Teal, false, 720, true);
         }
         else
         {
@@ -626,10 +648,10 @@ public sealed partial class GameWindow : Form
             {
                 overlay = ""; profile.Unlocked = n; NewHand(n, false);
                 int rows = hand!.Deal.Layout.Max(s => s.Row)+1;
-                if (rows != n-2096) throw new Exception("Deep board depth failed");
+                if (!hand.Deal.Layout.All(s=>s.DrawX.HasValue && s.BlockedBy!=null)) throw new Exception("Story formation geometry missing");
                 foreach (var button in Controls.OfType<GameButton>().Where(b => b.Name.StartsWith("card")))
                     if (button.Bottom > Rect(0, 0, 0, 521).Bottom) throw new Exception("Deep cards overlap stock");
-                Shot("18-depth-"+rows);
+                Shot("18-story-"+n);
                 foreach (var step in hand.Deal.Solution) Click(step.Index < 0 ? "draw" : "card"+step.Index);
                 if (!hand.Won) throw new Exception("Deep board UI path failed");
             }
@@ -637,7 +659,7 @@ public sealed partial class GameWindow : Form
             Shot("20-advanced-tier");
             foreach (var step in hand!.Deal.Solution) Click(step.Index < 0 ? "draw" : "card"+step.Index);
             if (!hand.Won) throw new Exception("Advanced progression UI path failed");
-            overlay = ""; profile.Unlocked = 130; NewHand(130, false);
+            overlay = ""; profile.Unlocked = 730; NewHand(730, false);
             session.Inventory.Add("lucky", 1); powerupPage=1; Build(); Click("power-lucky");
             Shot("19-temporary-effects", .2f);
             if (((ITemporaryHand)hand!).Effects.LuckySeconds <= 0) throw new Exception("Temporary boost did not start");
@@ -646,7 +668,7 @@ public sealed partial class GameWindow : Form
             powerupPage=0; Build();
             overlay=""; profile.Unlocked=2400; NewHand(2400,false);
             if(!hand!.Deal.Cards.Any(c=>c.Kind==CardKind.Gate) || !hand.Deal.Cards.Any(c=>c.Kind==CardKind.ColorSeal)) throw new Exception("Expansion cards missing");
-            session.Inventory.Add("peek",1); powerupPage=3; Build(); Click("power-peek"); Shot("21-stock-preview",.2f);
+            session.Inventory.Add("peek",1); powerupPage=Array.FindIndex(VisibleHelpers(),h=>h.Id=="peek")/3; Build(); Click("power-peek"); Shot("21-stock-preview",.2f);
             if(Controls.Find("mechanics",false).Single().Visible) throw new Exception("Preview controls not hidden");
             AdvancePresentation(7);
             if(((ITemporaryHand)hand).Effects.PeekSeconds>0 || !Controls.Find("mechanics",false).Single().Visible) throw new Exception("Stock preview expiry failed");

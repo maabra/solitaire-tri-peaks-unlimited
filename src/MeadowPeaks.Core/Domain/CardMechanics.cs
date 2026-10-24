@@ -114,7 +114,8 @@ public sealed class AdventureDealProvider : IDealProvider
         }
         // Only remove reserve draws after the witness prefix; never its solution draws.
         int keep = Math.Max(draws, deal.Stock.Count-profile.ReserveTrim);
-        return new Deal { Generation = "MP16", Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
-            Solution = solution, TemporaryRules = true, Bonus = level%25==0, OpeningEffect = level%25 != 0 ? "" : level >= 900 && level/25%3==0 ? "shelter" : level >= 700 && level/25%3==1 ? "harvest" : level >= 600 ? "glow" : "", Formation = AdventureLayouts.NameFor(level), Difficulty = profile };
+        bool story=deal.Layout.Any(s=>s.DrawX.HasValue);
+        return new Deal { Generation = story ? "MP18" : "MP16", Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
+            Solution = solution, TemporaryRules = true, Bonus = level%25==0, OpeningEffect = level%25 != 0 ? "" : level >= 900 && level/25%3==0 ? "shelter" : level >= 700 && level/25%3==1 ? "harvest" : level >= 600 ? "glow" : "", Formation = story ? StoryLayouts.NameFor(level) : AdventureLayouts.NameFor(level), Difficulty = profile };
     }
 }

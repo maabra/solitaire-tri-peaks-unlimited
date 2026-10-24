@@ -18,12 +18,14 @@ void Check(bool condition, string description)
 }
 if (args.Contains("--effects-only"))
 {
+    StoryTests.Run(Check);
     TemporaryTests.Run(Check);
     ProgressionTests.Run(Check);
     ExpansionTests.Run(Check);
     Console.WriteLine($"PASS: {assertions:N0} targeted effect assertions.");
     return;
 }
+if(args.Contains("--story-all")){StoryTests.Run(Check,true);Console.WriteLine($"PASS: {assertions:N0} story assertions.");return;}
 Check(rules.Adjacent(1, 13) && rules.Adjacent(13, 1), "Ace King wrap");
 Check(rules.Adjacent(1, 2) && !rules.Adjacent(2, 4), "Rank adjacency");
 Check(rules.Adjacent(0, 8), "Wild adjacency");

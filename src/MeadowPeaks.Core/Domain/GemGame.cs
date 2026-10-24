@@ -1,7 +1,14 @@
 namespace MeadowPeaks;
 
-public sealed class GemGame : ICoinGame, IAnimatedCoinGame
+public sealed record GemSwap(int First,int Second);
+public sealed record GemRun(int Seed,List<GemSwap> Swaps);
+public interface IPersistentCoinGame { GemRun Capture(); }
+public interface IPersistentCoinGameFactory { ICoinGame? Restore(GemRun run); }
+public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
 {
+    readonly int seed;
+    readonly List<GemSwap> swaps=new();
+    public GemRun Capture()=>new(seed,swaps.ToList());
     readonly List<GemAnimationFrame> frames = new();
     public IReadOnlyList<GemAnimationFrame> LastAnimation => frames.AsReadOnly();
     void Frame(GemFrameKind kind, HashSet<int>? matched, int cascade, int first = -1, int second = -1) => frames.Add(new(kind, Array.AsReadOnly((int[])cells.Clone()), Array.AsReadOnly(matched?.ToArray() ?? Array.Empty<int>()), cascade, first, second));
@@ -11,7 +18,7 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame
     public int Earned { get; private set; }
     public int LastGain { get; private set; }
     readonly Random rng;
-    public GemGame(int seed) { rng = new Random(seed); Fresh(); }
+    public GemGame(int seed) { this.seed=seed;rng = new Random(seed); Fresh(); }
     void Fresh()
     {
         do
@@ -51,6 +58,7 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame
         if (Moves == 0 || !Neighbors(a, b)) return false;
         Swap(a, b); var matches = Matches();
         if (matches.Count == 0) { Swap(a, b); return false; }
+        swaps.Add(new(a,b));
         Frame(GemFrameKind.Swap, null, 1, a, b);
         Moves--; LastGain = 0; int chain = 1;
         while (matches.Count > 0)

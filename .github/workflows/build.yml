@@ -15,6 +15,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0.x'
+      - name: Verify story layouts and cooldowns
+        shell: pwsh
+        run: dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all
       - name: Test, publish, and smoke test
         shell: pwsh
         run: ./scripts/build.ps1

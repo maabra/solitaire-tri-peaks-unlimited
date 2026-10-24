@@ -46,6 +46,7 @@ public sealed class GameSession
         Wallet = new(Profile);
         Inventory = new(Profile);
         Picnic = new(Profile,clock,Wallet,Inventory,Powerups,picnicPolicy);
+        if(Profile.ActiveGarden is {} garden && coinGames is IPersistentCoinGameFactory persistent)CoinGame=persistent.Restore(garden);
         if (Profile.Active != null)
         {
             try { Hand = solitaire.Restore(Profile.Active); }
@@ -58,7 +59,11 @@ public sealed class GameSession
             }
             else LoadWarning = "The saved hand could not be restored. Your wallet and adventure progress are available.";
         }
+        DiscoverHand();
     }
+    void DiscoverHand(){if(Hand==null)return;Profile.HighestPlayedLevel=Math.Max(Profile.HighestPlayedLevel,Level);foreach(var card in Hand.Deal.Cards)Profile.SeenMechanics.Add(card.Kind);}
+    public bool HelperDiscovered(string id)=>HelperDiscovery.Discovered(Profile,id);
+    public bool HelperRelevant(string id)=>HelperDiscovery.Relevant(Hand,id);
 
     public void StartHand(int level, bool endless)
     {
@@ -70,6 +75,7 @@ public sealed class GameSession
         Level = level;
         Seed = seed;
         Endless = endless;
+        DiscoverHand();
         if (endless) Profile.EndlessDeal = Math.Min(int.MaxValue - 1, level + 1);
     }
 
@@ -102,12 +108,12 @@ public sealed class GameSession
         if(!Profile.Favorites.Add(level)) Profile.Favorites.Remove(level);
         return true;
     }
-    public string? ShareCode => Hand==null || Hand.Deal.Generation!="MP16" ? null : DealCodes.Encode(new(Level,Seed,Endless));
+    public string? ShareCode => Hand==null || Hand.Deal.Generation is not ("MP16" or "MP18") ? null : DealCodes.Encode(new(Level,Seed,Endless,Hand.Deal.Generation));
     public bool StartSharedDeal(string code)
     {
         if(!DealCodes.TryParse(code,out var reference) || reference==null || !reference.Endless && reference.Level>Profile.Unlocked) return false;
-        var next=solitaire.Create(reference.Seed,reference.Level);
-        Hand=next; Level=reference.Level; Seed=reference.Seed; Endless=reference.Endless;
+        var next=solitaire is IVersionedSolitaireFactory versioned ? versioned.CreateVersion(reference.Seed,reference.Level,reference.Generation) : solitaire.Create(reference.Seed,reference.Level);
+        Hand=next; Level=reference.Level; Seed=reference.Seed; Endless=reference.Endless;DiscoverHand();
         if(Endless) Profile.EndlessDeal=Math.Max(Profile.EndlessDeal,Math.Min(int.MaxValue-1,Level+1));
         return true;
     }
@@ -133,7 +139,7 @@ public sealed class GameSession
     public CommandResult UsePowerup(string id, int? target = null)
     {
         var powerup = Powerups.Find(id);
-        if (Hand == null || powerup == null || (Hand is ITemporaryHand timed && timed.Effects.HelperCooldown > 0) || !powerup.CanUse(Hand)) return CommandResult.Unavailable;
+        if (Hand == null || powerup == null || !HelperDiscovered(id) || !HelperRelevant(id) || (Hand is ITemporaryHand timed && timed.Effects.HelperCooldown > 0) || !powerup.CanUse(Hand)) return CommandResult.Unavailable;
         if (Inventory.Count(id) == 0) return CommandResult.MissingItem;
         int before=Hand.Removed.Count(x=>x);
         if (!powerup.Apply(Hand, target, random.NextSeed())) return CommandResult.Unavailable;
@@ -146,7 +152,7 @@ public sealed class GameSession
     public CommandResult BuyPowerup(string id)
     {
         var powerup = Powerups.Find(id);
-        if (powerup == null) return CommandResult.Unavailable;
+        if (powerup == null || !HelperDiscovered(id)) return CommandResult.Unavailable;
         if (!Wallet.Spend(powerup.Price)) return CommandResult.InsufficientCoins;
         Inventory.Add(id, 1);
         return CommandResult.Applied;
@@ -160,7 +166,8 @@ public sealed class GameSession
         bool bonus = !Endless && Hand.Deal.Bonus && !Profile.Stars.ContainsKey(Level);
         if (bonus)
         {
-            string item = Powerups.All[(Level / 25) % Powerups.All.Count].Id;
+            var discovered=Powerups.All.Where(p=>HelperDiscovered(p.Id)).ToArray();
+            string item = discovered[(Level / 25) % discovered.Length].Id;
             Inventory.Add(item, 1);
             result = result with { Coins = checked(result.Coins + 125), BonusCoins = 125, BonusItem = item };
         }
@@ -199,8 +206,23 @@ public sealed class GameSession
         return coins;
     }
 
-    public void OpenCoinGame() => CoinGame ??= coinGames.Create(random.NextSeed());
-    public void NewCoinGame() => CoinGame = coinGames.Create(random.NextSeed());
+    public const int GardenRefreshSeconds = 3600;
+    public double GardenRefreshRemaining => Math.Max(0, (Profile.GardenRefreshAt-clock.UtcNow.ToUnixTimeMilliseconds())/1000.0);
+    public void OpenCoinGame()
+    {
+        if(CoinGame!=null) return;
+        CoinGame=coinGames.Create(random.NextSeed());
+        if(GardenRefreshRemaining<=0) Profile.GardenRefreshAt=clock.UtcNow.ToUnixTimeMilliseconds()+GardenRefreshSeconds*1000;
+        Save();
+    }
+    public bool NewCoinGame()
+    {
+        if(GardenRefreshRemaining>0) return false;
+        var next=coinGames.Create(random.NextSeed());
+        CoinGame=next;
+        Profile.GardenRefreshAt=clock.UtcNow.ToUnixTimeMilliseconds()+GardenRefreshSeconds*1000;
+        Save();return true;
+    }
     public bool PlayGems(int first, int second)
     {
         if (CoinGame?.Play(first, second) != true) return false;
@@ -212,6 +234,7 @@ public sealed class GameSession
     public void Save()
     {
         Profile.Active = Hand?.Capture(Seed, Level, Endless);
+        Profile.ActiveGarden=(CoinGame as IPersistentCoinGame)?.Capture();
         store.Save(Profile);
     }
 }

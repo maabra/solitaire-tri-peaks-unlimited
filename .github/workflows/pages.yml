@@ -27,7 +27,8 @@ jobs:
       - name: Stage original browser game
         run: |
           mkdir -p _site
-          cp web/index.html web/style.css web/icon.svg web/app.mjs web/core.mjs web/session.mjs _site/
+          cp web/index.html web/style.css web/icon.svg web/app.mjs web/core.mjs web/session.mjs web/story-layouts.mjs web/helper-discovery.mjs web/board-view.mjs _site/
+          cp -r web/assets _site/assets
           cp LICENSE _site/LICENSE.txt
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3

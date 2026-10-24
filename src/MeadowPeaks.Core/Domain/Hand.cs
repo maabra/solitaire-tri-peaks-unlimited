@@ -11,7 +11,7 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     public string CardStatus(int i) => Deal.Cards[i].Kind == CardKind.Stone ? $"\u25c6{Math.Max(1, Math.Max(2, Deal.Cards[i].Strength)-ArmorDamage(i))}" : mechanics.Status(Deal.Cards[i], state);
     public string BlockReason(int i)
     {
-        if(Failed) return "A bomb burst. Undo the last move or replay this deal for free.";
+        if(Failed) return "A bomb burst. Undo the last move or replay this deal.";
         var card=Deal.Cards[i];
         if(mechanics.Allows(card,state,Waste)) return "Play a card one rank higher or lower than the pile.";
         return card.Kind switch {

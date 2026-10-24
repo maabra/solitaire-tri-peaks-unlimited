@@ -8,6 +8,8 @@ internal sealed class GameButton : Control
     public Color Fill { get; set; }
     public Color Fore { get; set; }
     public Card? CardValue { get; set; }
+    public float CardAngle { get; set; }
+    public SizeF CardSize { get; set; }
     public string CardBadge { get; set; } = "";
     public bool Face { get; set; } = true;
     public bool Hint { get; set; }
@@ -63,7 +65,15 @@ internal sealed class GameButton : Control
             g.TranslateTransform(Width / 2f, Height / 2f + (1 - entry) * 12);
             g.ScaleTransform(reveal, .86f + .14f * entry); g.TranslateTransform(-Width / 2f, -Height / 2f);
         }
-        if (CardValue != null) artwork.DrawCard(g, r, CardValue, Face, Hint || Focused, hover);
+        if (CardValue != null)
+        {
+            if(CardSize.Width>0)
+            {
+                g.TranslateTransform(Width/2f,Height/2f);g.RotateTransform(CardAngle);
+                r=new(-CardSize.Width/2,-CardSize.Height/2,CardSize.Width-3,CardSize.Height-7);
+            }
+            artwork.DrawCard(g, r, CardValue, Face, Hint || Focused, hover);
+        }
         else if (Gem >= 0)
         {
             Art.Box(g, r, MatchGlow > 0 ? Color.FromArgb(170 + (int)(70 * MatchGlow), Color.White) : Hint || Focused ? Color.FromArgb(180, artwork.Gold) : Color.FromArgb(75, 255, 255, 255), 12);

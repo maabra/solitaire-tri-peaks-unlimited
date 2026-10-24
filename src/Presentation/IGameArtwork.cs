@@ -19,7 +19,7 @@ public sealed class MeadowArtwork : IGameArtwork
     public Color Cream => Art.Cream;
     public Color Gold => Art.Gold;
     public Color Teal => Art.Teal;
-    public void DrawLandscape(Graphics graphics, int region) => Art.Landscape(graphics, region);
-    public void DrawCard(Graphics graphics, RectangleF bounds, Card card, bool face, bool hint, bool hover) => Art.Card(graphics, bounds, card, face, hint, hover);
+    public void DrawLandscape(Graphics graphics, int region) => StoryLandscape.Draw(graphics, region);
+    public void DrawCard(Graphics graphics, RectangleF bounds, Card card, bool face, bool hint, bool hover) => StoryCardArt.Draw(graphics, bounds, card, face, hint, hover);
     public void DrawGem(Graphics graphics, RectangleF bounds, int kind) => Art.DrawGem(graphics, bounds, kind);
 }

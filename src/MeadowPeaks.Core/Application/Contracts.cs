@@ -6,7 +6,7 @@ public interface IProfileStore
     void Save(Progress profile);
 }
 
-public interface IGameClock { DateTime Today { get; } }
+public interface IGameClock { DateTime Today { get; } DateTimeOffset UtcNow => DateTimeOffset.UtcNow; }
 public interface IRandomSource { int NextSeed(); }
 
 public record WinContext(int BestStreak, int StockRemaining, bool Replay);

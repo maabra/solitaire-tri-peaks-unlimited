@@ -3,6 +3,10 @@ namespace MeadowPeaks;
 public sealed class Progress
 {
     public double FreshDealCooldown { get; set; }
+    public long GardenRefreshAt { get; set; }
+    public GemRun? ActiveGarden { get; set; }
+    public HashSet<CardKind> SeenMechanics { get; set; } = new();
+    public int HighestPlayedLevel { get; set; }
     public PicnicProgress Picnic { get; set; } = new();
     public HashSet<int> Favorites { get; set; } = new();
     public int Version { get; set; } = 1;

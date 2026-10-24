@@ -56,7 +56,7 @@ static class TemporaryTests
         restored.AdvanceTime(double.NaN); check(restored.Effects.LuckySeconds==7, "Invalid time delta is ignored");
         var catalog = new PowerupCatalog(new IPowerup[] { new WildPowerup(), new TemporaryPowerup("lucky","+1","10s",85) });
         var bonus = new Deal { TemporaryRules=true, Bonus=true, Cards=new[] { new Card(6,0) }, Layout=new[] { new Slot(1,0) }, Waste=new(5,0) };
-        var profile = new Progress { Unlocked=25, Coins=1000 }; profile.Items["lucky"]=2;
+        var profile = new Progress { Unlocked=25, Coins=1000 }; profile.Items["lucky"]=2; profile.SeenMechanics.Add(CardKind.Lucky);
         var session = new GameSession(new SolitaireFactory(new StaticDeals(bonus),rules,new StaticDeals(bonus)),new GemGameFactory(),new MemoryProfileStore(profile),new StandardEconomyPolicy(),catalog,new LocalGameClock(),new Seeds());
         session.StartHand(25,false);
         check(session.UsePowerup("lucky")==CommandResult.Applied && session.UsePowerup("wild")==CommandResult.Unavailable, "Helpers share a temporary recharge");

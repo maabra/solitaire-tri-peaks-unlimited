@@ -7,7 +7,13 @@ public record Card(int Rank, int Suit)
     public CardKind Kind { get; init; }
     public int Strength { get; init; }
 }
-public record Slot(float X, int Row);
+public record Slot(float X, int Row)
+{
+    public float? DrawX { get; init; }
+    public float? DrawY { get; init; }
+    public float Angle { get; init; }
+    public int[]? BlockedBy { get; init; }
+}
 public record Step(int Index); // -1 draws from stock
 public sealed class Deal
 {

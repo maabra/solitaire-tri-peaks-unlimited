@@ -45,6 +45,7 @@ internal static class ComponentSwapTests
         check(session.PlayGems(0, 1) && session.Wallet.Balance == 84, "Replacement coin game credits shared wallet");
         check(!session.PlayGems(0, 1) && session.Wallet.Balance == 84, "Rejected coin move cannot pay stale gain again");
         check(ReferenceEquals(session.Hand, waitingHand), "Coin-game replacement keeps the solitaire hand operational");
+        clock.UtcNow=clock.UtcNow.AddHours(1);
         session.NewCoinGame();
         check(coins.Calls == 2 && random.Calls > 0, "Round creation uses injected factory and randomness");
         session.Save();
@@ -158,7 +159,7 @@ internal static class ComponentSwapTests
             Applied++; return true;
         }
     }
-    sealed class TestClock : IGameClock { public DateTime Today { get; set; } = new(2026, 10, 24); }
+    sealed class TestClock : IGameClock { public DateTimeOffset UtcNow {get;set;}=new(2026,10,24,12,0,0,TimeSpan.Zero); public DateTime Today { get; set; } = new(2026, 10, 24); }
     sealed class TestRandom : IRandomSource { public int Calls { get; private set; } public int NextSeed() => ++Calls; }
     sealed class TestCoinGameFactory : ICoinGameFactory
     {

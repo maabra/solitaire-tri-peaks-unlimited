@@ -15,6 +15,14 @@ public interface IDealProvider
 {
     Deal Generate(int seed, int level);
 }
+public interface IVersionedDealProvider : IDealProvider
+{
+    Deal GenerateVersion(int seed,int level,string generation);
+}
+public interface IVersionedSolitaireFactory
+{
+    ISolitaireHand CreateVersion(int seed,int level,string generation);
+}
 
 public interface ISolitaireHand
 {

@@ -19,6 +19,7 @@ public sealed partial class GameWindow
     void AnimationTick(object? sender, EventArgs args)
     {
         double now = presentationClock.Elapsed.TotalSeconds;
+        if(screen=="gems" && Controls.Find("gemnew",false).FirstOrDefault() is GameButton gardenButton){gardenButton.Text=GardenRefreshCaption();gardenButton.Enabled=gemAnimation==null && session.GardenRefreshRemaining<=0;}
         AdvanceTemporaryEffects(Math.Max(0, now - lastFrame));
         float elapsed = (float)Math.Clamp(now - lastFrame, 0, .08); lastFrame = now;
         AdvancePresentation(elapsed);
@@ -50,6 +51,7 @@ public sealed partial class GameWindow
         foreach (var button in Controls.OfType<GameButton>()) button.Backdrop = next;
         previous?.Dispose();
     }
+    string GardenRefreshCaption() => session.GardenRefreshRemaining>0 ? "Fresh garden " + TimeSpan.FromSeconds(Math.Ceiling(session.GardenRefreshRemaining)).ToString(@"hh\:mm\:ss") : "Fresh garden";
     void PresentSceneEntrance()
     {
         int i = 0;
@@ -58,6 +60,11 @@ public sealed partial class GameWindow
     RectangleF CardBounds(int index)
     {
         var slot = hand!.Deal.Layout[index];
+        if(slot.DrawX.HasValue)
+        {
+            double a=slot.Angle*Math.PI/180;float w=(float)(Math.Abs(Math.Cos(a))*76+Math.Abs(Math.Sin(a))*106)+8,h=(float)(Math.Abs(Math.Sin(a))*76+Math.Abs(Math.Cos(a))*106)+8;
+            return new(140+slot.DrawX.Value-w/2,196+slot.DrawY!.Value-h/2,w,h);
+        }
         int rows = hand.Deal.Layout.Max(s => s.Row) + 1;
         if (!hand.Deal.TemporaryRules && rows <= 4) return new(140 + slot.X * 87, 208 + slot.Row * 59, 79, 111);
         float height = Math.Min(111, 310f / (1 + (rows - 1) * .54f)), width = height * .72f;
@@ -78,7 +85,7 @@ public sealed partial class GameWindow
         if (screen != "play" || overlay.Length > 0 || (!smoke && (!ContainsFocus || WindowState == FormWindowState.Minimized)) || hand is not ITemporaryHand timed || hand.Won) return;
         int rank = hand.Waste.Rank, stockCount=hand.Stock.Count; session.AdvanceTime(seconds);
         timerPaint += seconds; timerSave += seconds;
-        if (rank != hand.Waste.Rank || stockCount!=hand.Stock.Count) { Build(); return; }
+        if (rank != hand.Waste.Rank || stockCount!=hand.Stock.Count) { RefreshHandView(); return; }
         foreach (var button in Controls.OfType<GameButton>())
         {
             if (button.Name.StartsWith("card") && int.TryParse(button.Name.Substring(4), out int i))

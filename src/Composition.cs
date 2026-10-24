@@ -9,7 +9,7 @@ public static class Composition
         var rules = new TriPeaksRules();
         var deals = new SeededDealProvider(new PeakLayouts(), rules);
         return new GameSession(
-            new SolitaireFactory(new AdventureDealProvider(new SeededDealProvider(new AdventureLayouts(), rules)), rules, deals),
+            new SolitaireFactory(new StoryDealProvider(rules), rules, deals),
             new GemGameFactory(),
             store,
             new StandardEconomyPolicy(),
