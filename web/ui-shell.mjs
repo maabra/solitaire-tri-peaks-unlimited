@@ -1,0 +1,37 @@
+import {gameIcon} from './game-art.mjs';
+import {features} from './journey-guide.mjs';
+import {helpers} from './core.mjs';
+
+const explanations={
+ pack:['Opening sticker packs','A pack contains a small group of stickers, including at least one matching its rarity. New stickers join your album; duplicates become tokens. Rewards are saved before the reveal animation.','Open packs → complete sets → exchange duplicate tokens for more packs.','pack'],
+ tokenShop:['Duplicate token shop','Duplicate stickers become tokens. Choose an affordable pack rarity to trade your tokens. The pack goes to your album, ready to open.','Duplicate stickers → tokens → a new pack → another chance to finish a set.','token'],
+ albums:['Completed album gallery','A finished album remains in your gallery when you start the next one. Browse earlier collections here; rewards can only be collected once.','Finish a collection → keep it here → begin another album.','album'],
+ shop:['A helping hand','Spend coins on single-use helpers. Buying adds one to your basket; use it from the card table. Only discovered helpers appear.','Match gems for coins → buy a helper → return to the same hand.','extra'],
+ wheel:['A little luck','Use an earned spin, or the daily spin when its timer is ready. Every five solitaire wins earns another spin. Each of the eight prizes is equally likely.','Spin → receive coins or a helper → bring it to your next hand.','wheel'],
+ gems:['Gem Garden','Select a gem and an adjacent gem to swap. A valid swap connects at least three. Matches and cascades immediately earn coins. Fresh Garden refills the board and moves once per hour.','Match gems → earn coins → visit the helper shop → return to your cards.','gems'],
+ settings:['Your adventure settings','Sound and reduced motion apply throughout the game. Export makes a backup file. Import replaces this device’s save with the selected backup. Windows and browser saves are independent.','Export on one device → import on the other to move your progress.','settings'],
+ cards:['Your card table','Take an uncovered card one rank above or below the current face-up card. Ace connects to King and Two. Draw from the stock when you need another rank; each normal draw has a two-second cooldown.','Clear cards → build a streak → win stars, coins and activity rewards.','extra'],
+ hub:['Your little adventures','These places connect to your solitaire journey. Wins advance several activities at once. Colored badges show something to collect or use. Locked places show the level where Pip introduces them.','Play cards → collect rewards → spend them in the connected activity.','compass'],
+ journal:['Your meadow journal','Your journal brings together progress, picnic tasks and saved levels. Collect completed tasks for coins. Save a level at the card table to revisit it here.','Play a saved level to improve stars, or return to your current hand.','journal'],
+ guide:['Pip’s field guide','Special card badges describe their obstacles. Helpers are temporary consumables. Use the information buttons beside helpers and activities whenever you want a reminder.','Try a mechanic on the table, then ask Pip if you need a hand.','scout'],
+ default:['Your next little step','Use the navigation above to move between your cards, map, activities and helper shop. Your unfinished hand stays saved as you explore.','You can return to the same cards whenever you are ready.','compass']
+};
+export function infoButton(topic,label='How this works'){return `<button type="button" class="info-button" data-ui-info="${topic}" aria-label="${label}" title="${label}">i</button>`;}
+function helpData(topic){if(topic==='overview')topic='hub';if(topic.startsWith('helper-')){const h=helpers.find(h=>h.Id===topic.slice(7));if(h)return [h.Name,h.Description,'Buy with coins in the helper shop. Each use consumes one; effects are temporary.',h.Id];}const f=features.find(f=>f.id===topic);return explanations[topic]??(f?[f.title,f.text,'Continue playing cards to earn progress, then return here to collect or use it.',f.icon]:explanations.default);}
+export function installHelp(){
+ const help=document.createElement('dialog');help.id='context-help';help.className='context-help';help.setAttribute('aria-labelledby','help-title');document.body.append(help);
+ document.addEventListener('click',e=>{const info=e.target.closest('[data-ui-info]');if(info){e.preventDefault();e.stopImmediatePropagation();const [title,text,flow,icon]=helpData(info.dataset.uiInfo);help.innerHTML=`<div class="help-art">${gameIcon(icon,72)}</div><small class="eyebrow">PIP’S FIELD NOTES</small><h2 id="help-title">${title}</h2><p>${text}</p><div class="help-flow">${gameIcon('compass',28)}<span>${flow}</span></div><button class="primary" data-ui-dismiss>Got it</button>`;if(!help.open)help.showModal();help.querySelector('[data-ui-dismiss]').focus();return;}if(e.target.closest('[data-ui-dismiss]'))help.close();},true);
+ help.addEventListener('click',e=>{if(e.target===help){const r=help.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)help.close();}});
+}
+export function frameModal(modal){
+ modal.closest('dialog').querySelector(':scope > .close')?.remove();
+ const event=modal.querySelector('.event-panel'),classes=event?.className??'';
+ const topic=event?classes.split(' ').find(c=>c.startsWith('event-')&&c!=='event-panel')?.slice(6)??'hub':modal.querySelector('.shop')?'shop':modal.querySelector('.wheel-panel')?'wheel':modal.querySelector('[data-setting]')?'settings':modal.querySelector('.favorite-list')?'journal':modal.querySelector('.guide-grid')?'guide':modal.querySelector('.level-preview')?'cards':'default';
+ const heading=modal.querySelector('h2');if(heading){heading.classList.remove('panel-ribbon');const wrap=document.createElement('div');wrap.className='panel-heading';heading.before(wrap);wrap.innerHTML=`<span class="heading-art">${gameIcon(helpData(topic)[3],48)}</span>`;wrap.append(heading);wrap.insertAdjacentHTML('beforeend',infoButton(topic));}
+ const content=document.createElement('div');content.className='dialog-content';while(modal.firstChild)content.append(modal.firstChild);modal.append(content);
+ const nav=document.createElement('nav');nav.className='menu-navigation';nav.setAttribute('aria-label','Game places');nav.innerHTML=`<span class="menu-location">MEADOW PEAKS <span> / ${event?'Activities':topic==='shop'?'Helper shop':topic==='settings'?'Settings':'Your adventure'}</span></span><div>${[['map','travel','Map'],['continue','play','My cards'],['events','compass','Activities'],['shop','bag','Shop']].map(([action,icon,label])=>`<button data-action="${action}" ${action==='shop'&&topic==='shop'||action==='events'&&event?'aria-current="page"':''}>${gameIcon(icon,24)}<span>${label}</span></button>`).join('')}</div>`;nav.insertAdjacentHTML('beforeend','<button class="close shell-close" data-action="close" aria-label="Close menu">×</button>');modal.prepend(nav);
+ // Explanations belong beside the item they describe, without nesting buttons.
+ modal.querySelectorAll('.shop article').forEach(article=>{const action=article.querySelector('[data-action^="buy:"]')?.dataset.action;if(action)article.insertAdjacentHTML('afterbegin',infoButton('helper-'+action.slice(4)));});
+ modal.querySelectorAll('.event-hub .event-tile,.album-category,.reward-track>article,.skin-card').forEach((el,i)=>{el.style.setProperty('--item-delay',Math.min(i,10)*25+'ms');el.classList.add('menu-arrival');});
+ modal.closest('dialog').scrollTop=0;
+}

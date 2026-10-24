@@ -8,13 +8,13 @@ campaign levels**, 64 formation families, an endless mode and a match-three coin
 ## Play
 
 [Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
-[download MeadowPeaks-2.2.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.2.0/MeadowPeaks-2.2.exe).
+[download MeadowPeaks-2.3.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.3.0/MeadowPeaks-2.3.exe).
 
 The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
 no installer, administrator access, existing browser or network connection is
 needed. First launch unpacks the bundled runtimes into a local cache. The download
 is larger because the complete renderer is included. Windows 10 or 11 x64 is required.
-Older EXEs retain their older interface; use version 2.2 for the current unified UI.
+Older EXEs retain their older interface; use version 2.3 for the current unified UI.
 
 The portable ZIP contains the same game. Extract the entire archive before opening
 MeadowPeaks.exe. Source archives contain source and original art, rather than an EXE.
@@ -70,6 +70,15 @@ There are no purchases, ads, accounts, leaderboards or online reward dependencie
 Reference videos, example games and extracted reference frames are excluded from
 Git and distribution packages. Original project artwork is included.
 
+## Presentation in 2.3
+
+A shared illustrated menu frame connects Map, My cards, Activities and Shop.
+Activities are grouped into play, collections and rewards, with useful progress
+badges and related-place tabs. Contextual **i** buttons explain activities and
+helpers without losing your menu or hand. Consistent buttons, readable headings,
+responsive panels and gentle transitions follow the reduced-motion preference.
+See [UI details](docs/UI.md).
+
 ## Connected journeys in 2.2
 
 MP22 deals add interwoven formations, boxes, circles, arches, braids and linked
@@ -93,7 +102,7 @@ Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
 ```powershell
 ./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.2.exe
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.3.exe
 python scripts/package_web.py
 python scripts/package_source.py
 ```

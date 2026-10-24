@@ -57,3 +57,7 @@ relevant fixtures together when shipping a new version.
 
 See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
 Pip navigation, MP22 formation generation and compatibility details.
+
+
+The 2.3 menu frame, contextual help layers and presentation contract are documented
+in [UI.md](UI.md). Both stylesheets are embedded in Windows and packaged for web.

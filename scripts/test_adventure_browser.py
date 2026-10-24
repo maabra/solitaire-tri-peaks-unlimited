@@ -37,6 +37,8 @@ async def main():
      await page.wait_for_function("[...document.querySelectorAll('#modal img[data-chapter]')].every(i=>i.complete&&i.naturalWidth>0&&i.src.startsWith('data:'))")
      assert await page.locator('#modal img[data-chapter]').evaluate_all('(a)=>new Set(a.map(i=>i.src)).size===a.length')
     assert await page.locator('#modal').evaluate('(e)=>e.scrollWidth<=e.clientWidth+2'),f'{name} overflow at {size}'
+    clipped=await page.locator('#modal').evaluate("root=>[...root.querySelectorAll('button,h2,h3,strong')].filter(e=>e.getClientRects().length&&!e.closest('.activity-tabs')&&(e.scrollWidth>e.clientWidth+2||e.scrollHeight>e.clientHeight+3)).map(e=>[e.tagName,e.innerText,e.scrollWidth,e.clientWidth])")
+    assert not clipped,(name,size,clipped)
     await page.screenshot(path=str(OUT/f'{name}-{size[0]}.png'))
     if name=='album':
      await page.locator('#modal [data-action="ev:album-0"]').click();assert await page.locator('.sticker-card').count()==10

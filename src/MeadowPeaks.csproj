@@ -6,12 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>MeadowPeaks</AssemblyName>
-    <Version>2.2.0</Version>
+    <Version>2.3.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/MeadowPeaks.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="../web/*.mjs;../web/index.html;../web/style.css;../web/icon.svg" LogicalName="MeadowPeaks.Web/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../web/*.mjs;../web/index.html;../web/*.css;../web/icon.svg" LogicalName="MeadowPeaks.Web/%(Filename)%(Extension)" />
     <EmbeddedResource Include="../web/assets/**/*" LogicalName="MeadowPeaks.Web/assets/%(RecursiveDir)%(Filename)%(Extension)" />
     <Content Include="../artifacts/webview-runtime.cab" Link="WebViewRuntime.cab" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Condition="Exists('../artifacts/webview-runtime.cab')" />
     <EmbeddedResource Include="../web/assets/adventure-village.png" LogicalName="MeadowPeaks.AdventureVillage.png" />
