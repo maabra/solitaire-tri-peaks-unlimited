@@ -15,6 +15,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0.x'
+      - name: Prepare portable shared renderer
+        shell: pwsh
+        run: ./scripts/prepare_webview_runtime.ps1
       - name: Verify story layouts and cooldowns
         shell: pwsh
         run: dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all

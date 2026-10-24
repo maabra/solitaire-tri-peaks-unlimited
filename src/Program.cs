@@ -12,10 +12,10 @@ internal static class Program
             Application.ThreadException+=(_,e)=>{StartupDiagnostics.Error(e.Exception,smoke||checking);Application.Exit();};
             ApplicationConfiguration.Initialize();
             IProfileStore store=smoke ? new MemoryProfileStore() : new JsonProfileStore(JsonProfileStore.DefaultPath);
-            var session=Composition.CreateSession(store);
             StartupDiagnostics.Write("MeadowPeaks-startup.txt","Profile loaded. Building game window...");
-            using var soundtrack=new MeadowSoundtrack();
-            using var window=new GameWindow(session,new MeadowArtwork(),soundtrack,smoke,new EffectScene(),checking);
+            using var singleInstance=new Mutex(true,"Local\\MeadowPeaks.SharedUI",out bool first);
+            if(!smoke&&!checking&&!first){MessageBox.Show("Meadow Peaks is already open.","Meadow Peaks");return;}
+            using Form window=args.Contains("--legacy-smoke") ? new GameWindow(Composition.CreateSession(store),new MeadowArtwork(),new MeadowSoundtrack(),true,new EffectScene(),checking) : new DesktopGameWindow(store,smoke,checking);
             Application.Run(window);
         }
         catch(Exception e) { StartupDiagnostics.Error(e,smoke||checking); }

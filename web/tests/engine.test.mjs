@@ -21,3 +21,18 @@ let discovery=new Session(new ProfileStore(null));discovery.start(1);assert.equa
 for(let index=0;index<8;index++){let memory=new Map(),storage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)},s=new Session(new ProfileStore(storage));assert.equal(s.wheelSpins,1);let prize=s.spinWheel(index);assert.equal(prize.index,index);assert.equal(s.p.Coins,300+(prize.coins??0));if(prize.item)assert.equal(s.inventory(prize.item),prize.item==='remove'?2:3);assert.equal(s.spinWheel(index),null);let restored=new Session(new ProfileStore(storage));assert.equal(restored.wheelSpins,0);assert.equal(restored.spinWheel(index),null);restored.p.Garden=4;assert.equal(restored.wheelSpins,0);restored.p.Garden=5;assert.equal(restored.wheelSpins,1);assert.ok(restored.spinWheel(index));assert.equal(restored.wheelSpins,0)}
 assert.throws(()=>validateProfile({...defaults(),WheelSpinsUsed:2}));
 console.log('PASS: all eight wheel prizes, earned-spin thresholds and persisted consumption.');
+
+let conflictMemory=new Map(),conflictAdapter={getItem:k=>conflictMemory.get(k)??null,setItem:(k,v)=>conflictMemory.set(k,v)};
+let writer=new Session(new ProfileStore(conflictAdapter),()=>"2026-10-24"),stale=new Session(new ProfileStore(conflictAdapter),()=>"2026-10-24");
+assert.equal(writer.daily(),75);assert.throws(()=>stale.daily(),/another window/);assert.equal(stale.store.conflicted,true);assert.equal(new Session(new ProfileStore(conflictAdapter)).p.Coins,375);
+for(const Generation of ['MP18','MP19'])for(const Endless of [false,true]){let deal={Level:17,Seed:121678,Endless,Generation};assert.deepEqual(await parseDeal(await encodeDeal(deal)),deal)}
+console.log('PASS: stale-tab saves cannot overwrite newer rewards; old and new deal-code versions round trip.');
+
+let corruptMemory=new Map(),corruptAdapter={getItem:k=>corruptMemory.get(k)??null,setItem:(k,v)=>corruptMemory.set(k,v)},corrupt={...defaults(),Coins:777,Unlocked:100,Active:{Level:100,Removed:[]}};
+corruptMemory.set('meadow-peaks-profile',JSON.stringify(corrupt));let recovered=new Session(new ProfileStore(corruptAdapter));assert.equal(recovered.p.Coins,777);assert.equal(recovered.p.Unlocked,100);assert.equal(recovered.hand,null);assert.ok(recovered.store.warning);
+let invalidGarden={...defaults(),Coins:789,ActiveGarden:{Seed:42,Swaps:[{First:0,Second:63}]}};corruptMemory.set('meadow-peaks-profile',JSON.stringify(invalidGarden));let safeGarden=new Session(new ProfileStore(corruptAdapter));assert.equal(safeGarden.p.Coins,789);assert.equal(safeGarden.gems,null);assert.ok(safeGarden.store.warning);
+const beforeInvalid=corruptMemory.get('meadow-peaks-profile');assert.throws(()=>safeGarden.store.save({...defaults(),Coins:NaN}));assert.equal(corruptMemory.get('meadow-peaks-profile'),beforeInvalid);
+console.log('PASS: damaged hands and impossible saved gem swaps preserve the wallet; invalid saves never replace the existing save.');
+
+let html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),project=readFileSync(new URL('../../src/MeadowPeaks.csproj',import.meta.url),'utf8'),version=project.match(/<Version>([^<]+)<\/Version>/)[1];assert.ok(html.includes('name="meadow-build" content="'+version+'"'),'Desktop and web version stamps match');
+console.log('PASS: Windows and web build versions match.');

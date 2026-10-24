@@ -10,8 +10,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Single-file publish failed.' }
     $executable = Join-Path (Join-Path $projectRoot 'artifacts') $OutputName
     Copy-Item artifacts/single-file/MeadowPeaks.exe $executable -Force
+    $env:MEADOW_PEAKS_CACHE=Join-Path $projectRoot 'artifacts/desktop-cache'
     $process = Start-Process -FilePath $executable -ArgumentList '--smoke' -WindowStyle Hidden -PassThru
-    if (-not $process.WaitForExit(60000)) { $process.Kill(); throw 'Single-file UI smoke test timed out.' }
+    if (-not $process.WaitForExit(180000)) { $process.Kill(); throw 'Single-file UI smoke test timed out.' }
     $result = Get-Content artifacts/smoke-result.txt -Raw
     if ($process.ExitCode -ne 0 -or $result -notlike 'PASS:*') { throw "Single-file UI test failed: $result" }
     Write-Output $result

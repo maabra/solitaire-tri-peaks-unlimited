@@ -1,114 +1,46 @@
-# Browser edition
+# Shared Windows and web presentation
 
-The original browser game is in `web/`. It uses standard ES modules, has no build
-dependencies, and runs entirely in the browser.
+Version 2.0 uses the same `web/` interface, rules, CSS, animations and artwork on both
+platforms. GitHub Pages hosts these files. The Windows EXE embeds and serves them to
+a bundled WebView2 control from a private local origin; it does not depend on Pages.
 
-For a local preview, run `python -m http.server 8765 --directory web` from the
-repository and open http://localhost:8765. Opening index.html directly with a
-file URL does not support ES modules reliably.
+The map camera scales artwork, route and markers together, while the HUD stays fixed.
+Drag or swipe to explore on narrow/tall windows. All panels follow the colorful ribbon,
+purple control and green primary-action theme, with shared spacing and close targets.
+Forty-eight illustrated icons cover menus, helpers and obstacles. Transparent ice,
+lock-and-chain and vine overlays keep the central card rank visible.
 
-For GitHub Pages, select **Settings > Pages > Build and deployment > GitHub
-Actions** once. The `Play on GitHub Pages` workflow tests and publishes only the
-original browser files after pushes to main. It excludes reference examples,
-Windows binaries, tests, and developer files from the published site.
+Ten actual original paintings supply chapter environments for BOTH the menu and
+solitaire: spring village, snow village, autumn orchard, moonlit garden, lavender
+valley, tropical cove, desert oasis, cherry garden, enchanted forest and festival
+garden. Chapters cycle through these paintings, with additional seeded decoration.
+They are shared environments, not 24,000 separately painted backgrounds.
 
-## Windows and browser parity
+Profiles stay local. Windows keeps `LocalAppData/MeadowPeaks/progress.json`; browser
+storage is separate. Settings export/import transfers the compatible save. There is
+no online synchronization, account or purchase system. A browser needs the page's
+initial asset load; the packaged Windows game runs offline.
 
-Both editions include the 480,000-level campaign, 24,000 chapters, endless mode,
-layered formations, 5–8 tower layouts, fifteen card kinds, eleven consumables, the shared coin economy,
-Gem Garden, hint timers, temporary effects, two-second stock draw cooldowns,
-ten-second rescue cards, thirty-second fresh deals, daily and garden gifts,
-chapter gifts, bonus levels, picnic goals, favorites, star hunt, and versioned MP16/MP18 codes.
-Windows has a native animated effects layer and synthesized sound; the browser
-uses CSS/Web Animations and Web Audio. Their visual presentation differs.
+Build 2.0 is visible in Settings and checked against the Windows assembly version.
+Versioned module imports avoid mixing old cached scripts with the updated interface.
+The source and browser packages include all original artwork, and exclude references.
 
-Browser progress stays in local storage on the current browser/device. It does
-not automatically sync with Windows. Settings provides JSON save import/export;
-the current schema and active boards work in both editions. Back up progress
-before clearing browser data. Windows saves to the path in PLAYING.txt.
+## Regression checks
 
-## Keeping future features aligned
+Run a local static server on port 8765, then:
 
-Changes to rules, seeds, rewards, helpers, timers, or saves must ship in both
-`src/MeadowPeaks.Core` and `web/core.mjs` / `web/session.mjs` in the same change.
-The JavaScript core uses classes for the same replaceable responsibilities as
-Windows: Hand, GemGame, Session, and ProfileStore. Views do not award coins or
-implement card rules. A common seed format and saved-board schema preserve
-cross-platform deals and active hands.
+```text
+node --test web/tests/engine.test.mjs
+python scripts/test_web_browser.py
+python scripts/test_presentation_edges.py
+```
 
-Run native tests, regenerate fixtures with
-`dotnet run --project tests -c Release -- --export-web shared/engine-fixtures.json`,
-then run `node --test web/tests/engine.test.mjs`. The fixture comparison checks
-exact card order, formations, metadata, winning paths, and Gem Garden turns.
-Add representative fixtures for each new component or rule before shipping it.
-Optional UI checks: serve web on port 8765, then run
-`python scripts/test_web_browser.py` with Playwright and Edge installed.
+The browser checks cover a full legal win, connected gem animation, garden persistence,
+shops/settings, six viewport shapes, aligned markers, maximum level labels, stable
+resize, repeated draws, saved-hand resumption, confirmation before replacing a hand,
+stale tabs and immediate Wild/Thaw expiry graphics. Invalid hands and garden swaps
+preserve valid wallet/map data. Invalid saves cannot replace a valid stored profile.
 
-The campaign count supports a planning estimate of 8,000 campaign hours at one
-minute per level, plus up to 2,000 hours budgeted for endless. This is an estimate,
-not a measured playtime guarantee or an artificial play limit.
-
-## Release 1.8 presentation
-
-New deals use 16 story formation families with deterministic geometry variations:
-rotated fans, rings, twin arches, butterflies, ribbons, diamond loops, starbursts,
-5-8 towers, crowns, hourglasses and serpents. Explicit cover graphs match rotated
-card intersections. Old saved boards and MP16 codes keep their original rules;
-new layouts use MP18 codes.
-
-Both editions share the original generated story-meadow illustration. Saved
-reference pages, videos and examples remain excluded from builds and source ZIPs.
-Unchanged cards retain their controls/DOM nodes during stock draws and clears.
-Gem Garden displays swap, connected-match highlights, coin bursts, falls and
-cascades; reduced motion uses a brief static highlight. Helpers are hidden until
-discovered, and obstacle helpers stay off boards where they have no target.
-
-Fresh Garden has a minimum one-hour real-time recharge. Its deadline, gem board
-and successful swaps are saved, including across browser reloads and Windows
-restarts. Menus do not pause this deadline.
-
-
-### Recording-based card presentation (1.8.1)
-
-The supplied October 24 gameplay recording informed the new rank-first card faces:
-a large central rank, small corner rank and suit, cream paper, blue patterned backs,
-and strong red/dark suit contrast. Both Windows and browser render these faces using
-original drawing code. Existing formations, obstacle rules, timers, saves and MP16/MP18
-shared codes retain their behavior. The browser stock now has a layered fan silhouette
-and a 300 ms stock-to-waste draw animation. Reduced motion skips that flight.
-Untouched tableau nodes remain in place throughout a draw.
-
-Reference recordings and extracted frames are development-only material under examples
-and artifacts; neither directory is included in distributable packages. These changes
-adapt presentation cues; they do not copy the reference game's assets or claim feature
-parity with it.
-
-
-Live star preview (1.8.2)
-The play screen now shows a three-star progress meter in Windows and web. Clear
-the entire board to earn the displayed stars: one for completion, two with a best
-uninterrupted streak of at least 5, three with at least 9. Drawing resets the
-current streak, but your best streak still counts. Undo restores the previous
-best streak and updates the meter. The display previews existing rewards; it does
-not grant coins or stars before completion. This follows the compact, visible
-progress feedback in the second supplied gameplay recording, using original art.
-
-
-### Adventure menu and offline wheel (1.9)
-
-The opening screen is now the illustrated adventure map rather than the home
-page. It uses the packaged village painting, a winding trail and raised markers.
-Level selection opens a ribbon-topped preview panel before starting the deal.
-The Home button still opens the welcoming home screen. Small screens can pan
-the map horizontally without making the document overflow.
-
-The wheel uses saved earned spins and credits rewards before animation, matching
-Windows accounting. Eight segments have equal odds; one welcome spin is followed
-by one spin per five completed hands. No reward requires a server or purchase.
-
-New deals use MP19 and 32 formation families. MP16 and MP18 remain supported.
-Cards deal from the stock without replacing the tableau during later moves.
-Chapter scenery has seeded ornament placement and eight lighting/weather
-families over shared original painted foundations. These are procedural variations,
-not separate painted artwork for every chapter. Reduced motion skips flights
-and uses an immediate wheel result.
+Future UI and gameplay features belong in the shared modules, rather than a separate
+Windows renderer. Update the build stamp, cache-busting imports, documentation and
+relevant fixtures together when shipping a new version.

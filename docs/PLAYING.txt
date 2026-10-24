@@ -177,3 +177,19 @@ five to eight islands, spirals, bouquets and double ribbons. Existing saved
 hands and MP16/MP18 deal codes keep their original formations. New codes use MP19.
 Chapter-specific decorative placement and lighting/weather change the backdrop.
 Reduced motion skips card deal flights and the long wheel spin.
+
+UNIFIED PRESENTATION (2.0)
+Windows and web now use the same screens, icons, spacing, rules and animations.
+Settings shows the build version. Old EXEs still use their older interface.
+The map pans: drag empty scenery or swipe. Its trail and markers stay together,
+and the activity buttons remain at the edge. Ten painted environments rotate
+through chapters in both the menu and solitaire. The new artwork includes menu,
+helper and special-card icons, with ice, chain-lock and vine overlays.
+
+Opening your current map level resumes the same hand. Starting a different hand
+asks before replacing it. A draw recharges for two seconds, so rapid repeated
+clicks cannot consume extra cards. Wild and obstacle bypass artwork update as
+soon as the temporary effect ends. Resizing keeps surviving cards in place.
+If another browser tab changes the save, reload the latest adventure before
+continuing. Export/import in Settings moves progress between browser and Windows;
+there is no automatic online synchronization.

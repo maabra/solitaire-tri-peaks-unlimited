@@ -7,6 +7,7 @@ export function patchBoard(host,markup,incremental,reduced){
 
  const oldTableauCount=board.children.length;
  const fresh=next.querySelector('.board');
+ board.style.cssText=fresh.style.cssText;board.className=fresh.className;
  for(const card of [...board.children])if(!fresh.querySelector(`[data-action="${card.dataset.action}"]`)){
   if(!reduced){const target=host.querySelector('.hand-row .pile:nth-child(3) .card'),from=card.getBoundingClientRect(),to=target.getBoundingClientRect(),copy=card.cloneNode(true),w=card.offsetWidth,h=card.offsetHeight;
    copy.classList.remove('entering','hint-card');copy.style.cssText=`position:fixed;left:${from.x+from.width/2-w/2}px;top:${from.y+from.height/2-h/2}px;width:${w}px;height:${h}px;z-index:10000;pointer-events:none;--cw:${w}px`;document.body.append(copy);
@@ -38,9 +39,9 @@ export function patchBoard(host,markup,incremental,reduced){
  const waste=host.querySelector('.hand-row .pile:nth-child(3) .card');
  const newWaste=next.querySelector('.hand-row .pile:nth-child(3) .card');
  if(waste&&newWaste){waste.className=newWaste.className;if(waste.innerHTML!==newWaste.innerHTML)waste.innerHTML=newWaste.innerHTML}
- for(const selector of ['.run-stat:first-child','.run-stat:last-child','.stock-count','.hand-row .pile small','.subhead .meta','.star-meter','.tools','.play-actions']){
+ for(const selector of ['.run-stat:first-child','.run-stat:last-child','.stock-count','.hand-row .pile small','.subhead .meta','.star-meter','.subhead [data-action="favorite"]','.tools','.play-actions']){
   const old=host.querySelector(selector),fresh=next.querySelector(selector);
-  if(old&&fresh&&old.innerHTML!==fresh.innerHTML)old.innerHTML=fresh.innerHTML;
+  if(old&&fresh){if(old.innerHTML!==fresh.innerHTML)old.innerHTML=fresh.innerHTML;if(fresh.hasAttribute('aria-label'))old.setAttribute('aria-label',fresh.getAttribute('aria-label'))}
  }
  const notice=host.querySelector('.board-shell>.notice'),newNotice=next.querySelector('.board-shell>.notice');
  if(newNotice){if(notice)notice.replaceWith(newNotice);else host.querySelector('.board-shell').prepend(newNotice)}else notice?.remove();

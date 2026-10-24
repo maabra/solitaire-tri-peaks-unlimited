@@ -1,218 +1,101 @@
-# Meadow Peaks — Solitaire Unlimited
+# Meadow Peaks
 
-A Windows and browser solitaire game with an original illustrated countryside,
-large cards, **480,000 adventure levels**, an endless mode, and a match-three coin garden.
+An illustrated solitaire adventure for Windows and the browser, with **480,000
+campaign levels**, 32 formation families, an endless mode and a match-three coin garden.
 
 ![Meadow Peaks adventure map](docs/adventure-map.png)
 
-## Play on Windows
+## Play
 
-The latest local build is **`MeadowPeaks-1.9.exe`** (the existing `MeadowPeaks.exe` may still be an earlier running build). Close an older game before opening the new one so both do not save the same profile.
+[Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
+[download MeadowPeaks-2.0.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.0.0/MeadowPeaks-2.0.exe).
 
-Download [MeadowPeaks-1.9.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v1.9.0/MeadowPeaks-1.9.exe), the single-file Windows x64 build.
-Double-click it to play. No extraction, installer, administrator access, .NET
-installation, or internet connection is needed. It bundles the game, runtime,
-and license notices. The first launch extracts its bundled runtime to a local
-cache automatically; subsequent launches reuse it.
+The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
+no installer, administrator access, existing browser or network connection is
+needed. First launch unpacks the bundled runtimes into a local cache. The download
+is larger because the complete renderer is included. Windows 10 or 11 x64 is required.
+Older EXEs retain their older interface; use version 2.0 for the unified UI.
 
-Download `MeadowPeaks-win-x64.zip` from a release, extract the **entire** archive,
-and run `MeadowPeaks.exe`. Requires x64 Windows 10 or 11. The portable package
-includes its runtime. No installer or internet connection is needed.
+The portable ZIP contains the same game. Extract the entire archive before opening
+MeadowPeaks.exe. Source archives contain source and original art, rather than an EXE.
 
-The source archive does not include a compiled executable. Locally generated
-packages are in `artifacts/` and are intentionally excluded from Git.
+## One interface on both platforms
 
-## What's included
+Windows embeds the exact HTML, CSS, JavaScript and artwork used by GitHub Pages.
+The map, cards, animations, menus, padding, helpers, timers and gameplay now have one
+shipping implementation. Settings shows the same build version on both platforms.
 
-- 480,000 distinct, reproducible adventure deals across 24,000 map chapters and 20 themed worlds.
-- 480,000 distinct generated adventure formations plus classic opening boards, drawn from a standard 52-card base deck. Later tiers trim only surplus stock. The first four levels introduce the rules; every later campaign level has its own formation.
-- 32 formation families with rotated fans, rings, scattered packets and five-to-eight stacks, with explicit cover relationships and readable exposed cards.
-- Armored cards start at two hits and cap at four; vines start at two consecutive clears and cap at three. Lantern, clover and shield cards start temporary effects.
-- Ice cards that thaw through clears, keys and locks, move-count bombs, +3 stock gifts, and upward/downward +2 stock rewards. Gift cards arrive at 50, then ice at 100, locks at 200, bombs at 300, directional cards at 400, armor at 500, lanterns at 600, clovers at 700, vines at 800 and shields at 900.
-- Every 100 levels introduces or emphasizes a component. After level 900, rotating upgrades add thicker ice, multi-key locks, tighter fuses, layered armor, longer vine streaks and smaller stock reserves. Strength caps keep the endgame fair; later tiers vary combinations.
-- Deeper boards arrive at levels 300, 700, 1,300 and 2,100.
-- Icon badges, live fuse/ice counters, an illustrated guide, hover explanations, free replay and fresh-deck remix. Undo restores card state without restoring elapsed effect time.
-- Hints show matches for 3 seconds and recharge in 15 seconds. Helpers share a 5-second recharge. Wilds expire after 12 seconds if unused.
-- Consumable +1 stock-per-clear (10s), thaw (8s), shield (10s) and scout (5s) helpers. No permanent upgrades or level countdowns.
-- Phase gates at level 2,000 alternate after successful moves. Color seals at 2,300 require matching the waste pile color as well as rank.
-- Four more consumables: lock bypass (6s), pruning (8s), phase bypass (6s), and next-three-stock preview (6s). Eleven helper types in total.
-- A journal with daily picnic goals, once-per-day coin/consumable rewards, saved level favorites and a three-star hunt shortcut.
-- Checksummed deal codes reproduce current-version cards and formations, with campaign unlock checks. Share and import are explicit user actions.
-- Bonus opening varieties: Glow (8s matches), Harvest (6s +1 stock per clear), Shelter (6s fuse shield), introduced after their corresponding mechanic unlocks.
-- Every 25th campaign level grants a one-time 125-coin bonus and one consumable on first completion.
-- Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not hand-authored puzzles.
-- Endless Meadow: new seeded hands, unlimited retries, coins, and a growing garden.
-- Wild cards, five extra stock cards, targeted removal, free hints and three free undos per hand.
-- A shared coin wallet, helper shop, daily gifts and garden milestones.
-- Gem Garden: an 8×8 match-three game with swaps, cascades, hints, automatic dead-board recovery, and immediate coin payouts. 20-move rounds with a one-hour refresh cooldown.
-- Automatic local saves, active solitaire hand recovery and a previous-save backup.
-- 20 world palettes with rainbows, snowy valleys, moonlit lakes, blossoms and a cheerful bird guide, Pip.
-- Flying cards, reveals, sparkles, coin trails, combo cheers and confetti celebrations.
-- Animated gem swaps, match flashes and cascades, plus original musical rewards when sound is enabled.
-- A one-time chapter gift of 150 coins and a Wild for every 20 completed levels.
-- Resizable native Windows UI, keyboard focus, accessible control names, distinct gem shapes/suit colors, optional sound and reduced motion.
+The map camera keeps scenery, the trail and markers in the same coordinate system.
+Its controls stay anchored while the world pans. Drag the scenery or swipe to
+explore. The interface adapts to desktop, tall, wide and phone viewports.
 
-See [the player guide](docs/PLAYING.txt) for rules, costs, rewards, controls and saves.
+Windows keeps the existing JSON profile in Local AppData/MeadowPeaks; the web game
+uses browser storage. Saves are local and independent. Export/import in Settings
+moves cards, coins, inventory, progress and the saved garden between them.
 
+## Features
 
-## Replay and playtime
+- 480,000 seeded levels across 24,000 chapters, with explicit cover graphs and verified solutions.
+- 32 formation families: peaks, fans, rings, ribbons, spirals, tilted packets,
+  bouquets, and five to eight separate stacks or islands.
+- Ten distinct original painted environments used by the menu and gameplay,
+  with seeded decorations. Chapters cycle through the paintings.
+- 48 original illustrated icons, plus transparent ice, lock-and-chain and vine
+  overlays. Suit and rank remain readable under special-card artwork.
+- Ice, keys, locks, bombs, directional stock bonuses, armor, vines, lanterns,
+  lucky cards, shields, phase gates and color seals. Mechanics arrive gradually;
+  capped difficulty upgrades mix them every 100 levels.
+- Consumable helpers bought with earned coins. Helpers follow discovery and
+  board relevance; temporary bonuses expire rather than becoming permanent boosts.
+- Three-second hints with a 15-second recharge; two-second stock draw cooldown;
+  five rescue cards lasting ten seconds; a live three-star preview.
+- Gem Garden: connected-match highlights, swap and fall animations, refills,
+  cascades and immediate coin rewards. Its saved board and one-hour Fresh Garden
+  cooldown survive closing and reopening.
+- Lucky wheel: one welcome spin, then one per five solitaire wins. Eight equal
+  segments award coins or one-use helpers; the prize is saved before the animation.
+- Chapter gifts, bonus levels, a journal, daily picnic rewards, favorites,
+  reproducible deal codes, sound and reduced motion.
+- Stale browser tabs cannot overwrite newer saves. Damaged hands can be discarded
+  while preserving valid wallet and map progress. Timed Wild/Thaw expiry updates
+  card artwork immediately, and resizing preserves the current tableau.
 
-480,000 campaign levels provide an estimated 8,000 hours at one minute per level.
-This is a content planning assumption, not a measured or guaranteed playtime.
-For the requested 10,000-hour target, at most 2,000 hours are attributed to
-Endless Meadow. Endless is still freely playable; the budget is not a lockout.
-Free remix creates fresh reproducible card deals at the current level. Scores,
-stars, repeat payouts and Gem Garden support replay without permanent power boosts.
-All campaign winning paths are tested without relying on temporary effects.
+There are no purchases, ads, accounts, leaderboards or online reward dependencies.
+Reference videos, example games and extracted reference frames are excluded from
+Git and distribution packages. Original project artwork is included.
 
-## Replaceable components
+## Build and verify
 
-The game core is a separate, UI-independent class library. Deals, layouts,
-solitaire rules, card mechanics, helpers, rewards, coin games, saves, artwork and sound have
-replaceable interfaces selected in `src/Composition.cs` and `src/Program.cs`.
-Purchases and payouts live in `GameSession`, outside the Windows view. New saves
-retain the original board so a generator replacement preserves active hands.
-
-See [the architecture and extension guide](docs/ARCHITECTURE.md) for the component
-map, replacement examples, compatibility contracts and legacy-save behavior.
-
-![Solitaire](docs/solitaire.png)
-![Journal](docs/journal.png)
-![Stock preview](docs/stock-preview.png)
-![Deep board](docs/deep-board.png)
-![Temporary effects](docs/temporary-effects.png)
-![Formation examples](docs/formations.png)
-![Special cards](docs/special-cards.png)
-![Gem Garden](docs/gems.png)
-![Chapter celebration](docs/celebration.png)
-
-## Build and test
-
-The game is C# / Windows Forms with original GDI+ artwork. There are no third-party
-NuGet dependencies, browser wrappers, external art files, or game engine installs.
-The project targets .NET 6 to match the available development SDK; the supplied
-portable build bundles the installed 6.0.36 runtime. Building requires a .NET SDK
-with the .NET 6 Windows desktop targeting pack. Keep the bundled runtime current
-when producing releases; a move to a supported LTS target is recommended for ongoing maintenance.
+Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
 
 ```powershell
-dotnet run --project src/MeadowPeaks.csproj
-dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release
+./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1
-```
-
-The build script runs the engine tests, publishes a self-contained Windows x64
-folder, runs the UI smoke test, and writes `artifacts/MeadowPeaks-win-x64.zip`.
-Normal self-contained publishing downloads Microsoft runtime packs from NuGet.
-`build-single-exe.ps1` creates and smoke-tests `artifacts/MeadowPeaks.exe` using
-standard .NET single-file publishing. Use `-OutputName MeadowPeaks-1.6.exe` to create a versioned file while an older EXE is in use. No reference examples are included.
-
-For an offline development machine with matching x64 .NET Core and Windows
-Desktop runtimes already installed, Python 3 enables an offline fallback:
-
-```powershell
-./scripts/build.ps1 -OfflineInstalledRuntime
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.0.exe
+python scripts/package_web.py
 python scripts/package_source.py
 ```
 
-The fallback merges the installed runtime manifests and retains the Microsoft
-license notices. It produces a portable folder, not a single-file executable.
-The source ZIP uses an explicit directory allowlist and excludes all reference examples,
-build outputs and private workspace files.
+The runtime preparation script downloads Microsoft's pinned official Fixed Version
+WebView2 package and verifies its SHA-256. The runtime is kept under ignored artifacts,
+never in the source archive. See [architecture](docs/ARCHITECTURE.md) for the host boundary,
+[web notes](docs/WEB.md) for shared presentation and [player guide](docs/PLAYING.txt).
 
-If Windows PowerShell blocks local scripts, run the build with a process-scoped
-policy: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1`
-(add `-OfflineInstalledRuntime` for the offline fallback).
+```powershell
+node --test web/tests/engine.test.mjs
+dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --effects-only
+# Exhaustive formation and solution verification:
+dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all
+# Start a local server before real-browser checks:
+python -m http.server 8765 --bind 127.0.0.1 --directory web
+python scripts/test_web_browser.py
+python scripts/test_presentation_edges.py
+```
 
-## Validation
+Browser checks use Python Playwright with Microsoft Edge. Windows builds run a
+shared-renderer UI smoke test using a separate test profile and workspace cache.
+The native C# domain remains available for import compatibility, deterministic
+fixtures and replaceable component tests. New presentation changes belong in web/.
 
-The dependency-free test runner checks all 480,000 adventure winning paths with timed effects expired, all formation fingerprints, the original 4,000 legacy deals, deck uniqueness,
-deal reproducibility, covered-card rules, Ace/King wrap, undo, helpers, 100 complete
-match-three rounds, wallet spending, in-progress saves and corrupt-save recovery.
-It also installs alternative components and exercises the complete purchase,
-powerup, reward, coin-game and save flows through the application coordinator.
-
-`MeadowPeaks.exe --smoke` exercises the real Windows UI: home, map, full winning
-hand, reward, helper purchase, gem earnings and resize. It writes a result file
-and screenshots beside the executable. Smoke mode does not write to the player's
-save. The smoke runner is intended for an interactive Windows desktop; CI runners
-without a desktop may need to run only engine tests and validate the UI locally.
-
-## Publish on GitHub
-
-1. Put these original source files in a new public repository. Keep `examples/`
-   outside the repository or leave it ignored. The source ZIP is safe to use as
-   the initial upload; it never traverses the examples folder.
-2. Push to `main` or `master` to run `.github/workflows/build.yml`. The Windows ZIP
-   is uploaded as a workflow artifact.
-3. Push a version tag such as `v1.0.0` to create a GitHub release with the Windows ZIP.
-
-No repository or release is created by the local build scripts.
-
-## Originality and license
-
-Game code, UI, vector-drawn landscapes, cards and gems were created for this project
-and are MIT licensed. Reference games are inspiration for familiar
-TriPeaks mechanics, not dependencies or affiliated products. The optional sound
-uses Windows' built-in notification chime. Bundled Microsoft runtime files are
-covered by their included licenses and third-party notices.
-
-## Browser edition and release 1.7
-
-Play without installing through GitHub Pages once the repository Pages source is set to GitHub Actions. [Browser setup and parity contract](docs/WEB.md). The browser game includes the same campaign, card mechanics, helpers, coins and Gem Garden, with compatible exported saves and deal codes.
-
-Release 1.7 replaces native button painting to remove black corners and keep animated labels centered, adds illustrated explanations, and handles startup errors in a readable report. Stock draws now have a 2-second cooldown; +5 rescue cards expire after 10 seconds; fresh deals recharge for 30 seconds. No level countdown or permanent boosts.
-
-## Release 1.8
-
-New deals add rotated fans, rings, ribbons, butterfly wings, tower groups and
-other graph-based story formations, with a shared illustrated backdrop. The
-board updates surviving cards in place; Gem Garden shows connected matches,
-coin bursts, falling gems and cascades. Helpers follow mechanic discovery and
-level relevance. Fresh Garden recharges for one hour in real time and preserves
-the board and deadline across restarts. Flowery scene messages remain;
-promotional free/no-purchases claims have been removed from the interface.
-
-
-### 1.8.1 card presentation
-
-The Windows and web games now use large, easily scanned central card ranks with
-small corner suits, informed by the supplied gameplay recording. The browser adds
-a layered stock fan and a short stock-to-waste flight without refreshing the tableau.
-Reduced-motion settings suppress the flight. Existing progression, consumables,
-one-hour Fresh Garden cooldown, saved hands and shared deal codes remain compatible.
-See [web presentation notes](docs/WEB.md) for details.
-
-
-Live star preview (1.8.2)
-The play screen now shows a three-star progress meter in Windows and web. Clear
-the entire board to earn the displayed stars: one for completion, two with a best
-uninterrupted streak of at least 5, three with at least 9. Drawing resets the
-current streak, but your best streak still counts. Undo restores the previous
-best streak and updates the meter. The display previews existing rewards; it does
-not grant coins or stars before completion. This follows the compact, visible
-progress feedback in the second supplied gameplay recording, using original art.
-
-
-### 1.9: illustrated adventure menu and earned prize wheel
-
-The game now opens on an illustrated village map with a winding trail, raised
-level markers, a chapter ribbon and activity buttons. Selecting a level opens a
-star preview with a Play button. The home screen remains available through Home.
-
-- Lucky wheel: one welcome spin, then one additional spin per five solitaire
-  wins. Eight equal-probability segments award 25/40/50/75/100 coins or one Wild,
-  Fresh Cards or Remove consumable. Rewards and spent spins persist immediately.
-- 32 formation families, including five to eight tilted islands, spirals,
-  diamond packets, bouquets and double ribbons. Every deal still has a verified
-  legal removal path. New hands use MP19; MP16 and MP18 codes retain their generators.
-- Cards deal outward from the stock, and the live three-star meter previews
-  existing streak rewards. Normal stock draws keep their cooldown.
-- Chapter scenery uses seeded decorative placement and eight lighting/weather
-  treatments, including snow and night. It combines procedural variation with
-  shared original painted backgrounds, rather than 24,000 separate paintings.
-- All play and rewards work locally. There are no purchases, ads, accounts,
-  leaderboards, multiplayer or network-dependent reward systems.
-
-Reference videos and extracted frames remain excluded from distributions.
+Original code/art use the project LICENSE. Bundled Microsoft components keep their
+own license and notice files; see [third-party notes](docs/THIRD_PARTY.md).

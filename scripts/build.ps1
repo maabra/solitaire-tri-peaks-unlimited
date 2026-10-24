@@ -1,4 +1,4 @@
-param([switch]$OfflineInstalledRuntime, [switch]$SkipEngineTests)
+param([switch]$OfflineInstalledRuntime, [switch]$SkipEngineTests, [string]$OutputDirectory="artifacts/MeadowPeaks-win-x64")
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
@@ -7,7 +7,7 @@ try {
         dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release
         if ($LASTEXITCODE -ne 0) { throw 'Engine tests failed.' }
     }
-    $output = Join-Path $projectRoot 'artifacts/MeadowPeaks-win-x64'
+    $output = Join-Path $projectRoot $OutputDirectory
     if ($OfflineInstalledRuntime) {
         dotnet publish src/MeadowPeaks.csproj -c Release --self-contained false -o artifacts/framework-dependent --ignore-failed-sources
         if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
@@ -17,8 +17,9 @@ try {
         dotnet publish src/MeadowPeaks.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o $output
         if ($LASTEXITCODE -ne 0) { throw 'Publish failed. For an offline machine, use -OfflineInstalledRuntime.' }
     }
+    $env:MEADOW_PEAKS_CACHE=Join-Path $projectRoot 'artifacts/desktop-cache'
     $process = Start-Process -FilePath (Join-Path $output 'MeadowPeaks.exe') -ArgumentList '--smoke' -WindowStyle Hidden -PassThru
-    if (-not $process.WaitForExit(60000)) { $process.Kill(); throw 'UI smoke test timed out.' }
+    if (-not $process.WaitForExit(180000)) { $process.Kill(); throw 'UI smoke test timed out.' }
     $result = Get-Content (Join-Path $output 'smoke-result.txt') -Raw
     if ($process.ExitCode -ne 0 -or $result -notlike 'PASS:*') { throw "UI smoke test failed: $result" }
     Write-Output $result
