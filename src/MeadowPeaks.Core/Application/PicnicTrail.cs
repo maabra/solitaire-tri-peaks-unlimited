@@ -34,8 +34,10 @@ public sealed class PicnicTrail
     public void Win() { Today(); profile.Picnic.Wins=Math.Min(1000000,profile.Picnic.Wins+1); }
     public void Clear(int count) { Today(); profile.Picnic.Clears=Math.Min(1000000,profile.Picnic.Clears+Math.Max(0,count)); }
     public void Gems(int coins) { Today(); profile.Picnic.GemCoins=(int)Math.Min(1000000,(long)profile.Picnic.GemCoins+Math.Max(0,coins)); }
+    public string? LastGift { get; private set; }
     public int Claim(string id)
     {
+        LastGift=null;
         var goals=Goals; int index=goals.ToList().FindIndex(g=>g.Id==id);
         if(index<0 || !goals[index].Ready) return 0;
         var goal=goals[index]; wallet.Credit(goal.Coins); profile.Picnic.Claimed|=1<<index;
@@ -43,7 +45,8 @@ public sealed class PicnicTrail
         {
             var useful=helpers.All.Where(p=>p.Id is "wild" or "extra" or "scout" or "lucky" or "peek").ToArray();
             var choices=useful.Length>0 ? useful : helpers.All.ToArray();
-            inventory.Add(choices[(int)(clock.Today.Ticks/TimeSpan.TicksPerDay%choices.Length)].Id,1);
+            LastGift=choices[(int)(clock.Today.Ticks/TimeSpan.TicksPerDay%choices.Length)].Id;
+            inventory.Add(LastGift,1);
         }
         return goal.Coins;
     }

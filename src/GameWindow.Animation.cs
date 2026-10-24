@@ -87,8 +87,13 @@ public sealed partial class GameWindow
                 string badge = (hand as IAdventureHand)?.CardStatus(i) ?? "";
                 if (button.Hint != highlight || button.CardBadge != badge) { button.Hint = highlight; button.CardBadge = badge; button.Invalidate(); }
             }
-            if (button.Name.StartsWith("power-")) button.Enabled = timed.Effects.HelperCooldown <= 0 && session.Powerups.Find(button.Name.Substring(6))?.CanUse(hand) == true;
-            if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"\U0001f50e {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e 3s"; }
+            if (button.Name.StartsWith("power-") && session.Powerups.Find(button.Name.Substring(6)) is { } helper)
+            {
+                button.Enabled=timed.Effects.HelperCooldown<=0 && helper.CanUse(hand);
+                string subtitle=PowerupCaption(helper);
+                if(button.Subtitle!=subtitle) {button.Subtitle=subtitle;button.Invalidate();}
+            }
+            if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"Hint in {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e Hint 3s"; }
         }
         UpdatePeekControls();
         if (timerPaint >= .2) { timerPaint = 0; backdropDirty = true; Invalidate(); }
@@ -162,7 +167,7 @@ public sealed partial class GameWindow
     void PaintVictory(Graphics g)
     {
         float progress = profile.ReducedMotion ? 1 : Math.Clamp((float)(effects.Time - victoryStarted) / 1.1f, 0, 1);
-        string heading = lastVictory?.BonusCoins > 0 ? "\U0001f381 \U0001fa99 \u2728" : lastVictory?.ChapterName != null ? "A whole chapter of happiness!" : "You made the meadow smile!";
+        string heading = lastVictory?.BonusCoins > 0 ? "Bonus level complete!" : lastVictory?.ChapterName != null ? "A whole chapter of happiness!" : "You made the meadow smile!";
         Art.Text(g, heading, 260, 183, lastVictory?.ChapterName != null ? 32 : 37, artwork.Ink, true, 760, true);
         for (int i = 0; i < 3; i++)
         {
@@ -171,7 +176,7 @@ public sealed partial class GameWindow
             FestiveArt.Star(g, 552 + i * 88, 291, Math.Max(1, size), i < stars ? artwork.Gold : Color.FromArgb(221, 219, 198), i < stars ? (1 - appear) * -30 : 0);
         }
         Art.Text(g, $"+{(int)(reward * (1 - MathF.Pow(1 - progress, 3)))} coins", 280, 348, 37, artwork.Teal, true, 720, true);
-        string detail = lastVictory?.BonusCoins > 0 ? $"+{lastVictory.BonusCoins} \U0001fa99    +1 {session.Powerups.Find(lastVictory.BonusItem ?? "")?.Name}\n\u23f3 Consumable" : lastVictory?.ChapterName != null ? $"Chapter complete! Includes {lastVictory.ChapterBonus} bonus coins + {session.Economy.ChapterWilds} Wild.\nA new little adventure is waiting for you." : $"Score {hand?.Score:N0} · Best streak {hand?.BestStreak}\nOne more blossom in your growing garden. Beautifully done!";
+        string detail = lastVictory?.BonusCoins > 0 ? $"+{lastVictory.BonusCoins} \U0001fa99    +1 {session.Powerups.Find(lastVictory.BonusItem ?? "")?.Name}\nOne-use helper added to your bag" : lastVictory?.ChapterName != null ? $"Chapter complete! Includes {lastVictory.ChapterBonus} bonus coins + {session.Economy.ChapterWilds} Wild.\nA new little adventure is waiting for you." : $"Score {hand?.Score:N0} · Best streak {hand?.BestStreak}\nOne more blossom in your growing garden. Beautifully done!";
         Art.Text(g, detail, 310, 410, 19, artwork.Teal, false, 660, true);
         FestiveArt.Pip(g, 320, 337, .7f, true); FestiveArt.Pip(g, 960, 337, .7f, true);
         Art.Text(g, "Your progress is saved. Your next smile is just a card away.", 280, 480, 14, artwork.Teal, false, 720, true);
@@ -181,20 +186,20 @@ public sealed partial class GameWindow
         if (hand is not ITemporaryHand timed || hand.Won) return;
         var e = timed.Effects;
         var active = new[] {
-            ("\U0001f50e", e.HintSeconds), ("\U0001f340+1", e.LuckySeconds), ("\U0001f525", e.ThawSeconds),
-            ("\U0001f6e1", e.ShieldSeconds), ("\u2605", hand.Waste.Rank == 0 ? e.WildSeconds : 0), ("\u23f3", e.HelperCooldown), ("\U0001f5dd", e.KeySeconds), ("\u2702", e.PruneSeconds), ("\u25d0", e.PhaseSeconds), ("\U0001f441", e.PeekSeconds)
-        }.Where(x => x.Item2 > 0).ToArray();
-        for (int i = 0; i < active.Length; i++)
+            ("Hint",e.HintSeconds),("Lucky +1",e.LuckySeconds),("Thaw",e.ThawSeconds),("Shield",e.ShieldSeconds),
+            ("Wild",hand.Waste.Rank==0 ? e.WildSeconds:0),("Recharge",e.HelperCooldown),("Keypass",e.KeySeconds),("Prune",e.PruneSeconds),("Phase",e.PhaseSeconds),("Peek",e.PeekSeconds)
+        }.Where(x=>x.Item2>0).Take(6).ToArray();
+        for(int i=0;i<active.Length;i++)
         {
-            float x = 935 + i % 3 * 73, y = 533 + i / 3 * 38;
-            Art.Box(g, new(x, y, 68, 33), Color.FromArgb(230, artwork.Cream), 10);
-            Art.Text(g, $"{active[i].Item1} {Math.Ceiling(active[i].Item2)}s", x+4, y+6, 12, artwork.Ink, true, 62, true);
-            Art.Box(g, new(x+7, y+30, (float)(54 * Math.Min(1, active[i].Item2 / 12)), 3), artwork.Gold, 1);
+            float x=935+i%2*108,y=533+i/2*38;
+            Art.Box(g,new(x,y,101,33),Color.FromArgb(240,artwork.Cream),10);
+            Art.Text(g,$"{active[i].Item1} {Math.Ceiling(active[i].Item2)}s",x+3,y+6,12,artwork.Ink,true,95,true);
+            Art.Box(g,new(x+7,y+29,(float)(87*Math.Min(1,active[i].Item2/12)),3),artwork.Gold,1);
         }
         if (e.PeekSeconds > 0)
         {
             Art.Box(g, new(140, 533, 230, 130), artwork.Cream, 14);
-            Art.Text(g, $"\U0001f441 {Math.Ceiling(e.PeekSeconds)}s", 150, 536, 12, artwork.Teal, true, 210, true);
+            Art.Text(g, $"Next 3 cards - {Math.Ceiling(e.PeekSeconds)}s", 150, 536, 12, artwork.Teal, true, 210, true);
             for (int n = 0; n < Math.Min(3, hand.Stock.Count); n++) artwork.DrawCard(g, new(154+n*66, 558, 56, 83), hand.Stock[n], true, false, false);
         }
         if (e.ThawSeconds > 0 || e.ShieldSeconds > 0 || e.LuckySeconds > 0)

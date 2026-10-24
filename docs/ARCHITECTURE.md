@@ -230,3 +230,43 @@ Armor updates copy the map before recording a hit, preserving undo snapshots.
 Older saves fall back to `HasKey` and the original `Peeled` bitset. Tests cover
 JSON persistence, mixed legacy armor state, unlock boundaries and every tier's
 caps and baseline pressure, followed by all 480,000 actual winning paths.
+
+
+## Replay systems and late mechanics (1.6)
+
+`ICardMechanics.Allows(card,state,waste)` adds contextual eligibility with a
+backward-compatible default implementation. Phase gates use the existing move
+counter parity; color seals check the previous waste suit color. Their witness
+metadata is assigned at legal removal steps by AdventureDealProvider. Temporary
+keypass, pruning, phase and peek effects share the same tick/save/undo lifetime
+rules as the earlier effects. New effects never persist into a new hand.
+
+`OpeningEffect` labels current bonus deals as glow, harvest or shelter after the
+corresponding mechanic unlocks. Hand initializes only their short effect timers.
+Stored boards keep their opening label; replay restores the same starting effect.
+All full-campaign tests expire effects between steps, including these openings.
+
+`PicnicTrail` owns daily counters/claims and consumes an injectable `IPicnicPolicy`
+(optional final GameSession dependency). Compatible policies supply exactly three
+stable ordered goals with unique IDs and positive targets/rewards. The default
+policy never gates play. GameSession records clears, wins and gem earnings;
+PicnicTrail grants each reward once and one final inventory item. ProfileValidator
+checks persisted picnic and favorite data; older JSON gets empty defaults.
+
+Favorites are profile IDs, independent of card power. Journal UI lives in its own
+GameWindow partial. Navigation through a bookmark or star hunt opens the map;
+starting a different hand still uses the standard replacement confirmation.
+
+`DealCodes` encodes a version tag, mode, level and seed plus an eight-hex SHA-256
+checksum. It rejects malformed, noncanonical and incompatible inputs. This is
+mistype detection, not an authentication mechanism. GameSession imports only
+unlocked campaign levels; endless codes identify their own deal number. Only
+stored boards stamped with the current generation can be exported. If replacing
+providers or progression in a way that changes seeded output, update the
+Generation stamp/protocol instead of silently reusing MP16.
+
+Additional tests cover contextual gates/seals, new helper expiry, shared-deal
+reproduction, unlock checks, daily payout idempotency, day resets, JSON recovery,
+favorite persistence and all bonus opening styles. Real UI smoke checks include
+preview visibility/expiry, both guide pages, share view, favorite navigation and
+picnic reward claiming, without touching the player's profile or clipboard.

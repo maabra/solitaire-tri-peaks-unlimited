@@ -1,7 +1,8 @@
-MEADOW PEAKS - SOLITAIRE UNLIMITED 1.5
+MEADOW PEAKS - SOLITAIRE UNLIMITED 1.6
 
 RUN
-Double-click MeadowPeaks.exe. No installer, internet or runtime download needed.
+Double-click MeadowPeaks-1.6.exe (latest local build) or the release MeadowPeaks.exe.
+Close an older game first to keep one process writing your save. No installer, internet or runtime download needed.
 Windows 10/11 x64. The single EXE extracts its runtime cache automatically.
 For the portable ZIP, extract the whole folder before launching its EXE.
 
@@ -41,6 +42,11 @@ Clover +1: 85 coins. Each rank clear adds one stock card for 10 seconds.
 Fire: 70 coins. Ignore ice for 8 seconds; remaining ice returns afterward.
 Shield: 80 coins. Bomb fuses stop advancing on moves for 10 seconds.
 Scout: 35 coins. Show playable matches for 5 seconds.
+Keypass: 90 coins. Ignore locked-card key requirements for 6 seconds.
+Prune: 65 coins. Ignore vine streak requirements for 8 seconds.
+Phase: 70 coins. Ignore sun/moon gate requirements for 6 seconds.
+Peek: 40 coins. Show the next three stock cards for 6 seconds, in draw order.
+These bypasses still require a legal rank; no boost lasts across hands.
 Helpers share a 5-second recharge. Switch pages with the toolbar arrows.
 Effects never carry into a new hand and there are no permanent power upgrades.
 Menu, minimized-window and focus-loss time does not consume an effect.
@@ -62,19 +68,47 @@ King to Ace is up; Ace to King is down. Wild has no direction bonus.
 700: Clovers. A clear starts +1 stock per clear for 6 seconds.
 800: Vines. Build the displayed consecutive clear streak before playing.
 900: Shields. A clear pauses bomb fuses for 6 seconds.
+2,000: Phase gates. The gate shows sun or moon; every successful clear, draw or
+armor hit switches the board phase. The gate must match it. Invalid taps and
+elapsed time do not flip phase. Undo restores phase. Phase helper bypasses it.
+2,300: Color seals. Match both adjacent rank AND waste color: heart badge needs
+red (hearts/diamonds), spade badge needs black (clubs/spades). Wild bypasses color.
 
 Every 100 levels advances a tier. From 1,000, the emphasis rotates through
 ice, locks, bombs, armor, vines and reserve-stock pressure. Early upgrades:
 1,000 thicker ice; 1,100 two-key locks; 1,200 tighter bomb fuses;
 1,300 three-hit armor; 1,400 three-clear vines; 1,500 fewer surplus draws.
 Later cycles strengthen these within caps: three keys, four armor hits,
-three-clear vines, two moves of fuse margin, ten hazard cards and eight trimmed
+three-clear vines, two moves of fuse margin, ten core hazard cards (plus later gates/seals) and eight trimmed
 reserve draws. Once capped, tiers keep rotating stronger combinations instead
 of escalating a single mechanic without limit. Individual deals still vary.
 The tier icon and number appear beside the formation name.
 Only stock after the guaranteed-path draws may be trimmed.
 Remove bypasses ice, locks, armor and vines, and can trigger key/lantern/clover/
 shield effects. It does not give bonus stock. Ranks still apply to normal plays.
+
+JOURNAL, FAVORITES & SHARED DEALS
+The book on the home screen opens the journal. Daily picnic goals are optional:
+win two hands (40 coins), clear 24 cards (50), earn 80 in Gem Garden (60).
+Claim each completed goal once. Claiming all three adds one consumable.
+Goals follow the local day, reset on a new day, and never impose a level timer.
+The star beside a campaign level bookmarks it. Favorites appear in the journal,
+with pages for larger collections. The star-arrow finds an earlier unfinished
+three-star result. It opens the map without replacing your active hand.
+The link beside Remix opens a share code. Copy is an explicit clipboard action.
+The link on the home screen/journal imports a code. Opening it starts that deal
+from the beginning after the usual hand-replacement confirmation.
+Codes reproduce cards/formation and require this generator version (MP16).
+Campaign codes cannot open locked levels. Old stored boards without current
+metadata cannot be exported; finish them or remix to create a current deal.
+
+BONUS OPENINGS
+Every 25th campaign level retains its first-win coin/consumable reward.
+From 600, bonus levels can start with Glow (8 seconds of match hints).
+From 700, Harvest openings add +1 stock per clear for 6 seconds.
+From 900, Shelter openings pause bomb fuses for 6 seconds.
+The styles rotate. The clocks stop the effects, not the level. All these levels
+also have a verified path with every timed effect expired before each action.
 
 FREE COIN GARDEN
 Swap adjacent gems to match 3+. Cascades pay immediately into the shared wallet.

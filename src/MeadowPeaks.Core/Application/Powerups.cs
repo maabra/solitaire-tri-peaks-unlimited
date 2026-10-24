@@ -3,7 +3,7 @@ namespace MeadowPeaks;
 public sealed class WildPowerup : IPowerup
 {
     public string Id => "wild";
-    public string Name => "\u2605";
+    public string Name => "\u2605 Wild";
     public string Description => "Any exposed card plays\non a Wild. Keep your streak.";
     public int Price => 75;
     public bool RequiresTarget => false;
@@ -14,7 +14,7 @@ public sealed class WildPowerup : IPowerup
 public sealed class ExtraCardsPowerup : IPowerup
 {
     public string Id => "extra";
-    public string Name => "\u2660 +5";
+    public string Name => "\u2660 +5 cards";
     public string Description => "Adds five cards when\nyour stock is empty.";
     public int Price => 60;
     public bool RequiresTarget => false;
@@ -25,7 +25,7 @@ public sealed class ExtraCardsPowerup : IPowerup
 public sealed class RemovePowerup : IPowerup
 {
     public string Id => "remove";
-    public string Name => "\U0001f528";
+    public string Name => "\U0001f528 Remove";
     public string Description => "Choose any exposed card\nand remove it from the board.";
     public int Price => 90;
     public bool RequiresTarget => true;

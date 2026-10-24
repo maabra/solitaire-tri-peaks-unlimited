@@ -11,16 +11,16 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     public string CardStatus(int i) => Deal.Cards[i].Kind == CardKind.Stone ? $"\u25c6{Math.Max(1, Math.Max(2, Deal.Cards[i].Strength)-ArmorDamage(i))}" : mechanics.Status(Deal.Cards[i], state);
     public string BlockReason(int i)
     {
-        if(Failed) return "\U0001f4a3 \U0001f4a5  \u21b6 / \u21bb";
+        if(Failed) return "A bomb burst. Undo the last move or replay this deal for free.";
         var card=Deal.Cards[i];
-        if(mechanics.Allows(card,state,Waste)) return "\u2660 \u2191 / \u2193";
+        if(mechanics.Allows(card,state,Waste)) return "Play a card one rank higher or lower than the pile.";
         return card.Kind switch {
-            CardKind.Vine => $"\U0001f33f: {Math.Max(2,card.Strength)} clears in a row.",
-            CardKind.Lock => "\U0001f512: collect the remaining keys.",
-            CardKind.Ice => $"\u2744: clear {Math.Max(0,card.Strength-state.Clears)} other cards.",
-            CardKind.Gate => "\u2600 / \u263e: clear a card or draw to switch phase.",
-            CardKind.ColorSeal => "\u2665 / \u2660: match the color of the waste pile.",
-            _ => "\u2660 \u2191 / \u2193" };
+            CardKind.Vine => $"Vines: clear {Math.Max(2,card.Strength)} cards in a row first.",
+            CardKind.Lock => "Lock: collect the remaining keys first.",
+            CardKind.Ice => $"Ice: clear {Math.Max(0,card.Strength-state.Clears)} other cards to thaw it.",
+            CardKind.Gate => "Gate: clear a card or draw to switch sun and moon.",
+            CardKind.ColorSeal => "Color seal: match the pile color as well as the rank.",
+            _ => "Play one rank higher or lower than the pile." };
     }
     public Deal Deal { get; }
     bool[] removed;

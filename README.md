@@ -8,7 +8,9 @@ No accounts, ads, entry fees, energy systems, or real-money purchases.
 
 ## Play on Windows
 
-The easiest option is **`MeadowPeaks.exe`**, the single-file Windows x64 build.
+The latest local build is **`MeadowPeaks-1.6.exe`** (the existing `MeadowPeaks.exe` may still be an earlier running build). Close an older game before opening the new one so both do not save the same profile.
+
+The easiest release option is **`MeadowPeaks.exe`**, the single-file Windows x64 build.
 Double-click it to play. No extraction, installer, administrator access, .NET
 installation, or internet connection is needed. It bundles the game, runtime,
 and license notices. The first launch extracts its bundled runtime to a local
@@ -33,6 +35,11 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 - Icon badges, live fuse/ice counters, an illustrated guide, hover explanations, free replay and fresh-deck remix. Undo restores card state without restoring elapsed effect time.
 - Hints show matches for 3 seconds and recharge in 15 seconds. Helpers share a 5-second recharge. Wilds expire after 12 seconds if unused.
 - Consumable +1 stock-per-clear (10s), thaw (8s), shield (10s) and scout (5s) helpers. No permanent upgrades or level countdowns.
+- Phase gates at level 2,000 alternate after successful moves. Color seals at 2,300 require matching the waste pile color as well as rank.
+- Four more consumables: lock bypass (6s), pruning (8s), phase bypass (6s), and next-three-stock preview (6s). Eleven helper types in total.
+- A journal with daily picnic goals, once-per-day coin/consumable rewards, saved level favorites and a three-star hunt shortcut.
+- Checksummed deal codes reproduce current-version cards and formations, with campaign unlock checks. Share and import are explicit user actions.
+- Bonus opening varieties: Glow (8s matches), Harvest (6s +1 stock per clear), Shelter (6s fuse shield), introduced after their corresponding mechanic unlocks.
 - Every 25th campaign level grants a one-time 125-coin bonus and one consumable on first completion.
 - Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not hand-authored puzzles.
 - Endless Meadow: new seeded hands, unlimited retries, coins, and a growing garden.
@@ -71,6 +78,8 @@ See [the architecture and extension guide](docs/ARCHITECTURE.md) for the compone
 map, replacement examples, compatibility contracts and legacy-save behavior.
 
 ![Solitaire](docs/solitaire.png)
+![Journal](docs/journal.png)
+![Stock preview](docs/stock-preview.png)
 ![Deep board](docs/deep-board.png)
 ![Temporary effects](docs/temporary-effects.png)
 ![Formation examples](docs/formations.png)
@@ -98,7 +107,7 @@ The build script runs the engine tests, publishes a self-contained Windows x64
 folder, runs the UI smoke test, and writes `artifacts/MeadowPeaks-win-x64.zip`.
 Normal self-contained publishing downloads Microsoft runtime packs from NuGet.
 `build-single-exe.ps1` creates and smoke-tests `artifacts/MeadowPeaks.exe` using
-standard .NET single-file publishing. No reference examples are included.
+standard .NET single-file publishing. Use `-OutputName MeadowPeaks-1.6.exe` to create a versioned file while an older EXE is in use. No reference examples are included.
 
 For an offline development machine with matching x64 .NET Core and Windows
 Desktop runtimes already installed, Python 3 enables an offline fallback:
