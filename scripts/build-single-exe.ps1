@@ -1,3 +1,4 @@
+param([ValidatePattern("^[A-Za-z0-9._-]+\.exe$")][string]$OutputName = "MeadowPeaks.exe")
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
@@ -7,7 +8,7 @@ try {
         -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true `
         -p:DebugType=None -o artifacts/single-file
     if ($LASTEXITCODE -ne 0) { throw 'Single-file publish failed.' }
-    $executable = Join-Path $projectRoot 'artifacts/MeadowPeaks.exe'
+    $executable = Join-Path (Join-Path $projectRoot 'artifacts') $OutputName
     Copy-Item artifacts/single-file/MeadowPeaks.exe $executable -Force
     $process = Start-Process -FilePath $executable -ArgumentList '--smoke' -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(60000)) { $process.Kill(); throw 'Single-file UI smoke test timed out.' }

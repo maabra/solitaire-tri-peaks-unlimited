@@ -11,12 +11,13 @@ public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = 
     int Run = 0, int FuseDelay = 0, ulong Peeled = 0,
     double HintSeconds = 0, double HintCooldown = 0, double HelperCooldown = 0,
     double LuckySeconds = 0, double ThawSeconds = 0, double ShieldSeconds = 0,
-    double WildSeconds = 0, Card? WildReturn = null, int Keys = 0, IReadOnlyDictionary<int, int>? ArmorDamage = null);
+    double WildSeconds = 0, Card? WildReturn = null, int Keys = 0, IReadOnlyDictionary<int, int>? ArmorDamage = null, double KeySeconds = 0, double PruneSeconds = 0, double PhaseSeconds = 0, double PeekSeconds = 0);
 
 // Stateless policy. All mutable state lives in snapshots, so saves and undo agree.
 public interface ICardMechanics
 {
     bool Allows(Card card, MechanicState state);
+    bool Allows(Card card, MechanicState state, Card waste) => Allows(card,state);
     string Status(Card card, MechanicState state);
     MechanicState Advance(MechanicState state, Deal deal, IReadOnlyList<bool> removed, Card? played);
     int Bonus(Card played, Card previous);
@@ -26,24 +27,29 @@ public sealed class CardMechanics : ICardMechanics
     public bool Allows(Card card, MechanicState state) => card.Kind switch
     {
         CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength,
-        CardKind.Lock => Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength),
-        CardKind.Vine => state.Run >= Math.Max(2, card.Strength),
+        CardKind.Lock => state.KeySeconds > 0 || Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength),
+        CardKind.Vine => state.PruneSeconds > 0 || state.Run >= Math.Max(2, card.Strength),
+        CardKind.Gate => state.PhaseSeconds > 0 || state.Turns%2 == card.Strength,
         _ => true
     };
+    public bool Allows(Card card, MechanicState state, Card waste) => Allows(card,state) &&
+        (card.Kind != CardKind.ColorSeal || waste.Rank == 0 || (waste.Suit is 1 or 2) == (card.Strength == 1));
     public string Status(Card card, MechanicState state) => card.Kind switch
     {
         CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength ? "\u2744\u2713" : $"\u2744{card.Strength - state.Clears}",
         CardKind.Key => "\U0001f511",
-        CardKind.Lock => Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength) ? "\U0001f513" : $"\U0001f512{Math.Max(1, card.Strength)-Math.Max(state.Keys, state.HasKey ? 1 : 0)}",
+        CardKind.Lock => state.KeySeconds > 0 || Math.Max(state.Keys, state.HasKey ? 1 : 0) >= Math.Max(1, card.Strength) ? "\U0001f513" : $"\U0001f512{Math.Max(1, card.Strength)-Math.Max(state.Keys, state.HasKey ? 1 : 0)}",
         CardKind.Bomb => $"\U0001f4a3{Math.Max(0, card.Strength + state.FuseDelay - state.Turns)}",
         CardKind.Gift => "\u2660+3",
         CardKind.Up => "\u2191+2",
         CardKind.Down => "\u2193+2",
         CardKind.Stone => "\u25c6\u00d72",
-        CardKind.Vine => state.Run >= Math.Max(2, card.Strength) ? "\U0001f33f\u2713" : $"\U0001f33f{Math.Max(2, card.Strength)}",
+        CardKind.Vine => state.PruneSeconds > 0 || state.Run >= Math.Max(2, card.Strength) ? "\U0001f33f\u2713" : $"\U0001f33f{Math.Max(2, card.Strength)}",
         CardKind.Lantern => "\U0001f5264s",
         CardKind.Lucky => "\U0001f340+1",
         CardKind.Shield => "\U0001f6e16s",
+        CardKind.Gate => (card.Strength == 0 ? "\u2600" : "\u263e") + (state.PhaseSeconds > 0 || state.Turns%2==card.Strength ? "\u2713" : "\u00d7"),
+        CardKind.ColorSeal => card.Strength == 1 ? "\u2665" : "\u2660",
         _ => ""
     };
     public MechanicState Advance(MechanicState state, Deal deal, IReadOnlyList<bool> removed, Card? played)
@@ -93,6 +99,8 @@ public sealed class AdventureDealProvider : IDealProvider
                     CardKind.Vine => profile.VineRun, _ => 0 };
                 hazards++;
             }
+            else if (progression.Unlocked(CardKind.Gate, level) && clears%13==10) { kind = CardKind.Gate; strength = solution.Count%2; }
+            else if (progression.Unlocked(CardKind.ColorSeal, level) && clears%17==14) { kind = CardKind.ColorSeal; strength = previous.Suit is 1 or 2 ? 1 : 0; }
             else if (progression.Unlocked(CardKind.Lantern, level) && clears % 17 == 8) kind = CardKind.Lantern;
             else if (progression.Unlocked(CardKind.Lucky, level) && clears % 19 == 12) kind = CardKind.Lucky;
             else if (progression.Unlocked(CardKind.Shield, level) && clears % 17 == 10) kind = CardKind.Shield;
@@ -106,7 +114,7 @@ public sealed class AdventureDealProvider : IDealProvider
         }
         // Only remove reserve draws after the witness prefix; never its solution draws.
         int keep = Math.Max(draws, deal.Stock.Count-profile.ReserveTrim);
-        return new Deal { Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
-            Solution = solution, TemporaryRules = true, Bonus = level%25==0, Formation = AdventureLayouts.NameFor(level), Difficulty = profile };
+        return new Deal { Generation = "MP16", Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
+            Solution = solution, TemporaryRules = true, Bonus = level%25==0, OpeningEffect = level%25 != 0 ? "" : level >= 900 && level/25%3==0 ? "shelter" : level >= 700 && level/25%3==1 ? "harvest" : level >= 600 ? "glow" : "", Formation = AdventureLayouts.NameFor(level), Difficulty = profile };
     }
 }

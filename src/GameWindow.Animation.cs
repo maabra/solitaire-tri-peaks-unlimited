@@ -90,6 +90,7 @@ public sealed partial class GameWindow
             if (button.Name.StartsWith("power-")) button.Enabled = timed.Effects.HelperCooldown <= 0 && session.Powerups.Find(button.Name.Substring(6))?.CanUse(hand) == true;
             if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"\U0001f50e {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e 3s"; }
         }
+        UpdatePeekControls();
         if (timerPaint >= .2) { timerPaint = 0; backdropDirty = true; Invalidate(); }
         if (timerSave >= 5) { timerSave = 0; Save(); }
     }
@@ -181,14 +182,20 @@ public sealed partial class GameWindow
         var e = timed.Effects;
         var active = new[] {
             ("\U0001f50e", e.HintSeconds), ("\U0001f340+1", e.LuckySeconds), ("\U0001f525", e.ThawSeconds),
-            ("\U0001f6e1", e.ShieldSeconds), ("\u2605", hand.Waste.Rank == 0 ? e.WildSeconds : 0), ("\u23f3", e.HelperCooldown)
+            ("\U0001f6e1", e.ShieldSeconds), ("\u2605", hand.Waste.Rank == 0 ? e.WildSeconds : 0), ("\u23f3", e.HelperCooldown), ("\U0001f5dd", e.KeySeconds), ("\u2702", e.PruneSeconds), ("\u25d0", e.PhaseSeconds), ("\U0001f441", e.PeekSeconds)
         }.Where(x => x.Item2 > 0).ToArray();
         for (int i = 0; i < active.Length; i++)
         {
-            float x = 935 + i % 2 * 108, y = 533 + i / 2 * 42;
-            Art.Box(g, new(x, y, 101, 35), Color.FromArgb(230, artwork.Cream), 10);
-            Art.Text(g, $"{active[i].Item1} {Math.Ceiling(active[i].Item2)}s", x+4, y+6, 16, artwork.Ink, true, 93, true);
-            Art.Box(g, new(x+7, y+30, (float)(87 * Math.Min(1, active[i].Item2 / 12)), 3), artwork.Gold, 1);
+            float x = 935 + i % 3 * 73, y = 533 + i / 3 * 38;
+            Art.Box(g, new(x, y, 68, 33), Color.FromArgb(230, artwork.Cream), 10);
+            Art.Text(g, $"{active[i].Item1} {Math.Ceiling(active[i].Item2)}s", x+4, y+6, 12, artwork.Ink, true, 62, true);
+            Art.Box(g, new(x+7, y+30, (float)(54 * Math.Min(1, active[i].Item2 / 12)), 3), artwork.Gold, 1);
+        }
+        if (e.PeekSeconds > 0)
+        {
+            Art.Box(g, new(140, 533, 230, 130), artwork.Cream, 14);
+            Art.Text(g, $"\U0001f441 {Math.Ceiling(e.PeekSeconds)}s", 150, 536, 12, artwork.Teal, true, 210, true);
+            for (int n = 0; n < Math.Min(3, hand.Stock.Count); n++) artwork.DrawCard(g, new(154+n*66, 558, 56, 83), hand.Stock[n], true, false, false);
         }
         if (e.ThawSeconds > 0 || e.ShieldSeconds > 0 || e.LuckySeconds > 0)
         {

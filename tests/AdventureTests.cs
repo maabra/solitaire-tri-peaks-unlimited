@@ -43,7 +43,7 @@ static class AdventureTests
                 check(step.Index < 0 ? endless.Draw() : endless.Play(step.Index), "Endless formation has a winning path");
             check(endless.Won, "Endless formation solved");
         }
-        check(kinds.Count == 13 && formations.Count == MeadowCampaign.TotalLevels - 3, "Every special card and formation generated");
+        check(kinds.Count == 15 && formations.Count == MeadowCampaign.TotalLevels - 3, "Every special card and formation generated");
         Deal Board(params Card[] cards) => new() { Cards = cards, Layout = cards.Select((_, i) => new Slot(i * 2, 0)).ToArray(), Waste = new(5, 0), Stock = new[] { new Card(7, 1), new Card(8, 1) } };
         var ice = new Hand(Board(new Card(6, 0) { Kind = CardKind.Ice, Strength = 1 }, new Card(6, 1)), rules);
         check(!ice.Play(0) && ice.Play(1) && ice.Effects.Clears == 1, "Ice blocks and thaws on clears");

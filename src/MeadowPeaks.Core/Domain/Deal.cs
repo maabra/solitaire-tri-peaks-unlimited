@@ -1,6 +1,6 @@
 namespace MeadowPeaks;
 
-public enum CardKind { Normal, Ice, Key, Lock, Bomb, Gift, Up, Down, Stone, Vine, Lantern, Lucky, Shield }
+public enum CardKind { Normal, Ice, Key, Lock, Bomb, Gift, Up, Down, Stone, Vine, Lantern, Lucky, Shield, Gate, ColorSeal }
 public record Card(int Rank, int Suit)
 {
     public CardKind Kind { get; init; }
@@ -12,6 +12,8 @@ public sealed class Deal
 {
     public DifficultyProfile? Difficulty { get; init; }
     public bool TemporaryRules { get; init; }
+    public string Generation { get; init; } = "";
+    public string OpeningEffect { get; init; } = "";
     public bool Bonus { get; init; }
     public string Formation { get; init; } = "Classic peaks";
     public IReadOnlyList<Slot> Layout { get; init; } = Array.Empty<Slot>();

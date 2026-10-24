@@ -12,6 +12,7 @@ if (args.Contains("--effects-only"))
 {
     TemporaryTests.Run(Check);
     ProgressionTests.Run(Check);
+    ExpansionTests.Run(Check);
     Console.WriteLine($"PASS: {assertions:N0} targeted effect assertions.");
     return;
 }
@@ -116,6 +117,7 @@ finally { Directory.Delete(dir, true); }
 ComponentSwapTests.Run(Check);
 TemporaryTests.Run(Check);
 ProgressionTests.Run(Check);
+ExpansionTests.Run(Check);
 AdventureTests.Run(Check);
 var campaign = new MeadowCampaign();
 Check(campaign.Chapters.Count == 24000 && campaign.LevelCount == 480000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 20, "Expanded campaign has 24,000 chapters and 20 worlds");

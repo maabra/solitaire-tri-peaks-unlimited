@@ -3,7 +3,7 @@
 public sealed record DifficultyProfile(int Tier, CardKind Focus, int HazardBudget,
     int IceLead, int KeysRequired, int BombSlack, int ArmorHits, int VineRun, int ReserveTrim)
 {
-    public string Badge => $"{Focus switch { CardKind.Ice => "\u2744", CardKind.Lock => "\U0001f512", CardKind.Bomb => "\U0001f4a3", CardKind.Stone => "\u25c6", CardKind.Vine => "\U0001f33f", CardKind.Gift => "\U0001f381", CardKind.Up => "\u2191\u2193", CardKind.Lantern => "\U0001f526", CardKind.Lucky => "\U0001f340", CardKind.Shield => "\U0001f6e1", _ => "\u2660" }} {Tier}";
+    public string Badge => $"{Focus switch { CardKind.Ice => "\u2744", CardKind.Lock => "\U0001f512", CardKind.Bomb => "\U0001f4a3", CardKind.Stone => "\u25c6", CardKind.Vine => "\U0001f33f", CardKind.Gift => "\U0001f381", CardKind.Up => "\u2191\u2193", CardKind.Lantern => "\U0001f526", CardKind.Lucky => "\U0001f340", CardKind.Shield => "\U0001f6e1", CardKind.Gate => "\u25d0", CardKind.ColorSeal => "\u2665\u2660", _ => "\u2660" }} {Tier}";
 }
 public interface IDifficultyProgression
 {
@@ -19,6 +19,7 @@ public sealed class CampaignProgression : IDifficultyProgression
         CardKind.Gift => 50, CardKind.Ice => 100, CardKind.Key or CardKind.Lock => 200,
         CardKind.Bomb => 300, CardKind.Up or CardKind.Down => 400, CardKind.Stone => 500,
         CardKind.Lantern => 600, CardKind.Lucky => 700, CardKind.Vine => 800, CardKind.Shield => 900,
+        CardKind.Gate => 2000, CardKind.ColorSeal => 2300,
         _ => 1
     };
     public bool Unlocked(CardKind kind, int level) => level >= Introduction(kind);
@@ -30,6 +31,9 @@ public sealed class CampaignProgression : IDifficultyProgression
             4 => CardKind.Up, 5 => CardKind.Stone, 6 => CardKind.Lantern, 7 => CardKind.Lucky,
             8 => CardKind.Vine, _ => CardKind.Shield
         } : new[] { CardKind.Ice, CardKind.Lock, CardKind.Bomb, CardKind.Stone, CardKind.Vine, CardKind.Normal }[(tier-10)%6];
+        if (tier == 20) focus = CardKind.Gate;
+        if (tier == 23) focus = CardKind.ColorSeal;
+        if (tier >= 24) focus = new[] { CardKind.Ice, CardKind.Lock, CardKind.Bomb, CardKind.Stone, CardKind.Vine, CardKind.Gate, CardKind.ColorSeal, CardKind.Normal }[(tier-24)%8];
         int Steps(int first) => tier < first ? 0 : 1 + (tier-first)/6;
         // Bounded upgrades preserve a reasonable difficulty ceiling. Once a
         // component reaches its cap, later tiers focus on different combinations.

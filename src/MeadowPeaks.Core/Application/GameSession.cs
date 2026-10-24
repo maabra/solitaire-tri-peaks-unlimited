@@ -12,6 +12,7 @@ public sealed class GameSession
     public IEconomyPolicy Economy { get; }
     public PowerupCatalog Powerups { get; }
     public ICampaignCatalog Campaign { get; }
+    public PicnicTrail Picnic { get; }
     public Progress Profile { get; }
     public Wallet Wallet { get; }
     public PowerupInventory Inventory { get; }
@@ -26,7 +27,7 @@ public sealed class GameSession
 
     public GameSession(ISolitaireFactory solitaire, ICoinGameFactory coinGames,
         IProfileStore store, IEconomyPolicy economy, PowerupCatalog powerups,
-        IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null)
+        IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null, IPicnicPolicy? picnicPolicy = null)
     {
         if (economy.GardenInterval <= 0 || economy.UndoCost < 0 || economy.DailyGift < 0 || economy.GardenGift < 0 || economy.ChapterGift < 0 || economy.ChapterWilds < 0)
             throw new ArgumentException("Invalid economy policy.", nameof(economy));
@@ -44,6 +45,7 @@ public sealed class GameSession
         LoadWarning = warning;
         Wallet = new(Profile);
         Inventory = new(Profile);
+        Picnic = new(Profile,clock,Wallet,Inventory,Powerups,picnicPolicy);
         if (Profile.Active != null)
         {
             try { Hand = solitaire.Restore(Profile.Active); }
@@ -88,7 +90,28 @@ public sealed class GameSession
         Hand = next; Seed = nextSeed;
     }
 
-    public bool PlayCard(int index) => Hand?.Play(index) == true;
+    public bool ToggleFavorite(int level)
+    {
+        if(level<1 || level>Profile.Unlocked) return false;
+        if(!Profile.Favorites.Add(level)) Profile.Favorites.Remove(level);
+        return true;
+    }
+    public string? ShareCode => Hand==null || Hand.Deal.Generation!="MP16" ? null : DealCodes.Encode(new(Level,Seed,Endless));
+    public bool StartSharedDeal(string code)
+    {
+        if(!DealCodes.TryParse(code,out var reference) || reference==null || !reference.Endless && reference.Level>Profile.Unlocked) return false;
+        var next=solitaire.Create(reference.Seed,reference.Level);
+        Hand=next; Level=reference.Level; Seed=reference.Seed; Endless=reference.Endless;
+        if(Endless) Profile.EndlessDeal=Math.Max(Profile.EndlessDeal,Math.Min(int.MaxValue-1,Level+1));
+        return true;
+    }
+    public bool PlayCard(int index)
+    {
+        if(Hand==null) return false;
+        int before=Hand.Removed.Count(x=>x);
+        if(!Hand.Play(index)) return false;
+        Picnic.Clear(Hand.Removed.Count(x=>x)-before); return true;
+    }
     public bool Draw() => Hand?.Draw() == true;
 
     public CommandResult Undo()
@@ -106,7 +129,9 @@ public sealed class GameSession
         var powerup = Powerups.Find(id);
         if (Hand == null || powerup == null || (Hand is ITemporaryHand timed && timed.Effects.HelperCooldown > 0) || !powerup.CanUse(Hand)) return CommandResult.Unavailable;
         if (Inventory.Count(id) == 0) return CommandResult.MissingItem;
+        int before=Hand.Removed.Count(x=>x);
         if (!powerup.Apply(Hand, target, random.NextSeed())) return CommandResult.Unavailable;
+        Picnic.Clear(Hand.Removed.Count(x=>x)-before);
         Inventory.Add(id, -1);
         (Hand as ITemporaryHand)?.StartHelperCooldown();
         return CommandResult.Applied;
@@ -139,6 +164,7 @@ public sealed class GameSession
         Wallet.Credit(result.Coins);
         Hand.Paid = true;
         Profile.Garden++;
+        Picnic.Win();
         if (Endless) Profile.EndlessWins++;
         else
         {
@@ -173,6 +199,7 @@ public sealed class GameSession
     {
         if (CoinGame?.Play(first, second) != true) return false;
         Wallet.Credit(CoinGame.LastGain);
+        Picnic.Gems(CoinGame.LastGain);
         return true;
     }
 

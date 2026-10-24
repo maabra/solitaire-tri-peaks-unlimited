@@ -88,7 +88,7 @@ internal static class Art
     public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);
-        var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), CardKind.Stone => Color.FromArgb(220, 223, 230), CardKind.Vine => Color.FromArgb(211, 237, 196), CardKind.Lantern => Color.FromArgb(255, 245, 190), CardKind.Lucky => Color.FromArgb(221, 247, 212), CardKind.Shield => Color.FromArgb(210, 245, 242), _ => Cream };
+        var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), CardKind.Stone => Color.FromArgb(220, 223, 230), CardKind.Vine => Color.FromArgb(211, 237, 196), CardKind.Lantern => Color.FromArgb(255, 245, 190), CardKind.Lucky => Color.FromArgb(221, 247, 212), CardKind.Shield => Color.FromArgb(210, 245, 242), CardKind.Gate => card.Strength==0 ? Color.FromArgb(255,240,180) : Color.FromArgb(227,221,250), CardKind.ColorSeal => card.Strength==1 ? Color.FromArgb(255,219,227) : Color.FromArgb(221,228,239), _ => Cream };
         Box(g, r, face ? paper : Color.FromArgb(44, 110, 97), 9);
         if (face && card.Kind == CardKind.Ice)
         {

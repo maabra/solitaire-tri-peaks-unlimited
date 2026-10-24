@@ -18,6 +18,10 @@ public sealed class TemporaryPowerup : IPowerup
             "lucky" => timed.Effects.LuckySeconds <= 0,
             "thaw" => timed.Effects.ThawSeconds <= 0 && Has(CardKind.Ice),
             "shield" => timed.Effects.ShieldSeconds <= 0 && Has(CardKind.Bomb),
+            "keypass" => timed.Effects.KeySeconds <= 0 && Has(CardKind.Lock),
+            "prune" => timed.Effects.PruneSeconds <= 0 && Has(CardKind.Vine),
+            "phase" => timed.Effects.PhaseSeconds <= 0 && Has(CardKind.Gate),
+            "peek" => timed.Effects.PeekSeconds <= 0 && hand.Stock.Count > 0,
             "scout" => hand.Moves.Any(), _ => false };
     }
     public bool Apply(ISolitaireHand hand, int? target, int seed) => CanUse(hand) && ((ITemporaryHand)hand).UseEffect(Id);

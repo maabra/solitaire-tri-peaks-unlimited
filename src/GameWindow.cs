@@ -64,7 +64,7 @@ public sealed partial class GameWindow : Form
     GameButton Button(string name, string text, float x, float y, float w, float h, Action action, Color? fill = null, bool enabled = true)
     {
         var b = new GameButton(artwork) { Name = name, Text = text, AccessibleName = text.Replace("\n", " "), Bounds = Rect(x, y, w, h), Fill = fill ?? artwork.Cream, Enabled = enabled, TabIndex = Controls.Count };
-        string description = name switch { "mechanics" => "Special cards guide", "hint" => "Show a match for 3 seconds. Recharges in 15 seconds.", "remix" => "Deal fresh cards at this level. Current hand is replaced.", _ => name.StartsWith("power-") ? session.Powerups.Find(name.Substring(6))?.Description ?? "" : "" };
+        string description = name switch { "mechanics" => "Special cards guide", "hint" => "Show a match for 3 seconds. Recharges in 15 seconds.", "picnic-wins" => "Win two hands", "picnic-clears" => "Clear 24 board cards", "picnic-gems" => "Earn 80 coins in Gem Garden", "journal" => "Journal: daily picnic, favorites and star hunt", "importDeal" or "shareDeal" => "Share or open a reproducible deal code", "favorite" => "Add or remove this level from favorites", "remix" => "Deal fresh cards at this level. Current hand is replaced.", _ => name.StartsWith("power-") ? session.Powerups.Find(name.Substring(6))?.Description ?? "" : "" };
         if (description.Length > 0) { b.AccessibleName = description; iconTips.SetToolTip(b, description); }
         b.Advance(effects.Time, profile.ReducedMotion);
         b.Click += (_, _) => action(); Controls.Add(b); return b;
@@ -103,6 +103,8 @@ public sealed partial class GameWindow : Form
         if (hand != null && !hand.Won) Button("resume", "Resume saved hand", 88, 626, 345, 48, () => Navigate("play"), Color.FromArgb(195, 225, 196));
         Button("how", "How to play", 88, 695, 160, 42, () => ShowOverlay("help"));
         Button("daily", session.DailyClaimed ? "Gift collected ✓" : $"Daily gift  +{session.Economy.DailyGift}", 265, 695, 168, 42, ClaimDaily, artwork.Gold, !session.DailyClaimed);
+        Button("journal", "\U0001f4d6", 865, 571, 130, 47, () => ShowOverlay("journal"));
+        Button("importDeal", "\U0001f517", 1008, 571, 130, 47, ImportDeal);
         if (session.GardenGifts > 0) Button("gardenGift", $"Collect garden gift · +{session.Economy.GardenGift}", 810, 651, 325, 50, ClaimGarden, artwork.Gold);
     }
     void ClaimDaily()
@@ -185,13 +187,16 @@ public sealed partial class GameWindow : Form
             b.TabStop = face; b.Enabled = face;
             b.BringToFront();
         }
+        if (!endless) Button("favorite", profile.Favorites.Contains(level) ? "\u2605" : "\u2606", 477, 117, 46, 42, () => { session.ToggleFavorite(level); Save(); Build(); }, artwork.Gold);
         var draw = Button("draw", "", 426, 540, 86, 119, Draw);
         draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
         var waste = Button("waste", "", 561, 540, 86, 119, () => Tell("Play one rank higher or lower. Aces connect Kings and Twos."));
         waste.CardValue = hand.Waste; waste.TabStop = false; waste.AccessibleName = "Waste pile " + Art.Rank(hand.Waste.Rank);
         Button("hint", "Hint · free", 742, 551, 156, 47, Hint);
         Button("retry", "Replay deal", 742, 609, 156, 43, () => { confirmAction = () => { session.Replay(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("retry"); });
-        Button("remix", "\U0001f3b2", 140, 609, 230, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); });
+        Button("remix", "\U0001f3b2", 140, 609, 110, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); });
+        Button("shareDeal", "\U0001f517", 260, 609, 110, 43, () => ShowOverlay("share"));
+        UpdatePeekControls();
         Button("undo", hand.FreeUndos > 0 ? $"↶  Undo · {hand.FreeUndos} free" : $"↶  Undo · {session.Economy.UndoCost} coins", 158, 698, 210, 57, Undo, enabled: hand.CanUndo);
         var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
         for (int i = 0; i < helpers.Length; i++)
@@ -362,7 +367,17 @@ public sealed partial class GameWindow : Form
             Button("nextHand", !endless && level == campaign.LevelCount ? "Enter the endless meadow  →" : "Next adventure  →", 439, 512, 402, 61, () => NewHand(endless ? profile.EndlessDeal : Math.Min(level + 1, campaign.LevelCount), endless || level == campaign.LevelCount), artwork.Gold);
             Button("winHome", "Back to the meadow", 439, 590, 402, 48, () => Navigate("home"));
         }
-        else if (overlay == "help" || overlay == "mechanics") Button("gotit", "Let’s play", 450, 602, 380, 56, () => { overlay = ""; Build(); }, artwork.Gold);
+        else if (overlay == "help" || overlay == "mechanics")
+        {
+            Button("gotit", "\u25b6", 450, 602, 380, 56, () => { overlay = ""; Build(); }, artwork.Gold);
+            if(overlay=="mechanics")
+            {
+                Button("mechanicsPrev", "\u2039",280,604,70,48,()=>{mechanicsPage=0;Build();},enabled:mechanicsPage>0);
+                Button("mechanicsNext", "\u203a",930,604,70,48,()=>{mechanicsPage=1;Build();},enabled:mechanicsPage==0);
+            }
+        }
+        else if (overlay == "journal") BuildJournal();
+        else if (overlay == "share") Button("copyDeal", "\U0001f4cb", 440, 525, 400, 55, CopyDeal, artwork.Gold, session.ShareCode != null);
         else if (overlay == "settings")
         {
             Button("sound", "Sound  " + (profile.Sound ? "ON" : "OFF"), 375, 315, 530, 55, () => { profile.Sound = !profile.Sound; Save(); Build(); });
@@ -457,7 +472,7 @@ public sealed partial class GameWindow : Form
         if ((hand as IAdventureHand)?.Failed == true)
             Art.Text(g, "\U0001f4a3 \U0001f4a5     \u21b6 / \u21bb", 160, 508, 13, Color.LightGoldenrodYellow, true, 960, true);
         else if (liveBombs.Length > 0)
-            Art.Text(g, string.Join("   ", liveBombs), 160, 508, 12, artwork.Cream, true, 960, true);
+            Art.Text(g, string.Join("   ", liveBombs) + (hand.Deal.Cards.Any(c=>c.Kind==CardKind.Gate) && hand is ITemporaryHand phaseHand ? phaseHand.Effects.Turns%2==0 ? "   \u2600" : "   \u263e" : ""), 160, 508, 12, artwork.Cream, true, 960, true);
         Art.Box(g, new(113, 193, 1055, 327), Color.FromArgb(50, 12, 65, 47), 26);
         for (int i = 0; i < hand.Removed.Count; i++)
         {
@@ -522,8 +537,14 @@ public sealed partial class GameWindow : Form
             string[] entries = {
                 "\u2744  Clear others to thaw", "\U0001f511 \U0001f512  Keys open locks", "\U0001f4a3  Clear before fuse = 0",
                 "\u2660+3  Bonus stock", "\u2191+2 / \u2193+2  Rank direction", "\u25c6  Tap the displayed hit count",
-                "\U0001f33f2  Build the displayed clear streak", "\U0001f526  Show matches briefly", "\U0001f340+1  Stock per clear, briefly",
+                "\U0001f33f  Build the displayed clear streak", "\U0001f526  Show matches briefly", "\U0001f340+1  Stock per clear, briefly",
                 "\U0001f525  Ignore ice, briefly", "\U0001f6e1  Pause fuses, briefly", "\U0001f381  Bonus coins + consumable"
+            };
+            if(mechanicsPage>0) entries=new[] {
+                "\u2600 / \u263e  Gates alternate after moves", "\u2665 / \u2660  Seal matches pile color",
+                "\U0001f5dd  Ignore locks: 6s", "\u2702  Ignore vines: 8s", "\u25d0  Ignore phase gates: 6s", "\U0001f441  Peek at 3 stock cards: 6s",
+                "\U0001f381  Glow / harvest / shelter", "\U0001f4d6  Picnic / favorites / star hunt",
+                "\U0001f517  Reproduce a shared deal", "\u2605  Bookmark a campaign level"
             };
             for (int i = 0; i < entries.Length; i++)
                 Art.Text(g, entries[i], 280 + i % 2 * 360, 251 + i / 2 * 43, 18, artwork.Teal, true);
@@ -534,6 +555,13 @@ public sealed partial class GameWindow : Form
             Art.Text(g, "One up. One down. All yours.", 280, 175, 34, artwork.Ink, true, 720, true);
             Art.Text(g, "1. Play any exposed card one higher or lower than the waste pile.\n     Suits do not matter. Aces connect to both Kings and Twos.\n\n2. Clear the cards covering a card to turn it over. Clear the whole\n     board to win. Draw from the stock when you need a new rank.\n\n3. Long streaks earn stars. Wins pay coins and grow your garden.\n     Spend coins on helpers, or earn more in the free Gem Garden.\n\nKeys: Tab + Enter to play · D draw · U undo · W wild\nH hint · Esc close / home · F11 maximize. No timers or entry fees.", 292, 247, 19, artwork.Teal, false, 711);
             Art.Text(g, "3 free undos per hand. Helpers clear undo history. Replay is free.", 292, 563, 16, artwork.Teal);
+        }
+        else if (overlay == "journal") PaintJournal(g);
+        else if (overlay == "share")
+        {
+            Art.Text(g, "\U0001f517", 280, 180, 42, artwork.Ink, true, 720, true);
+            Art.Text(g, session.ShareCode ?? "Start a new hand to share its deal.", 260, 310, 22, artwork.Teal, true, 760, true);
+            Art.Text(g, "Same cards, same level. Open this code from the home screen.\nCampaign codes respect unlocked levels. Codes require version 1.6.", 280, 410, 18, artwork.Teal, false, 720, true);
         }
         else if (overlay == "settings")
         {
@@ -606,7 +634,7 @@ public sealed partial class GameWindow : Form
             Shot("13-chapter-celebration", 1.2f);
             overlay = ""; profile.Unlocked = Math.Max(profile.Unlocked, 900); NewHand(900, false);
             if (!hand!.Deal.Cards.Any(c => c.Kind == CardKind.Bomb) || !hand.Deal.Cards.Any(c => c.Kind == CardKind.Ice)) throw new Exception("Special cards missing");
-            Shot("14-special-cards"); Click("mechanics"); Shot("15-special-guide"); Click("gotit");
+            Shot("14-special-cards"); Click("mechanics"); Shot("15-special-guide"); Click("mechanicsNext"); Shot("24-expanded-guide"); Click("gotit");
             foreach (var step in hand.Deal.Solution) Click(step.Index < 0 ? "draw" : "card" + step.Index);
             if (!hand.Won || ((IAdventureHand)hand).Failed) throw new Exception("Special-card UI witness failed");
             Shot("16-special-victory");
@@ -632,8 +660,22 @@ public sealed partial class GameWindow : Form
             AdvancePresentation(11);
             if (((ITemporaryHand)hand!).Effects.LuckySeconds != 0) throw new Exception("Temporary boost did not expire");
             powerupPage=0; Build();
+            overlay=""; profile.Unlocked=2400; NewHand(2400,false);
+            if(!hand!.Deal.Cards.Any(c=>c.Kind==CardKind.Gate) || !hand.Deal.Cards.Any(c=>c.Kind==CardKind.ColorSeal)) throw new Exception("Expansion cards missing");
+            session.Inventory.Add("peek",1); powerupPage=3; Build(); Click("power-peek"); Shot("21-stock-preview",.2f);
+            if(Controls.Find("mechanics",false).Single().Visible) throw new Exception("Preview controls not hidden");
+            AdvancePresentation(7);
+            if(((ITemporaryHand)hand).Effects.PeekSeconds>0 || !Controls.Find("mechanics",false).Single().Visible) throw new Exception("Stock preview expiry failed");
+            Click("shareDeal"); Shot("22-share-code"); string code=session.ShareCode ?? throw new Exception("Shared code missing"); Click("closeOverlay");
+            var sharedCards=hand.Deal.Cards.ToArray();
+            if(!session.StartSharedDeal(code) || !hand!.Deal.Cards.SequenceEqual(sharedCards)) throw new Exception("Shared deal reproduction failed");
+            Build(); Click("favorite"); if(!profile.Favorites.Contains(2400)) throw new Exception("Favorite failed");
+            Click("home"); session.Picnic.Win();session.Picnic.Win();session.Picnic.Clear(24);session.Picnic.Gems(80);
+            Click("journal"); Shot("23-journal"); int picnicWallet=profile.Coins; Click("picnic-wins");
+            if(profile.Coins!=picnicWallet+40) throw new Exception("Picnic claim UI failed");
+            Click("favorite-level2400"); if(screen!="map") throw new Exception("Favorite navigation failed");
             SaveFormationAtlas(Path.Combine(outputDirectory, "screenshots", "17-formations.png"));
-            File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), "PASS: special cards, ice, keys, locks, bombs, bonus stock, new formations, guide,  home, 24,000 chapters, 480,000 levels, 5-8 rows, temporary effects, solitaire win, rewards, shop, animated gem cascades, card flight, effects, reduced motion, chapter gift, resize.");
+            File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), "PASS: journal, picnic, favorites, share codes, stock preview, gates, color seals, special cards, ice, keys, locks, bombs, bonus stock, new formations, guide,  home, 24,000 chapters, 480,000 levels, 5-8 rows, temporary effects, solitaire win, rewards, shop, animated gem cascades, card flight, effects, reduced motion, chapter gift, resize.");
         }
         catch (Exception ex) { File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), ex.ToString()); Environment.ExitCode = 1; }
         finally { Close(); }

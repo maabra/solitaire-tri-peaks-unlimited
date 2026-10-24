@@ -71,7 +71,7 @@ internal sealed class GameButton : Button
         }
         if (CardValue != null && Face && CardBadge.Length > 0)
         {
-            var tint = CardValue.Kind == CardKind.Ice ? Color.SteelBlue : CardValue.Kind == CardKind.Bomb ? Color.Firebrick : artwork.Teal;
+            var tint = CardValue.Kind == CardKind.Ice ? Color.SteelBlue : CardValue.Kind == CardKind.Bomb || CardValue.Kind==CardKind.ColorSeal && CardValue.Strength==1 ? Color.Firebrick : artwork.Teal;
             Art.Box(g, new(r.X + 3, r.Bottom - r.Height * .25f, r.Width - 6, r.Height * .23f), tint, 4);
             Art.Text(g, CardBadge, r.X + 2, r.Bottom - r.Height * .23f, Math.Max(8, r.Width * .125f), Color.White, true, r.Width - 4, true);
         }
