@@ -1,7 +1,10 @@
 namespace MeadowPeaks;
 
-public sealed class GemGame : ICoinGame
+public sealed class GemGame : ICoinGame, IAnimatedCoinGame
 {
+    readonly List<GemAnimationFrame> frames = new();
+    public IReadOnlyList<GemAnimationFrame> LastAnimation => frames.AsReadOnly();
+    void Frame(GemFrameKind kind, HashSet<int>? matched, int cascade, int first = -1, int second = -1) => frames.Add(new(kind, Array.AsReadOnly((int[])cells.Clone()), Array.AsReadOnly(matched?.ToArray() ?? Array.Empty<int>()), cascade, first, second));
     readonly int[] cells = new int[64];
     public IReadOnlyList<int> Cells => Array.AsReadOnly(cells);
     public int Moves { get; private set; } = 20;
@@ -44,12 +47,15 @@ public sealed class GemGame : ICoinGame
     }
     public bool Play(int a, int b)
     {
+        frames.Clear();
         if (Moves == 0 || !Neighbors(a, b)) return false;
         Swap(a, b); var matches = Matches();
         if (matches.Count == 0) { Swap(a, b); return false; }
+        Frame(GemFrameKind.Swap, null, 1, a, b);
         Moves--; LastGain = 0; int chain = 1;
         while (matches.Count > 0)
         {
+            Frame(GemFrameKind.Match, matches, chain);
             LastGain += matches.Count * 2 * chain;
             for (int col = 0; col < 8; col++)
             {
@@ -57,6 +63,7 @@ public sealed class GemGame : ICoinGame
                 int missing = 8 - kept.Count;
                 for (int row = 0; row < 8; row++) cells[row * 8 + col] = row < missing ? rng.Next(6) : kept[row - missing];
             }
+            Frame(GemFrameKind.Drop, matches, chain);
             chain++; matches = Matches();
         }
         Earned += LastGain;

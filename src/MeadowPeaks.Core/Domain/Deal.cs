@@ -1,10 +1,16 @@
 namespace MeadowPeaks;
 
-public record Card(int Rank, int Suit);
+public enum CardKind { Normal, Ice, Key, Lock, Bomb, Gift, Up, Down }
+public record Card(int Rank, int Suit)
+{
+    public CardKind Kind { get; init; }
+    public int Strength { get; init; }
+}
 public record Slot(float X, int Row);
 public record Step(int Index); // -1 draws from stock
 public sealed class Deal
 {
+    public string Formation { get; init; } = "Classic peaks";
     public IReadOnlyList<Slot> Layout { get; init; } = Array.Empty<Slot>();
     public IReadOnlyList<Card> Cards { get; init; } = Array.Empty<Card>();
     public IReadOnlyList<Card> Stock { get; init; } = Array.Empty<Card>();

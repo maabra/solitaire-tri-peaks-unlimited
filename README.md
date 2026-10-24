@@ -1,7 +1,7 @@
 # Meadow Peaks — Solitaire Unlimited
 
 A free, offline Windows solitaire game with an original illustrated countryside,
-large cards, **2,000 adventure levels**, an endless mode, and a match-three coin garden.
+large cards, **4,000 adventure levels**, an endless mode, and a match-three coin garden.
 No accounts, ads, entry fees, energy systems, or real-money purchases.
 
 ![Meadow Peaks](docs/home.png)
@@ -23,14 +23,20 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 
 ## What's included
 
-- 2,000 distinct, reproducible adventure deals across 100 map chapters and ten named regions.
-- Three overlapping board layouts, with a complete 52-card deck per deal. Early levels use smaller boards.
-- Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not 2,000 hand-authored puzzles.
+- 4,000 distinct, reproducible adventure deals across 200 map chapters and 20 themed worlds.
+- 4,096 distinct generated adventure formations plus classic opening boards, with a complete 52-card base deck per deal. The first four levels introduce the rules; every later campaign level has its own formation. Mirrored and horizontally shifted duplicates are rejected.
+- Ice cards that thaw through clears, keys and locks, move-count bombs, +3 stock gifts, and upward/downward +2 stock rewards. Mechanics arrive gradually at levels 5, 10, 20, 35 and 50.
+- Colored special cards, live fuse/ice badges, a special-card guide and free replay. Undo restores mechanical state as well as cards.
+- Every campaign deal has a verified legal winning path without powerups. These are seeded generated deals, not 4,000 hand-authored puzzles.
 - Endless Meadow: new seeded hands, unlimited retries, coins, and a growing garden.
 - Wild cards, five extra stock cards, targeted removal, free hints and three free undos per hand.
 - A shared coin wallet, helper shop, daily gifts and garden milestones.
 - Gem Garden: an 8×8 match-three game with swaps, cascades, hints, automatic dead-board recovery, and immediate coin payouts. Unlimited free 20-move rounds.
 - Automatic local saves, active solitaire hand recovery and a previous-save backup.
+- 20 world palettes with rainbows, snowy valleys, moonlit lakes, blossoms and a cheerful bird guide, Pip.
+- Flying cards, reveals, sparkles, coin trails, combo cheers and confetti celebrations.
+- Animated gem swaps, match flashes and cascades, plus original musical rewards when sound is enabled.
+- A one-time chapter gift of 150 coins and a Wild for every 20 completed levels.
 - Resizable native Windows UI, keyboard focus, accessible control names, distinct gem shapes/suit colors, optional sound and reduced motion.
 
 See [the player guide](docs/PLAYING.txt) for rules, costs, rewards, controls and saves.
@@ -38,7 +44,7 @@ See [the player guide](docs/PLAYING.txt) for rules, costs, rewards, controls and
 ## Replaceable components
 
 The game core is a separate, UI-independent class library. Deals, layouts,
-solitaire rules, helpers, rewards, coin games, saves, artwork and sound have
+solitaire rules, card mechanics, helpers, rewards, coin games, saves, artwork and sound have
 replaceable interfaces selected in `src/Composition.cs` and `src/Program.cs`.
 Purchases and payouts live in `GameSession`, outside the Windows view. New saves
 retain the original board so a generator replacement preserves active hands.
@@ -47,7 +53,10 @@ See [the architecture and extension guide](docs/ARCHITECTURE.md) for the compone
 map, replacement examples, compatibility contracts and legacy-save behavior.
 
 ![Solitaire](docs/solitaire.png)
+![Formation examples](docs/formations.png)
+![Special cards](docs/special-cards.png)
 ![Gem Garden](docs/gems.png)
+![Chapter celebration](docs/celebration.png)
 
 ## Build and test
 
@@ -90,7 +99,7 @@ policy: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1`
 
 ## Validation
 
-The dependency-free test runner checks all 2,000 level solutions, deck uniqueness,
+The dependency-free test runner checks all 4,000 level solutions, deck uniqueness,
 deal reproducibility, covered-card rules, Ace/King wrap, undo, helpers, 100 complete
 match-three rounds, wallet spending, in-progress saves and corrupt-save recovery.
 It also installs alternative components and exercises the complete purchase,

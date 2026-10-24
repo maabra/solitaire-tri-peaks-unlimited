@@ -6,6 +6,8 @@ public sealed class StandardEconomyPolicy : IEconomyPolicy
     public int DailyGift => 75;
     public int GardenGift => 80;
     public int GardenInterval => 5;
+    public int ChapterGift => 150;
+    public int ChapterWilds => 1;
 
     public WinReward Reward(WinContext context)
     {

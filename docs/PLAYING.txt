@@ -8,9 +8,19 @@ Windows 10/11, x64. No installation, internet, account, or runtime download need
 Keep the executable together with its bundled files and language folders.
 
 ADVENTURE
-Continue adventure opens a map of 2,000 levels. Pick the golden next level.
+Continue adventure opens a map of 4,000 levels. Pick the golden next level.
 You can replay any completed level. Previous/Next and Go to level browse the map.
-The levels are reproducible seeded deals with three different board layouts.
+The levels are reproducible seeded deals with 4,096 distinct generated formations and classic opening boards.
+There are 200 chapters across 20 themed worlds. Completing all 20 levels in a
+chapter adds a one-time gift of 150 coins and one Wild. Old saves continue into
+the expanded campaign, including players who completed the original 2,000 levels.
+
+Pip, the meadow's bird guide, cheers you along the path. Cards fly to the waste,
+newly revealed cards turn into view, and long runs sparkle. Coins trail into the
+wallet and victories earn confetti and popping stars. Gem Garden animates its
+swaps, matches and falling cascades. Input waits briefly while a gem swap resolves.
+Enable sound for original musical chimes. Reduced motion removes these effects,
+ambient butterflies/fireflies, card reveals and the animated victory counter.
 
 Play any uncovered card one rank above or below the waste card. Suits do not
 matter. Ace wraps around to King. Clear covering cards to expose new cards.
@@ -63,3 +73,27 @@ Replay restarts the same deal; spent coins and helpers stay spent.
 This is an original offline game. It does not contain the reference games,
 their characters, music, artwork, or assets. Game source/artwork: MIT license.
 Bundled Microsoft runtime files retain their own licenses and notices.
+
+SPECIAL CARDS (introduced gradually)
+Level 5: Gift cards append 3 bonus stock cards when played by rank.
+Level 10: Ice cards cannot be played until their displayed number reaches zero.
+Each board clear melts one layer; draws do not. Thawed cards still need a matching rank.
+Level 20: Clear the key card to open every lock. Locks still need a matching rank.
+Level 35: Bomb fuses tick on every successful draw or board clear, even while covered.
+Clear each bomb before zero. A burst stops the hand; undo can rescue it, or replay
+for free. There is no real-time timer. The fuse summary includes covered bombs.
+Level 50: UP +2 and DOWN +2 cards append two stock cards when played in that
+rank direction. King to Ace counts up; Ace to King counts down. Wilds give no
+up/down reward. All bonus cards go behind existing stock.
+Remove bypasses ice and locks and defuses bombs, but does not grant bonus stock.
+Keys, thaw progress, fuses and earned stock are saved and restored together.
+Undo reverses these effects; replay starts them fresh. Helpers clear undo history.
+The Special cards guide on the play screen explains every badge.
+Existing saved boards keep their original rules and formations until completed.
+
+FORMATION VARIETY
+After the four introductory levels, each campaign level has its own formation.
+Formations vary in card count (18-30), clusters, gaps, branches and coverage.
+The catalog rejects mirrored and horizontally shifted duplicates. Endless mode
+also uses the 4,096-pattern catalog. Existing saved hands keep their old layout;
+new hands use the expanded catalog.

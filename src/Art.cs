@@ -26,22 +26,55 @@ internal static class Art
     }
     public static void Landscape(Graphics g, int region)
     {
-        Color sky = (region % 4) switch { 1 => Color.FromArgb(217, 226, 237), 2 => Color.FromArgb(245, 218, 187), 3 => Color.FromArgb(212, 229, 235), _ => Color.FromArgb(215, 236, 218) };
-        using var bg = new LinearGradientBrush(new Point(0, 0), new Point(0, 800), sky, Color.FromArgb(249, 237, 201)); g.FillRectangle(bg, 0, 0, 1280, 800);
-        using var sun = new SolidBrush(Color.FromArgb(100, 255, 252, 218)); g.FillEllipse(sun, 940, 90, 175, 175);
-        using var clouds = new SolidBrush(Color.FromArgb(90, Color.White));
-        for (int i = 0; i < 6; i++) { int x = i * 245 - 50; int y = 110 + i % 3 * 44; g.FillEllipse(clouds, x, y, 150, 30); g.FillEllipse(clouds, x + 42, y - 15, 65, 40); }
-        Hill(g, Color.FromArgb(171, 200, 179), new(0, 410), new(200, 260), new(420, 370), new(650, 235), new(850, 355), new(1050, 255), new(1280, 390));
-        Hill(g, Color.FromArgb(128, 171, 147), new(0, 430), new(250, 490), new(500, 385), new(800, 480), new(1060, 390), new(1280, 460));
-        Hill(g, Color.FromArgb(84, 139, 112), new(0, 620), new(220, 535), new(480, 640), new(750, 545), new(1030, 600), new(1280, 510));
-        Hill(g, Color.FromArgb(52, 107, 86), new(0, 710), new(220, 660), new(520, 730), new(840, 650), new(1090, 720), new(1280, 665));
-        for (int i = 0; i < 18; i++) Tree(g, i * 81 - 30, 530 + (i * 37) % 170, .55f + i % 3 * .25f);
-        // Small original cottage beside the path.
-        Box(g, new(1090, 485, 88, 67), Color.FromArgb(237, 218, 175), 3);
-        using var roof = new SolidBrush(Color.FromArgb(133, 83, 64)); g.FillPolygon(roof, new[] { new Point(1077, 489), new Point(1132, 445), new Point(1190, 489) });
+        var palette = WorldPalette.For(region);
+        using var bg = new LinearGradientBrush(new Point(0, 0), new Point(0, 800), palette.Sky, palette.Horizon); g.FillRectangle(bg, 0, 0, 1280, 800);
+        using var sun = new SolidBrush(Color.FromArgb(160, 255, 249, 212)); g.FillEllipse(sun, 970, 100, palette.Night ? 90 : 150, palette.Night ? 90 : 150);
+        if (palette.Night)
+        {
+            for (int i = 0; i < 50; i++) FestiveArt.Star(g, 100 + i * 137 % 1130, 93 + i * 79 % 270, 1.5f + i % 3, Color.FromArgb(160, 255, 246, 200));
+            if (region == 18)
+            {
+                using var aurora = new Pen(Color.FromArgb(50, 143, 242, 206), 25); g.DrawBezier(aurora, new(90, 190), new(420, 30), new(700, 390), new(1140, 170));
+            }
+        }
+        else
+        {
+            using var clouds = new SolidBrush(Color.FromArgb(90, Color.White));
+            for (int i = 0; i < 6; i++) { int x = i * 245 - 50, y = 110 + i % 3 * 44; g.FillEllipse(clouds, x, y, 150, 30); g.FillEllipse(clouds, x + 42, y - 15, 65, 40); }
+        }
+        if (region is 0 or 11 or 15 or 19)
+        {
+            Color[] rainbow = { Color.FromArgb(244, 161, 157), Color.FromArgb(252, 199, 132), Color.FromArgb(251, 229, 151), Color.FromArgb(169, 215, 173), Color.FromArgb(160, 198, 224), Color.FromArgb(196, 168, 219) };
+            for (int i = 0; i < rainbow.Length; i++) { using var pen = new Pen(Color.FromArgb(115, rainbow[i]), 9); g.DrawArc(pen, 775 + i * 8, 164 + i * 8, 377 - i * 16, 240 - i * 16, 180, 180); }
+        }
+        Hill(g, WorldPalette.Mix(palette.Horizon, palette.Grass, .35f), new(0, 410), new(200, 260), new(420, 370), new(650, 235), new(850, 355), new(1050, 255), new(1280, 390));
+        Hill(g, WorldPalette.Mix(palette.Horizon, palette.Grass, .65f), new(0, 430), new(250, 490), new(500, 385), new(800, 480), new(1060, 390), new(1280, 460));
+        Hill(g, palette.Grass, new(0, 620), new(220, 535), new(480, 640), new(750, 545), new(1030, 600), new(1280, 510));
+        if (palette.Coast || region == 1)
+        {
+            using var water = new SolidBrush(Color.FromArgb(115, 121, 199, 216)); g.FillEllipse(water, -80, 476, 1500, 145);
+            using var ripple = new Pen(Color.FromArgb(110, Color.White), 2);
+            for (int i = 0; i < 12; i++) g.DrawArc(ripple, i * 125 - 30, 520 + i % 3 * 17, 130, 15, 0, 160);
+        }
+        Hill(g, WorldPalette.Mix(palette.Grass, palette.Snow ? Color.White : Color.FromArgb(35, 88, 73), palette.Snow ? .35f : .55f), new(0, 710), new(220, 660), new(520, 730), new(840, 650), new(1090, 720), new(1280, 665));
+        for (int i = 0; i < 18; i++)
+        {
+            float x = i * 81 - 30, y = 530 + (i * 37) % 170, size = .55f + i % 3 * .25f;
+            if (palette.Snow)
+            {
+                using var trunk = new Pen(Color.FromArgb(114, 138, 143), 5); g.DrawLine(trunk, x, y, x, y + 50 * size);
+                using var snow = new SolidBrush(Color.FromArgb(236, 247, 246)); g.FillPolygon(snow, new[] { new PointF(x, y - 48 * size), new PointF(x - 30 * size, y + 22 * size), new PointF(x + 30 * size, y + 22 * size) });
+            }
+            else Tree(g, x, y, size);
+            if (region is 2 or 7 or 10 or 14)
+            {
+                using var fruit = new SolidBrush(palette.Accent); for (int j = 0; j < 5; j++) g.FillEllipse(fruit, x - 21 + j * 9, y - 17 + j % 2 * 15, 10, 10);
+            }
+        }
+        Box(g, new(1090, 485, 88, 67), Color.FromArgb(247, 227, 186), 3);
+        using var roof = new SolidBrush(WorldPalette.Mix(palette.Accent, Color.FromArgb(140, 85, 73), .45f)); g.FillPolygon(roof, new[] { new Point(1077, 489), new Point(1132, 445), new Point(1190, 489) });
         Box(g, new(1123, 514, 20, 38), Color.FromArgb(73, 108, 92), 8); Box(g, new(1101, 503, 14, 17), Gold, 2); Box(g, new(1151, 503, 14, 17), Gold, 2);
-        using var grass = new SolidBrush(Color.FromArgb(62, 121, 90));
-        for (int i = 0; i < 60; i++) { float x = (i * 193) % 1280, y = 715 + i % 5 * 18; g.FillEllipse(grass, x, y, 5, 18); }
+        for (int i = 0; i < 38; i++) FestiveArt.Flower(g, 22 + i * 181 % 1250, 719 + i % 4 * 17, 4 + i % 4, i % 3 == 0 ? Color.FromArgb(249, 237, 212) : palette.Accent);
     }
     public static void Tree(Graphics g, float x, float y, float scale)
     {
@@ -55,7 +88,14 @@ internal static class Art
     public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);
-        Box(g, r, face ? Cream : Color.FromArgb(44, 110, 97), 9);
+        var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), _ => Cream };
+        Box(g, r, face ? paper : Color.FromArgb(44, 110, 97), 9);
+        if (face && card.Kind == CardKind.Ice)
+        {
+            using var frost = new Pen(Color.FromArgb(110, 110, 180, 230), 2);
+            g.DrawLine(frost, r.X + r.Width * .7f, r.Y + 4, r.X + r.Width * .45f, r.Y + r.Height * .7f);
+            g.DrawLine(frost, r.X + r.Width * .53f, r.Y + r.Height * .4f, r.Right - 3, r.Y + r.Height * .5f);
+        }
         using var outline = new Pen(hint ? Gold : face ? Color.FromArgb(220, 211, 184) : Color.FromArgb(138, 183, 156), hint ? 3 : 1);
         using var path = Round(new(r.X + 2, r.Y + 2, r.Width - 4, r.Height - 4), 8); g.DrawPath(outline, path);
         if (!face)

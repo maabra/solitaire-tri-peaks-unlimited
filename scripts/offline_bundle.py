@@ -40,7 +40,7 @@ def bundle(source: Path, output: Path, dotnet: Path):
     appdeps = json.loads((source / "MeadowPeaks.deps.json").read_text("utf-8-sig"))
     app_target = appdeps["targets"][appdeps["runtimeTarget"]["name"]]
     merged = dict(app_target)
-    app = merged["MeadowPeaks/1.0.0"]
+    app = merged[next(key for key in merged if key.split("/")[0] == "MeadowPeaks")]
     app.setdefault("dependencies", {})
     for name, version in chosen.items():
         runtime = dotnet / "shared" / name / version

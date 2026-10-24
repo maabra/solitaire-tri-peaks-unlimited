@@ -20,4 +20,5 @@ public sealed class Progress
     public int GardenClaimed { get; set; }
     public SavedRun? Active { get; set; }
     public Dictionary<string, int> Items { get; set; } = new();
+    public HashSet<int> ChapterGifts { get; set; } = new();
 }

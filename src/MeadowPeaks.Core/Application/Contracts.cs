@@ -10,7 +10,7 @@ public interface IGameClock { DateTime Today { get; } }
 public interface IRandomSource { int NextSeed(); }
 
 public record WinContext(int BestStreak, int StockRemaining, bool Replay);
-public record WinReward(int Stars, int Coins);
+public record WinReward(int Stars, int Coins, int ChapterBonus = 0, string? ChapterName = null);
 
 public interface IEconomyPolicy
 {
@@ -18,6 +18,8 @@ public interface IEconomyPolicy
     int DailyGift { get; }
     int GardenGift { get; }
     int GardenInterval { get; }
+    int ChapterGift => 150;
+    int ChapterWilds => 1;
     WinReward Reward(WinContext context);
 }
 

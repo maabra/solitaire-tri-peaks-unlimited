@@ -5,15 +5,17 @@ public sealed class SolitaireFactory : ISolitaireFactory
     readonly IDealProvider deals;
     readonly ISolitaireRules rules;
     readonly IDealProvider legacyDeals;
+    readonly ICardMechanics mechanics;
 
-    public SolitaireFactory(IDealProvider deals, ISolitaireRules rules, IDealProvider legacyDeals)
+    public SolitaireFactory(IDealProvider deals, ISolitaireRules rules, IDealProvider legacyDeals, ICardMechanics? mechanics = null)
     {
+        this.mechanics = mechanics ?? new CardMechanics();
         this.deals = deals;
         this.rules = rules;
         this.legacyDeals = legacyDeals;
     }
 
-    public ISolitaireHand Create(int seed, int level) => new Hand(deals.Generate(seed, level), rules);
+    public ISolitaireHand Create(int seed, int level) => new Hand(deals.Generate(seed, level), rules, mechanics);
 
     public ISolitaireHand? Restore(SavedRun run)
     {
@@ -21,10 +23,10 @@ public sealed class SolitaireFactory : ISolitaireFactory
         // even after the provider for new deals has been replaced.
         var deal = run.DealtBoard ?? legacyDeals.Generate(run.Seed, run.Level);
         if (!ValidBoard(deal)) return null;
-        return Hand.Restore(run, deal, rules);
+        return Hand.Restore(run, deal, rules, mechanics);
     }
 
-    static bool ValidBoard(Deal? deal) => deal != null && deal.Layout != null && deal.Cards != null && deal.Stock != null && deal.Layout.Count > 0 && deal.Layout.Count <= 52 && deal.Layout.Count == deal.Cards.Count && deal.Layout.All(s => s != null && float.IsFinite(s.X) && s.Row >= 0 && s.Row <= 20) && deal.Cards.Concat(deal.Stock).Append(deal.Waste).All(c => c != null && c.Rank >= 1 && c.Rank <= 13 && c.Suit >= 0 && c.Suit <= 3);
+    static bool ValidBoard(Deal? deal) => deal != null && deal.Layout != null && deal.Cards != null && deal.Stock != null && deal.Layout.Count > 0 && deal.Layout.Count <= 52 && deal.Layout.Count == deal.Cards.Count && deal.Layout.All(s => s != null && float.IsFinite(s.X) && s.Row >= 0 && s.Row <= 20) && deal.Cards.Concat(deal.Stock).Append(deal.Waste).All(c => c != null && c.Rank >= 1 && c.Rank <= 13 && c.Suit >= 0 && c.Suit <= 3 && Enum.IsDefined(typeof(CardKind), c.Kind) && c.Strength >= 0 && c.Strength <= 200);
 }
 
 public sealed class GemGameFactory : ICoinGameFactory

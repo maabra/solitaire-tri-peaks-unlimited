@@ -93,7 +93,24 @@ internal static class ComponentSwapTests
             check(migrated.Hand!.Deal.Cards.SequenceEqual(oldHand.Deal.Cards) && migrated.Hand.Removed.All(x => !x), "Legacy deal can still be replayed after a provider swap");
         }
         finally { Directory.Delete(directory, true); }
-        Console.WriteLine("Component replacement tests passed: providers, layouts, rules, rewards, helpers, coin games, stores, clock, randomness, and legacy saves.");
+        var completed = new Progress { Unlocked = 20 };
+        for (int n = 1; n < 20; n++) completed.Stars[n] = 1;
+        var chapterStore = new MemoryProfileStore(completed);
+        var chapterSession = Open(chapterStore, replacementHands);
+        chapterSession.StartHand(20, false); chapterSession.PlayCard(0);
+        var chapterWin = chapterSession.CompleteHand();
+        check(chapterWin?.ChapterBonus == 150 && chapterSession.Wallet.Balance == 467 && chapterSession.Inventory.Count("wild") == 3, "Completing a chapter awards coins and one Wild");
+        chapterSession.Save();
+        var chapterReload = Open(chapterStore, replacementHands);
+        chapterReload.Replay(); chapterReload.PlayCard(0);
+        check(chapterReload.CompleteHand()?.ChapterBonus == 0 && chapterReload.Inventory.Count("wild") == 3, "Chapter gift persists and cannot be claimed twice");
+        var lateSession = Open(new MemoryProfileStore(new Progress { Unlocked = 4000 }), replacementHands);
+        lateSession.StartHand(4000, false); lateSession.Save();
+        check(Open(new MemoryProfileStore(lateSession.Profile), replacementHands).Hand != null, "Active hand beyond the original campaign restores");
+        var finishedOldCampaign = new Progress { Unlocked = 2000 };
+        finishedOldCampaign.Stars[2000] = 3;
+        check(Open(new MemoryProfileStore(finishedOldCampaign), replacementHands).Profile.Unlocked == 2001, "A completed old campaign unlocks its new continuation");
+        Console.WriteLine("Component replacement, expanded campaign, chapter gifts and legacy save tests passed.");
     }
 
     sealed class TinyDeals : IDealProvider

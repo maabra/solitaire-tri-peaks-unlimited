@@ -11,6 +11,7 @@ public sealed class GameSession
     readonly IRandomSource random;
     public IEconomyPolicy Economy { get; }
     public PowerupCatalog Powerups { get; }
+    public ICampaignCatalog Campaign { get; }
     public Progress Profile { get; }
     public Wallet Wallet { get; }
     public PowerupInventory Inventory { get; }
@@ -25,9 +26,9 @@ public sealed class GameSession
 
     public GameSession(ISolitaireFactory solitaire, ICoinGameFactory coinGames,
         IProfileStore store, IEconomyPolicy economy, PowerupCatalog powerups,
-        IGameClock clock, IRandomSource random)
+        IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null)
     {
-        if (economy.GardenInterval <= 0 || economy.UndoCost < 0 || economy.DailyGift < 0 || economy.GardenGift < 0)
+        if (economy.GardenInterval <= 0 || economy.UndoCost < 0 || economy.DailyGift < 0 || economy.GardenGift < 0 || economy.ChapterGift < 0 || economy.ChapterWilds < 0)
             throw new ArgumentException("Invalid economy policy.", nameof(economy));
         this.solitaire = solitaire;
         this.coinGames = coinGames;
@@ -36,7 +37,10 @@ public sealed class GameSession
         this.random = random;
         Economy = economy;
         Powerups = powerups;
+        Campaign = campaign ?? new MeadowCampaign();
         Profile = store.Load(out var warning);
+        // A profile that finished the old campaign can continue into new chapters.
+        while (Profile.Unlocked < Campaign.LevelCount && Profile.Stars.ContainsKey(Profile.Unlocked)) Profile.Unlocked++;
         LoadWarning = warning;
         Wallet = new(Profile);
         Inventory = new(Profile);
@@ -56,7 +60,7 @@ public sealed class GameSession
 
     public void StartHand(int level, bool endless)
     {
-        if (level < 1 || (!endless && (level > 2000 || level > Profile.Unlocked)))
+        if (level < 1 || (!endless && (level > Campaign.LevelCount || level > Profile.Unlocked)))
             throw new ArgumentOutOfRangeException(nameof(level));
         int seed = endless ? (int)((170003L + level * 7919L) % int.MaxValue) : 104729 + level * 997;
         var next = solitaire.Create(seed, level); // Build successfully before replacing an active hand.
@@ -72,7 +76,7 @@ public sealed class GameSession
         if (Hand == null) return;
         // Replay the stored board, not whichever provider happens to be installed now.
         var run = Hand.Capture(Seed, Level, Endless);
-        var fresh = run with { Removed = new bool[Hand.Removed.Count], Stock = Hand.Deal.Stock.ToList(), Waste = Hand.Deal.Waste, Score = 0, Streak = 0, BestStreak = 0, FreeUndos = 3, Paid = false };
+        var fresh = run with { Removed = new bool[Hand.Removed.Count], Stock = Hand.Deal.Stock.ToList(), Waste = Hand.Deal.Waste, Score = 0, Streak = 0, BestStreak = 0, FreeUndos = 3, Paid = false, Mechanics = null };
         Hand = solitaire.Restore(fresh) ?? throw new InvalidOperationException("Unable to replay this deal.");
     }
 
@@ -113,6 +117,9 @@ public sealed class GameSession
         if (Hand == null || !Hand.Won || Hand.Paid) return null;
         var result = Economy.Reward(new(Hand.BestStreak, Hand.Stock.Count, !Endless && Profile.Stars.ContainsKey(Level)));
         if (result.Coins < 0 || result.Stars < 1 || result.Stars > 3) throw new InvalidOperationException("Invalid win reward.");
+        Chapter chapter = Campaign.ForLevel(Level);
+        bool chapterComplete = !Endless && !Profile.ChapterGifts.Contains(chapter.Number) && Enumerable.Range(chapter.FirstLevel, chapter.LastLevel - chapter.FirstLevel + 1).All(n => n == Level || Profile.Stars.ContainsKey(n));
+        if (chapterComplete) result = result with { Coins = checked(result.Coins + Economy.ChapterGift), ChapterBonus = Economy.ChapterGift, ChapterName = chapter.World + " · " + chapter.Name };
         Wallet.Credit(result.Coins);
         Hand.Paid = true;
         Profile.Garden++;
@@ -121,8 +128,9 @@ public sealed class GameSession
         {
             Profile.Stars[Level] = Math.Max(Profile.Stars.GetValueOrDefault(Level), result.Stars);
             Profile.Scores[Level] = Math.Max(Profile.Scores.GetValueOrDefault(Level), Hand.Score);
-            Profile.Unlocked = Math.Min(2000, Math.Max(Profile.Unlocked, Level + 1));
+            Profile.Unlocked = Math.Min(Campaign.LevelCount, Math.Max(Profile.Unlocked, Level + 1));
         }
+        if (chapterComplete) { Profile.ChapterGifts.Add(chapter.Number); Inventory.Add("wild", Economy.ChapterWilds); }
         return result;
     }
 

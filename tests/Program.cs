@@ -14,13 +14,16 @@ Check(rules.Adjacent(0, 8), "Wild adjacency");
 var fingerprints = new HashSet<string>();
 var campaignBaseline = new System.Text.StringBuilder();
 var watch = System.Diagnostics.Stopwatch.StartNew();
-for (int level = 1; level <= 2000; level++)
+for (int level = 1; level <= MeadowCampaign.TotalLevels; level++)
 {
     int seed = 104729 + level * 997;
     var deal = deals.Generate(seed, level);
+    if (level <= 2000)
+    {
     foreach (var c in deal.Cards.Concat(deal.Stock).Append(deal.Waste)) campaignBaseline.Append(c.Rank).Append(':').Append(c.Suit).Append(',');
     foreach (var slot in deal.Layout) campaignBaseline.Append(slot.X.ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(':').Append(slot.Row).Append(',');
     campaignBaseline.Append('\n');
+    }
     Check(deal.Cards.Concat(deal.Stock).Append(deal.Waste).Distinct().Count() == 52, $"Level {level}: unique deck");
     Check(deal.Cards.Count + deal.Stock.Count + 1 == 52, $"Level {level}: complete deck");
     Check(fingerprints.Add(string.Join(",", deal.Cards.Select(c => c.Rank * 4 + c.Suit))), $"Level {level}: distinct deal");
@@ -37,7 +40,7 @@ for (int level = 1; level <= 2000; level++)
 // Recorded from the shipped, pre-refactor generator, including every stock order.
 string baselineHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(campaignBaseline.ToString())));
 Check(baselineHash == "9E4489B3ACA9B8CA930885ED018778E066801FCC75E9B0FDC80E065FEBEF7159", "All campaign boards and stock orders match the original release");
-Console.WriteLine($"All 2,000 campaign deals are distinct, deterministic, use 52 unique cards and have legal winning solutions ({watch.ElapsedMilliseconds}ms).");
+Console.WriteLine($"All 4,000 campaign deals are distinct, deterministic, use 52 unique cards and have legal winning solutions ({watch.ElapsedMilliseconds}ms).");
 for (int n = 1; n <= 100; n++)
 {
     var h = new Hand(deals.Generate(170003 + n * 7919, n), rules);
@@ -74,6 +77,9 @@ for (int seed = 0; seed < 100; seed++)
         var pair = hint!.Value;
         int before = gems.Earned;
         Check(gems.Play(pair.Item1, pair.Item2), "Hint makes valid match");
+        Check(gems.LastAnimation.First().Kind == GemFrameKind.Swap && gems.LastAnimation.Last().Kind == GemFrameKind.Drop, "Visual history starts at swap and ends after a cascade");
+        Check(gems.LastAnimation.Where(f => f.Kind == GemFrameKind.Match).Sum(f => f.Matched.Count * 2 * f.Cascade) == gems.LastGain, "Animated cascade rewards agree with wallet payout");
+        Check(gems.LastAnimation.All(f => f.Cells.Count == 64 && f.Cells.All(c => c >= 0 && c < 6)), "Animation frames contain independent valid boards");
         Check(gems.Earned > before && gems.LastGain >= 6 && gems.Moves == 19 - move, "Gem payouts and move accounting");
         Check(gems.Matches().Count == 0 && gems.Cells.All(c => c >= 0 && c < 6), "Cascades fully resolved");
     }
@@ -101,4 +107,9 @@ try
 }
 finally { Directory.Delete(dir, true); }
 ComponentSwapTests.Run(Check);
+AdventureTests.Run(Check);
+var campaign = new MeadowCampaign();
+Check(campaign.Chapters.Count == 200 && campaign.LevelCount == 4000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 20, "Expanded campaign has 200 chapters and 20 worlds");
+Check(campaign.Chapters.SelectMany(c => Enumerable.Range(c.FirstLevel, c.LastLevel - c.FirstLevel + 1)).SequenceEqual(Enumerable.Range(1, 4000)), "Chapters cover every level once without gaps");
+Check(campaign.ForLevel(4000).Number == 200 && campaign.ForLevel(2001).Theme == 10, "New worlds and final chapter can be reached");
 Console.WriteLine($"PASS: {assertions:N0} assertions. Gameplay, persistence, economy and component replacements verified.");

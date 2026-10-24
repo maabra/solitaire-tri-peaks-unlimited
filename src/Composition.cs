@@ -9,12 +9,13 @@ public static class Composition
         var rules = new TriPeaksRules();
         var deals = new SeededDealProvider(new PeakLayouts(), rules);
         return new GameSession(
-            new SolitaireFactory(deals, rules, deals),
+            new SolitaireFactory(new AdventureDealProvider(new SeededDealProvider(new AdventureLayouts(), rules)), rules, deals),
             new GemGameFactory(),
             store,
             new StandardEconomyPolicy(),
             new PowerupCatalog(new IPowerup[] { new WildPowerup(), new ExtraCardsPowerup(), new RemovePowerup() }),
             new LocalGameClock(),
-            new RandomSource());
+            new RandomSource(),
+            new MeadowCampaign());
     }
 }
