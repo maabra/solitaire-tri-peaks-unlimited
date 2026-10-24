@@ -3,6 +3,7 @@ namespace MeadowPeaks;
 public enum CardKind { Normal, Ice, Key, Lock, Bomb, Gift, Up, Down, Stone, Vine, Lantern, Lucky, Shield, Gate, ColorSeal }
 public record Card(int Rank, int Suit)
 {
+    public bool TemporaryStock { get; init; }
     public CardKind Kind { get; init; }
     public int Strength { get; init; }
 }

@@ -42,7 +42,7 @@ public sealed partial class GameWindow
             "keypass"=>"Needs a lock / may be active", "prune"=>"Needs vines / may be active", "phase"=>"Needs a gate / may be active", "peek"=>"Needs stock / may be active", _=>"Not available right now" };
         if(session.Inventory.Count(helper.Id)==0) return $"Buy in shop - {helper.Price} coins";
         return helper.Id switch {
-            "wild"=>"Any rank once - 12s", "extra"=>"Add five stock cards", "remove"=>"Choose an exposed card",
+            "wild"=>"Any rank once - 12s", "extra"=>"Five rescue cards - 10s", "remove"=>"Choose an exposed card",
             "lucky"=>"+1 stock per clear - 10s", "thaw"=>"Ignore ice - 8s", "shield"=>"Pause bomb fuses - 10s", "scout"=>"Show matches - 5s",
             "keypass"=>"Ignore locks - 6s", "prune"=>"Ignore vines - 8s", "phase"=>"Open phase gates - 6s", "peek"=>"See next 3 draws - 6s", _=>"One-use helper" };
     }
@@ -69,7 +69,7 @@ public sealed partial class GameWindow
         artwork.DrawCard(g,new(441,268,74,103),new(4,1),true,true,false);
         artwork.DrawCard(g,new(603,268,74,103),new(5,0),true,false,false);
         artwork.DrawCard(g,new(765,268,74,103),new(6,3),true,true,false);
-        Art.Text(g,"\\u2192".Replace("\\u2192","\u2192"),533,300,32,artwork.Teal,true);
+        Art.Text(g,"\u2192",533,300,32,artwork.Teal,true);
         Art.Text(g,"\u2190",700,300,32,artwork.Teal,true);
         Art.Text(g,"4 plays",425,383,17,artwork.Teal,true,108,true);Art.Text(g,"Pile: 5",585,383,17,artwork.Ink,true,108,true);Art.Text(g,"6 plays",748,383,17,artwork.Teal,true,108,true);
         Art.Text(g,"1. Clear covering cards to reveal the cards underneath.",292,433,18,artwork.Ink);

@@ -1,8 +1,16 @@
 using MeadowPeaks;
+try
+{
+
 
 var rules = new TriPeaksRules();
 var deals = new SeededDealProvider(new PeakLayouts(), rules);
 var hands = new SolitaireFactory(deals, rules, deals);
+if (args.Length == 2 && args[0] == "--export-web")
+{
+    WebFixtures.Export(args[1]);
+    return;
+}
 int assertions = 0;
 void Check(bool condition, string description)
 {
@@ -124,3 +132,6 @@ Check(campaign.Chapters.Count == 24000 && campaign.LevelCount == 480000 && campa
 Check(campaign.Chapters.SelectMany(c => Enumerable.Range(c.FirstLevel, c.LastLevel - c.FirstLevel + 1)).SequenceEqual(Enumerable.Range(1, MeadowCampaign.TotalLevels)), "Chapters cover every level once without gaps");
 Check(campaign.ForLevel(4000).Number == 200 && campaign.ForLevel(2001).Theme == 10, "New worlds and final chapter can be reached");
 Console.WriteLine($"PASS: {assertions:N0} assertions. Gameplay, persistence, economy and component replacements verified.");
+
+}
+catch(Exception error) { Console.Error.WriteLine(error.ToString()); Environment.ExitCode=1; }

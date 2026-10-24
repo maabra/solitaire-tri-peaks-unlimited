@@ -106,8 +106,8 @@ public sealed partial class GameWindow : Form
         if (hand != null && !hand.Won) Button("resume", "Browse adventure map", 88, 626, 345, 48, () => { mapPage=(profile.Unlocked-1)/20; Navigate("map"); }, Color.FromArgb(195, 225, 196));
         Button("how", "How to play", 88, 695, 160, 42, () => ShowOverlay("help"));
         Button("daily", session.DailyClaimed ? "Gift collected ✓" : $"Daily gift  +{session.Economy.DailyGift}", 265, 695, 168, 42, ClaimDaily, artwork.Gold, !session.DailyClaimed);
-        Button("journal", "\U0001f4d6 Journal", 755, 571, 190, 47, () => ShowOverlay("journal"));
-        Button("importDeal", "\U0001f517 Open deal", 960, 571, 190, 47, ImportDeal);
+        Button("journal", "\U0001f4d6 Journal", 755, 520, 190, 47, () => ShowOverlay("journal"));
+        Button("importDeal", "\U0001f517 Open deal", 960, 520, 190, 47, ImportDeal);
         if (session.GardenGifts > 0) Button("gardenGift", $"Collect garden gift · +{session.Economy.GardenGift}", 810, 651, 325, 50, ClaimGarden, artwork.Gold);
     }
     void ClaimDaily()
@@ -197,7 +197,7 @@ public sealed partial class GameWindow : Form
         draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
         var waste = Button("waste", "", 561, 540, 86, 119, () => Tell("Play one rank higher or lower. Aces connect Kings and Twos."));
         waste.CardValue = hand.Waste; waste.TabStop = false; waste.AccessibleName = "Waste pile " + Art.Rank(hand.Waste.Rank);
-        Button("hint", "Hint · free", 742, 551, 156, 47, Hint);
+        Button("hint", "\U0001f50e Hint 3s", 742, 551, 156, 47, Hint, enabled:(hand as ITemporaryHand)?.Effects.HintCooldown<=0);
         Button("retry", "Replay deal", 742, 609, 156, 43, () => { confirmAction = () => { session.Replay(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("retry"); });
         Button("remix", "\U0001f3b2 Remix", 140, 609, 110, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); });
         Button("shareDeal", "\U0001f517 Share", 260, 609, 110, 43, () => ShowOverlay("share"));

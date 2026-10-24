@@ -84,12 +84,18 @@ public sealed class GameSession
 
     public void Remix()
     {
-        if (Hand == null) return;
+        if (Profile.FreshDealCooldown>0 || Hand == null) return;
         int nextSeed = random.NextSeed();
         var next = solitaire.Create(nextSeed, Level);
-        Hand = next; Seed = nextSeed;
+        Hand = next; Seed = nextSeed; Profile.FreshDealCooldown=30;
     }
 
+    public void AdvanceTime(double seconds)
+    {
+        if(!double.IsFinite(seconds) || seconds<=0) return;
+        Profile.FreshDealCooldown=Math.Max(0,Profile.FreshDealCooldown-seconds);
+        (Hand as ITemporaryHand)?.AdvanceTime(seconds);
+    }
     public bool ToggleFavorite(int level)
     {
         if(level<1 || level>Profile.Unlocked) return false;

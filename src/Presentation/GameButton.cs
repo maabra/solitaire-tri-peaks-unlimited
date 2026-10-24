@@ -2,7 +2,7 @@ using System.Drawing.Drawing2D;
 
 namespace MeadowPeaks;
 
-internal sealed class GameButton : Button
+internal sealed class GameButton : Control
 {
     public string Subtitle { get; set; } = "";
     public Color Fill { get; set; }
@@ -35,9 +35,16 @@ internal sealed class GameButton : Button
         this.artwork = artwork;
         Fill = artwork.Cream; Fore = artwork.Ink;
         SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.SupportsTransparentBackColor, true);
-        BackColor = Color.Transparent; FlatStyle = FlatStyle.Flat; FlatAppearance.BorderSize = 0; Cursor = Cursors.Hand;
+        BackColor = Color.Transparent; Cursor = Cursors.Hand; TabStop=true; AccessibleRole=AccessibleRole.PushButton;
+        SetStyle(ControlStyles.Selectable|ControlStyles.ResizeRedraw,true);
         MouseEnter += (_, _) => { hover = true; Invalidate(); }; MouseLeave += (_, _) => { hover = false; Invalidate(); };
     }
+    public void PerformClick() { if(Enabled) OnClick(EventArgs.Empty); }
+    protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if(e.Button==MouseButtons.Left) {Focus();pressed=true;Invalidate();} }
+    protected override void OnMouseUp(MouseEventArgs e) { pressed=false;Invalidate();base.OnMouseUp(e); }
+    protected override void OnKeyDown(KeyEventArgs e) { base.OnKeyDown(e); if(e.KeyCode is Keys.Enter or Keys.Space) {PerformClick();e.Handled=true;e.SuppressKeyPress=true;} }
+    protected override bool IsInputKey(Keys keyData) => keyData is Keys.Enter or Keys.Space || base.IsInputKey(keyData);
+    bool pressed;
     protected override void OnPaintBackground(PaintEventArgs e)
     {
         // Reuse the scene image rather than repainting the entire landscape
@@ -64,15 +71,15 @@ internal sealed class GameButton : Button
         }
         else
         {
-            Art.Box(g, new(r.X, r.Y + 4, r.Width, r.Height), Color.FromArgb(40, 0, 30, 20), 14);
-            Art.Box(g, r, !Enabled ? WorldPalette.Mix(Fill, Color.FromArgb(170, 187, 169), .4f) : WorldPalette.Mix(Fill, Color.White, hoverAmount * .23f), 14);
+            if(pressed) g.TranslateTransform(0,2);
+            HandmadeArt.Button(g,r,Fill,Enabled,hoverAmount,Name.StartsWith("level"));
             using var font = new Font(Text.Any(char.IsSurrogate) ? "Segoe UI Emoji" : "Segoe UI", Math.Max(11, Height * .27f), Text.Any(char.IsSurrogate) ? FontStyle.Regular : FontStyle.Bold, GraphicsUnit.Pixel);
-            if(Subtitle.Length==0) TextRenderer.DrawText(g, Text, font, Rectangle.Round(r), Enabled ? Fore : Color.FromArgb(88,111,99), TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.WordBreak);
+            if(Subtitle.Length==0) HandmadeArt.Label(g,Text,font,r,Enabled ? Fore : Color.FromArgb(77,98,88));
             else
             {
-                TextRenderer.DrawText(g,Text,font,new Rectangle(5,4,Width-10,(int)(Height*.51f)),Enabled ? Fore : Color.FromArgb(77,98,88),TextFormatFlags.HorizontalCenter|TextFormatFlags.VerticalCenter|TextFormatFlags.EndEllipsis);
+                HandmadeArt.Label(g,Text,font,new(5,3,Width-10,Height*.53f),Enabled ? Fore : Color.FromArgb(77,98,88));
                 using var small=new Font("Segoe UI",Math.Max(10,Height*.19f),FontStyle.Regular,GraphicsUnit.Pixel);
-                TextRenderer.DrawText(g,Subtitle,small,new Rectangle(6,(int)(Height*.51f),Width-12,(int)(Height*.33f)),Color.FromArgb(55,92,79),TextFormatFlags.HorizontalCenter|TextFormatFlags.VerticalCenter|TextFormatFlags.EndEllipsis);
+                HandmadeArt.Label(g,Subtitle,small,new(6,Height*.50f,Width-12,Height*.34f),Color.FromArgb(55,92,79));
             }
             if (Focused) { using var p = new Pen(artwork.Gold, 2); using var path = Art.Round(new(4, 4, Width - 10, Height - 14), 11); g.DrawPath(p, path); }
         }

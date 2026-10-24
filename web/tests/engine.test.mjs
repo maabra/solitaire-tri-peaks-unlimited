@@ -1,0 +1,12 @@
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {generate,Hand,GemGame,K} from '../core.mjs';
+import {Session,ProfileStore,defaults,validateProfile,encodeDeal,parseDeal} from '../session.mjs';
+const fixtures=JSON.parse(readFileSync(new URL('../../shared/engine-fixtures.json',import.meta.url)));
+for(let f of fixtures.Deals){let actual=generate(f.Seed,f.Level);assert.deepEqual(actual,f.Deal,`Windows/browser deal parity: ${f.Level}`);let h=new Hand(actual);for(let s of actual.Solution)assert.ok(s.Index<0?h.draw():h.play(s.Index),`Legal solution at ${f.Level}: ${s.Index}`);assert.ok(h.Won);let run=h.capture(f.Seed,f.Level,false);assert.deepEqual(new Hand(actual,run).capture(f.Seed,f.Level,false),run)}
+for(let f of fixtures.Gems){let g=new GemGame(f.Seed);for(let frame of f.Frames){assert.ok(g.play(...g.hint()));assert.deepEqual({Cells:g.Cells,Earned:g.Earned,Moves:g.Moves},frame,'Native gem-game parity')}}
+let storage=new Map(),adapter={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},store=new ProfileStore(adapter),session=new Session(store,()=> '2026-10-24');session.start(1);for(let step of session.hand.Deal.Solution)step.Index<0?session.draw():session.play(step.Index);assert.ok(session.hand.Won);assert.equal(session.p.Unlocked,2);let coins=session.p.Coins;session.complete();assert.equal(session.p.Coins,coins,'Reward only once');assert.equal(new Session(store).p.Unlocked,2);assert.equal(session.daily(),75);assert.equal(session.daily(),0);session.remix();assert.equal(session.p.FreshDealCooldown,30);assert.equal(session.remix(),false);session.tick(31);assert.equal(session.p.FreshDealCooldown,0);
+let d={TemporaryRules:true,Cards:[{Rank:6,Suit:0,Kind:K.Normal},{Rank:7,Suit:0,Kind:K.Normal}],Layout:[{X:0,Row:0},{X:2,Row:0}],Stock:[],Waste:{Rank:5,Suit:0},OpeningEffect:''},h=new Hand(d);assert.ok(h.use('extra'));assert.equal(h.Stock.length,5);h.draw();h.tick(11);assert.equal(h.Stock.length,0);h.undo();assert.equal(h.Stock.length,0,'Undo cannot revive expired rescue cards');
+for(let endless of [false,true]){let d={Level:1,Seed:105726,Endless:endless},code=await encodeDeal(d);assert.deepEqual(await parseDeal(code),d);assert.equal(await parseDeal(code.slice(0,-1)+'Z'),null)}
+assert.throws(()=>validateProfile({...defaults(),Coins:-1}));assert.throws(()=>validateProfile({...defaults(),FreshDealCooldown:Infinity}));
+console.log(`PASS: ${fixtures.Deals.length} Windows/browser deal fixtures, 60 native gem turns, legal winning paths, saves, rewards, timers and deal codes.`);

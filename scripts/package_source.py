@@ -5,7 +5,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 root = Path(__file__).resolve().parents[1]
 output = root / "artifacts" / "MeadowPeaks-source.zip"
 output.parent.mkdir(exist_ok=True)
-allowed = ["src", "tests", "scripts", "docs", ".github"]
+allowed = ["src", "tests", "scripts", "docs", ".github", "web", "shared"]
 files = [root / name for name in ("README.md", "LICENSE", ".gitignore")]
 for directory in allowed:
     files.extend(p for p in (root / directory).rglob("*") if p.is_file() and not {"bin", "obj", "__pycache__"}.intersection(p.relative_to(root).parts))

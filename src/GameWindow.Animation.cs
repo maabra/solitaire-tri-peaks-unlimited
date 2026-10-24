@@ -76,9 +76,9 @@ public sealed partial class GameWindow
     void AdvanceTemporaryEffects(double seconds)
     {
         if (screen != "play" || overlay.Length > 0 || (!smoke && (!ContainsFocus || WindowState == FormWindowState.Minimized)) || hand is not ITemporaryHand timed || hand.Won) return;
-        int rank = hand.Waste.Rank; timed.AdvanceTime(seconds);
+        int rank = hand.Waste.Rank, stockCount=hand.Stock.Count; session.AdvanceTime(seconds);
         timerPaint += seconds; timerSave += seconds;
-        if (rank != hand.Waste.Rank) { Build(); return; }
+        if (rank != hand.Waste.Rank || stockCount!=hand.Stock.Count) { Build(); return; }
         foreach (var button in Controls.OfType<GameButton>())
         {
             if (button.Name.StartsWith("card") && int.TryParse(button.Name.Substring(4), out int i))
@@ -95,6 +95,7 @@ public sealed partial class GameWindow
             }
             if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"Hint in {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e Hint 3s"; }
         }
+        if(Controls.Find("remix",false).FirstOrDefault() is GameButton remix) {remix.Enabled=profile.FreshDealCooldown<=0;remix.Text=profile.FreshDealCooldown>0 ? $"Fresh in {Math.Ceiling(profile.FreshDealCooldown)}s" : "\U0001f3b2 Remix";}
         UpdatePeekControls();
         if (timerPaint >= .2) { timerPaint = 0; backdropDirty = true; Invalidate(); }
         if (timerSave >= 5) { timerSave = 0; Save(); }
@@ -187,7 +188,7 @@ public sealed partial class GameWindow
         var e = timed.Effects;
         var active = new[] {
             ("Hint",e.HintSeconds),("Lucky +1",e.LuckySeconds),("Thaw",e.ThawSeconds),("Shield",e.ShieldSeconds),
-            ("Wild",hand.Waste.Rank==0 ? e.WildSeconds:0),("Recharge",e.HelperCooldown),("Keypass",e.KeySeconds),("Prune",e.PruneSeconds),("Phase",e.PhaseSeconds),("Peek",e.PeekSeconds)
+            ("Wild",hand.Waste.Rank==0 ? e.WildSeconds:0),("Recharge",e.HelperCooldown),("Keypass",e.KeySeconds),("Prune",e.PruneSeconds),("Phase",e.PhaseSeconds),("Peek",e.PeekSeconds),("Fresh +5",e.FreshSeconds)
         }.Where(x=>x.Item2>0).Take(6).ToArray();
         for(int i=0;i<active.Length;i++)
         {

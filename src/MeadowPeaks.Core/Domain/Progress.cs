@@ -2,6 +2,7 @@ namespace MeadowPeaks;
 
 public sealed class Progress
 {
+    public double FreshDealCooldown { get; set; }
     public PicnicProgress Picnic { get; set; } = new();
     public HashSet<int> Favorites { get; set; } = new();
     public int Version { get; set; } = 1;

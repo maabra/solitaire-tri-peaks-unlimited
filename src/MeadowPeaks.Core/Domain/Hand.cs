@@ -43,7 +43,7 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         if (run.Level < 1 || (!run.Endless && run.Level > MeadowCampaign.TotalLevels) || run.Seed < 0 || run.Removed == null || run.Stock == null || run.Waste == null || run.Score < 0 || run.Streak < 0 || run.BestStreak < run.Streak || run.FreeUndos < 0 || run.FreeUndos > 3 || run.Waste.Rank < 0 || run.Waste.Rank > 13 || run.Waste.Suit < 0 || run.Waste.Suit > 3 || run.Stock.Count > 100 || run.Stock.Any(c => c == null || c.Rank < 1 || c.Rank > 13 || c.Suit < 0 || c.Suit > 3)) return null;
         var h = new Hand(deal, rules, mechanics);
         if (run.Removed.Length != h.removed.Length || (run.Paid && run.Removed.Any(x => !x))) return null;
-        if (run.Mechanics is { } m && (m.Turns < 0 || m.Clears < 0 || m.Clears > deal.Cards.Count || m.Run < 0 || m.FuseDelay < 0 || m.Keys < 0 || m.Keys > deal.Cards.Count || (m.ArmorDamage != null && m.ArmorDamage.Any(x => x.Key < 0 || x.Key >= deal.Cards.Count || x.Value < 1 || x.Value > 3)) || new[] { m.HintSeconds, m.HintCooldown, m.HelperCooldown, m.LuckySeconds, m.ThawSeconds, m.ShieldSeconds, m.WildSeconds, m.KeySeconds, m.PruneSeconds, m.PhaseSeconds, m.PeekSeconds }.Any(t => !double.IsFinite(t) || t < 0 || t > 120) || (m.WildReturn != null && (m.WildReturn.Rank < 1 || m.WildReturn.Rank > 13 || m.WildReturn.Suit < 0 || m.WildReturn.Suit > 3)))) return null;
+        if (run.Mechanics is { } m && (m.Turns < 0 || m.Clears < 0 || m.Clears > deal.Cards.Count || m.Run < 0 || m.FuseDelay < 0 || m.Keys < 0 || m.Keys > deal.Cards.Count || (m.ArmorDamage != null && m.ArmorDamage.Any(x => x.Key < 0 || x.Key >= deal.Cards.Count || x.Value < 1 || x.Value > 3)) || new[] { m.HintSeconds, m.HintCooldown, m.HelperCooldown, m.LuckySeconds, m.ThawSeconds, m.ShieldSeconds, m.WildSeconds, m.KeySeconds, m.PruneSeconds, m.PhaseSeconds, m.PeekSeconds, m.FreshSeconds }.Any(t => !double.IsFinite(t) || t < 0 || t > 120) || (m.WildReturn != null && (m.WildReturn.Rank < 1 || m.WildReturn.Rank > 13 || m.WildReturn.Suit < 0 || m.WildReturn.Suit > 3)))) return null;
         h.state = run.Mechanics ?? h.state;
         h.removed = (bool[])run.Removed.Clone(); h.stock = run.Stock.ToList(); h.Waste = run.Waste; h.Score = run.Score; h.Streak = run.Streak; h.BestStreak = run.BestStreak; h.FreeUndos = run.FreeUndos; h.Paid = run.Paid;
         return h;
@@ -89,9 +89,11 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
             KeySeconds = Math.Min(s.Mechanics?.KeySeconds ?? 0, current.KeySeconds),
             PruneSeconds = Math.Min(s.Mechanics?.PruneSeconds ?? 0, current.PruneSeconds),
             PhaseSeconds = Math.Min(s.Mechanics?.PhaseSeconds ?? 0, current.PhaseSeconds),
+            FreshSeconds = Math.Min(s.Mechanics?.FreshSeconds ?? 0,current.FreshSeconds),
             PeekSeconds = Math.Min(s.Mechanics?.PeekSeconds ?? 0, current.PeekSeconds),
             WildSeconds = Math.Min(s.Mechanics?.WildSeconds ?? 0, current.WildSeconds)
         };
+        if(state.FreshSeconds<=0) stock.RemoveAll(c=>c.TemporaryStock);
         if (Deal.TemporaryRules && Waste.Rank == 0 && state.WildSeconds <= 0 && state.WildReturn != null) { Waste = state.WildReturn; state = state with { WildReturn = null }; }
         if (FreeUndos > 0) FreeUndos--; return true;
     }
@@ -104,7 +106,8 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     {
         if (Failed || Won || stock.Count > 0) return false;
         history.Clear(); var rng = new Random(seed);
-        for (int i = 0; i < 5; i++) stock.Add(new(rng.Next(1, 14), rng.Next(4)));
+        state=state with {FreshSeconds=10};
+        for (int i = 0; i < 5; i++) stock.Add(new(rng.Next(1, 14), rng.Next(4)){TemporaryStock=true});
         return true;
     }
     public bool Remove(int i)

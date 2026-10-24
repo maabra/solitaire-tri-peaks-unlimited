@@ -16,6 +16,12 @@ static class TemporaryTests
         check(h.UseEffect("lucky") && h.Play(0) && h.Stock.Count == 3, "Temporary +1 adds one stock per clear");
         h.AdvanceTime(11); check(h.Play(1) && h.Stock.Count == 3, "+1 stops at expiry");
         check(h.Undo() && h.Effects.LuckySeconds == 0, "Undo does not restore expired effect duration");
+        var rescue = new Hand(new Deal {TemporaryRules=true, Cards=plain.Cards, Layout=plain.Layout, Waste=plain.Waste},rules);
+        check(rescue.Extra(42) && rescue.Stock.Count==5 && rescue.Stock.All(c=>c.TemporaryStock), "Fresh rescue cards have a ten second timer");
+        check(rescue.Draw() && rescue.Stock.Count==4, "Fresh rescue card can be drawn within its window");
+        rescue.AdvanceTime(11);
+        check(rescue.Stock.Count==0 && rescue.Effects.FreshSeconds==0, "Unused rescue cards expire");
+        check(rescue.Undo() && rescue.Stock.Count==0, "Undo cannot restore expired rescue cards");
         h = new Hand(Board(new Card(6,0) { Kind=CardKind.Ice, Strength=99 },new(7,0)),rules);
         check(!h.CanPlay(0) && h.UseEffect("thaw") && h.CanPlay(0), "Temporary thaw bypasses ice");
         h.AdvanceTime(9); check(!h.CanPlay(0), "Ice returns when thaw expires");
@@ -53,6 +59,8 @@ static class TemporaryTests
         session.PlayCard(0); var replay=session.CompleteHand();
         check(replay?.BonusCoins==0 && session.Inventory.Count("lucky")==stock+1, "Bonus consumable cannot be farmed by replay");
         session.Remix(); check(session.Level==25 && session.Seed==42 && !session.Hand!.Won, "Remix deals another seeded hand at the same level");
+        check(session.Profile.FreshDealCooldown==30,"Fresh deals begin a thirty second recharge");
+        session.AdvanceTime(31);check(session.Profile.FreshDealCooldown==0,"Fresh deal cooldown elapses with play time");
         string folder = Path.Combine(Path.GetTempPath(), "MeadowPeaks-large-wallet-" + Guid.NewGuid());
         Directory.CreateDirectory(folder);
         try
