@@ -12,12 +12,13 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(channel='msedge', headless=True)
         context = await browser.new_context(viewport={'width':1280, 'height':950}, reduced_motion='reduce')
+        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
         page = await context.new_page()
         errors=[]
         page.on('pageerror', lambda e: errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/', wait_until='networkidle')
         await page.screenshot(path=str(OUT/'adventure-map.png'),full_page=True)
-        assert await page.locator('.story-node').count()==20
+        assert await page.locator('.story-node').count()==100
         await page.locator('[data-action="wheel"]').click()
         await page.screenshot(path=str(OUT/'lucky-wheel.png'),full_page=True)
         await page.locator('[data-action="spinWheel"]').click()
@@ -70,12 +71,14 @@ async def main():
         # The deepest board must stay inside a narrow viewport and remain playable.
         await context.close()
         context=await browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
+        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
         page=await context.new_page()
         await page.goto('http://127.0.0.1:8765/')
         deep=await page.evaluate('''async()=>{let {defaults}=await import('./session.mjs');let {generate,Hand}=await import('./core.mjs');let p=defaults();p.Unlocked=2104;p.Active=new Hand(generate(104729+2104*997,2104)).capture(104729+2104*997,2104,false);return p;}''')
         await context.close()
         context=await browser.new_context(viewport={'width':390,'height':844},reduced_motion='reduce')
         await context.add_init_script('localStorage.setItem("meadow-peaks-profile",'+json.dumps(json.dumps(deep))+');')
+        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
         page=await context.new_page()
         page.on('pageerror',lambda e: errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/')
@@ -85,10 +88,11 @@ async def main():
         assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')
         await page.screenshot(path=str(OUT/'mobile-eight-rows.png'),full_page=True)
         await page.locator('[data-action="guide"]').first.click()
-        assert await page.locator('.guide-grid article').count()==13
+        assert await page.locator('.guide-grid article').count()==15
         assert errors==[], errors
         await context.close()
         context=await browser.new_context(viewport={'width':1280,'height':950},reduced_motion='no-preference')
+        await context.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
         page=await context.new_page()
         page.on('pageerror',lambda e:errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/')

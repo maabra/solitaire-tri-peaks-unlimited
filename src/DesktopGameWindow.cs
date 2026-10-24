@@ -8,14 +8,18 @@ internal sealed partial class DesktopGameWindow:Form
     const string Origin="https://meadow-peaks.local/";
     readonly WebView2 browser=new(){Dock=DockStyle.Fill,DefaultBackgroundColor=Color.FromArgb(49,82,59)};
     readonly Label loading=new(){Dock=DockStyle.Fill,Text="Meadow Peaks\nPreparing your meadow...",TextAlign=ContentAlignment.MiddleCenter,BackColor=Color.FromArgb(49,82,59),ForeColor=Color.FromArgb(255,244,211),Font=new Font("Segoe UI",22,FontStyle.Bold)};
-    readonly IProfileStore store;readonly bool smoke,checking;Progress profile;string loadWarning="";bool loaded,closing,initializingNavigation;
+    readonly IProfileStore store;readonly bool smoke,checking;Progress profile;string initialProfile,loadWarning="";bool loaded,closing,initializingNavigation;
     readonly System.Windows.Forms.Timer timeout=new(){Interval=170000};
     public DesktopGameWindow(IProfileStore store,bool smoke,bool checking)
     {
-        this.store=store;this.smoke=smoke;this.checking=checking;var restored=Composition.CreateSession(store);profile=restored.Profile;loadWarning=restored.LoadWarning;
+        this.store=store;this.smoke=smoke;this.checking=checking;
+        string? shared=smoke?null:DesktopProfileBridge.Load(out loadWarning);
+        if(shared!=null){profile=JsonSerializer.Deserialize<Progress>(shared)!;initialProfile=shared;}
+        else {var restored=Composition.CreateSession(store);profile=restored.Profile;loadWarning=restored.LoadWarning;
         if(profile.Active!=null)profile.Active=restored.Hand?.Capture(restored.Seed,restored.Level,restored.Endless);
         if(profile.ActiveGarden!=null)profile.ActiveGarden=(restored.CoinGame as IPersistentCoinGame)?.Capture();
         if(smoke)profile.ReducedMotion=true;
+        initialProfile=JsonSerializer.Serialize(profile);}
         Text="Meadow Peaks";ClientSize=new(1280,800);MinimumSize=new(800,600);StartPosition=FormStartPosition.CenterScreen;Icon=Icon.ExtractAssociatedIcon(Environment.ProcessPath!);
         Controls.Add(browser);Controls.Add(loading);Shown+=async(_,_)=>await Initialize();
         FormClosing+=async(_,e)=>{if(smoke||checking||closing||!loaded)return;e.Cancel=true;closing=true;try{await browser.CoreWebView2.ExecuteScriptAsync("window.dispatchEvent(new Event('pagehide'))");await Task.Delay(80);}catch{}Close();};
@@ -32,7 +36,7 @@ internal sealed partial class DesktopGameWindow:Form
             await browser.EnsureCoreWebView2Async(environment);var core=browser.CoreWebView2;
             core.Settings.AreDevToolsEnabled=false;core.Settings.AreDefaultContextMenusEnabled=false;core.Settings.IsStatusBarEnabled=false;
 
-            await core.AddScriptToExecuteOnDocumentCreatedAsync("globalThis.meadowDesktop={profile:"+JsonSerializer.Serialize(profile)+",warning:"+JsonSerializer.Serialize(loadWarning)+",readOnly:"+((smoke||checking)?"true":"false")+"};");
+            await core.AddScriptToExecuteOnDocumentCreatedAsync("globalThis.meadowDesktop={profile:"+initialProfile+",warning:"+JsonSerializer.Serialize(loadWarning)+",readOnly:"+((smoke||checking)?"true":"false")+"};");
             core.WebMessageReceived+=MessageReceived;
             core.NavigationStarting+=(_,e)=>{if(!e.Uri.StartsWith(Origin,StringComparison.Ordinal))e.Cancel=true;};
             FormWindowState previousState=WindowState;Rectangle previousBounds=Bounds;FormBorderStyle previousBorder=FormBorderStyle;
@@ -67,7 +71,7 @@ internal sealed partial class DesktopGameWindow:Form
         try
         {
             using var data=JsonDocument.Parse(e.WebMessageAsJson);if(data.RootElement.GetProperty("type").GetString()!="save"||smoke||checking)return;
-            profile=ProfileCodec.Decode(data.RootElement.GetProperty("profile").GetRawText());store.Save(profile);
+            string json=data.RootElement.GetProperty("profile").GetRawText();DesktopProfileBridge.Save(json);
         }
         catch(Exception error){StartupDiagnostics.Write("MeadowPeaks-save-error.txt",error.ToString());browser.CoreWebView2.ExecuteScriptAsync("document.querySelector('#toast').textContent='Could not save progress. Export your adventure from Settings.';document.querySelector('#toast').classList.add('show');");}
     }

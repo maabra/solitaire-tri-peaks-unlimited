@@ -193,3 +193,12 @@ soon as the temporary effect ends. Resizing keeps surviving cards in place.
 If another browser tab changes the save, reload the latest adventure before
 continuing. Export/import in Settings moves progress between browser and Windows;
 there is no automatic online synchronization.
+
+VERSION 2.1
+100 levels per scrollable chapter; 4,800 unique chapter names and compositions.
+Open Activities on the map or during a hand for albums, missions, the monthly
+voyage, tournaments, regatta, Balloon Trail, Souvenir Hunt, bingo and Travel Hub.
+Pack/trophy/arrow card rewards are banked when you win. Match frozen cards twice.
+Joker selects one exposed card; TNT clears every currently exposed card.
+Browser play requires explicit local-saving permission on the first visit.
+Full rules: docs/ADVENTURES.md.

@@ -22,7 +22,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify shared browser engine and save compatibility
-        run: node --test web/tests/engine.test.mjs
+        run: node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs
+      - name: Verify mutation-aware campaign deals
+        run: node scripts/verify_adventure_deals.mjs
       - name: Prepare portable shared renderer
         shell: pwsh
         run: ./scripts/prepare_webview_runtime.ps1

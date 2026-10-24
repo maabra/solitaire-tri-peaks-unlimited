@@ -1,3 +1,10 @@
+# Current adventure expansion
+
+Version 2.1 adds 100-stop scrolling chapters, uniquely named/composed destinations,
+matching Travel Hub thumbnails, playing tables, local-save consent and all offline
+adventure systems. See [ADVENTURES.md](ADVENTURES.md) for the current complete rules.
+The following section describes the shared-renderer foundation introduced in 2.0.
+
 # Shared Windows and web presentation
 
 Version 2.0 uses the same `web/` interface, rules, CSS, animations and artwork on both

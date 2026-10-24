@@ -12,7 +12,7 @@ async def main():
   async def context(width=1280,height=800,profile=None):
    c=await browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce')
    if profile:await c.add_init_script('localStorage.setItem("meadow-peaks-profile",'+json.dumps(json.dumps(profile))+');')
-   page=await c.new_page();page.on('pageerror',lambda e:errors.append(str(e)));await page.goto(URL);await page.wait_for_timeout(150);return c,page
+   await c.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");page=await c.new_page();page.on('pageerror',lambda e:errors.append(str(e)));await page.goto(URL);await page.wait_for_timeout(150);return c,page
   c,bootstrap=await context()
   # Confirm each of the ten actual paintings decodes; these are not tint-only variants.
   assert await bootstrap.evaluate("""async()=>{let {environments}=await import('./chapter-scene.mjs');return environments.length===10&&(await Promise.all(environments.map(name=>new Promise(resolve=>{let i=new Image;i.onload=()=>resolve(i.naturalWidth>1000);i.onerror=()=>resolve(false);i.src='assets/'+name+'.png'})))).every(Boolean)}""")
@@ -40,7 +40,7 @@ async def main():
   await page.locator('[data-action="home"]').first.click();await page.locator('[data-action="endless"]').click();assert await page.locator('[data-action="confirmStart"]').count()==1;await page.locator('[data-action="close"]').last.click()
   # A second tab cannot silently overwrite the current adventure.
   other=await c.new_page();await other.goto(URL);await other.locator('[data-action="home"]').first.click();await other.locator('[data-action="daily"]').click()
-  await page.wait_for_selector('[data-action="reloadSave"]');await page.locator('[data-action="reloadSave"]').click();assert await page.locator('.story-node').count()==20
+  await page.wait_for_selector('[data-action="reloadSave"]');await page.locator('[data-action="reloadSave"]').click();assert await page.locator('.story-node').count()==100
   await c.close()
   # Timed helper expiry must restore the actual card art and waste rank immediately.
   c,base=await context()

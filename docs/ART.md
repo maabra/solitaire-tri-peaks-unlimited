@@ -16,3 +16,15 @@ transparent card overlays. Existing original gem SVG artwork remains in gem-art.
 The earlier original story-meadow and adventure-village paintings remain available
 for legacy diagnostics. No images or audio extracted from the supplied reference
 games or recordings are included in the released source or game packages.
+
+## Adventure expansion 2.1
+
+Four additional full-size paintings: lighthouse-harbor, crystal-cavern, sky-islands
+and pumpkin-village. chapter-worlds.mjs generates bounded-cache, deterministic
+chapter compositions and 4,800 distinct names. The same image is used on the map,
+in Travel Hub and on its postcard. No 4,800 separate bitmap files are claimed.
+
+event-icons.png: transparent 8x4 atlas, 32 new event/helper icons.
+sticker-atlas.png: original 10x10 collectible tile painting.
+card-tables.png: 4x4 atlas of sixteen uncluttered playing surfaces.
+chapter-worlds.png: original 4x4 destination overview artwork.

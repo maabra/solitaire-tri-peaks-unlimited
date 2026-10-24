@@ -80,3 +80,13 @@ six-digit labels, actual painted asset loading, resize identity, rapid draws, ha
 replacement, tab conflicts and temporary effect artwork. Windows `--smoke` exercises
 the packaged shared renderer with an isolated test profile. `--startup-check` loads
 the real profile read-only. Settings and the project assembly share a tested build stamp.
+
+## Adventure boundaries (2.1)
+
+AdventureHand extends Hand for mutation-aware MP21 rules and winning witnesses.
+AdventureSystems owns local event state/reward ledgers; AdventureUI owns their
+panels. ChapterWorlds owns seeded paintings, thumbnails, unique names and tables.
+The map route contains 100 stops per chapter on a 6,800-unit scrolling world.
+DesktopProfileBridge preserves raw shared JSON atomically, avoiding data loss
+through the legacy typed model. Browser consent runs before Session loads a save.
+See ADVENTURES.md for the complete rules and TODO.txt for deferred undefined scope.
