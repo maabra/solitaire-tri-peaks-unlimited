@@ -77,7 +77,8 @@ async def main():
         await page.locator('[data-action="gemHint"]').click()
         hints=await page.locator('.gem.found').evaluate_all('els=>els.map(e=>e.dataset.action)')
         for action in hints:await page.locator('[data-action="'+action+'"]').click()
-        await page.wait_for_selector('.gem-links path')
+        await page.wait_for_selector('.gem.matched')
+        assert await page.locator('.gem-links path').count()>0
         assert await page.locator('.gem.matched').count()>=3
         assert '+' in await page.locator('.gem-reward').inner_text()
         await page.screenshot(path=str(OUT/'gem-match-animation.png'),full_page=True)
