@@ -9,7 +9,7 @@ public sealed partial class GameWindow : Form
     Progress profile => session.Profile;
     readonly bool smoke;
     readonly bool startupCheck;
-    string screen = "home", overlay = "", message = "Welcome to the meadow. Take your time.";
+    string screen = "map", overlay = "", message = "Welcome to the meadow. Take your time.";
     ISolitaireHand? hand => session.Hand;
     ICoinGame? gems => session.CoinGame;
     int level => session.Level;
@@ -85,7 +85,8 @@ public sealed partial class GameWindow : Form
         else
         {
             if (screen != "home") Button("home", "‹  Home", 38, 26, 114, 46, () => Navigate("home"));
-            Button("wallet", $"●  {profile.Coins:N0}   +", 1025, 26, 215, 46, () => ShowOverlay("shop"), artwork.Gold);
+            var walletButton=Button("wallet", $"●  {profile.Coins:N0}   +", 1025, 26, 215, 46, () => ShowOverlay("shop"), artwork.Gold);
+            if(screen=="map"){walletButton.Fill=Color.FromArgb(80,37,83);walletButton.Fore=Color.White;}
             Button("settings", "⚙", screen == "home" ? 38 : 168, 26, 48, 46, () => ShowOverlay("settings"));
             if (screen == "home") BuildHome();
             if (screen == "map") BuildMap();
@@ -122,25 +123,24 @@ public sealed partial class GameWindow : Form
         int coins = session.ClaimGarden();
         Save(); Tell($"Your garden thanks you. +{coins} coins!"); Build(); RewardEffects(coins, new(960, 651));
     }
+    int previewLevel;
+    void PreviewLevel(int n){previewLevel=n;ShowOverlay("levelPreview");}
     void BuildMap()
     {
-        for (int i = 0; i < 20; i++)
+        for(int i=0;i<20;i++)
         {
-            int n = mapPage * 20 + i + 1;
-            var p = MapPoint(i);
-            bool unlocked = n <= profile.Unlocked;
-            Button("level" + n, n % 25 == 0 ? "\U0001f381\n" + n : n.ToString(), p.X - 32, p.Y - 29, 64, 64, () => StartAdventure(n), n == profile.Unlocked ? artwork.Gold : profile.Stars.ContainsKey(n) ? Color.FromArgb(207, 226, 177) : WorldPalette.Mix(artwork.Cream, WorldPalette.For(CurrentChapter.Theme).Accent, .12f), unlocked);
+            int n=mapPage*20+i+1;var p=MapPoint(i);bool current=n==profile.Unlocked;
+            var node=Button("level"+n,n.ToString(),p.X-33,p.Y-28,66,59,()=>PreviewLevel(n),current?Color.FromArgb(240,183,51):profile.Stars.ContainsKey(n)?Color.FromArgb(115,178,52):Color.FromArgb(138,160,122),n<=profile.Unlocked);
+            node.MapNode=true;node.CurrentNode=current;node.AccessibleName=$"Level {n}";
         }
-        Button("prev", "‹  Previous", 70, 685, 160, 50, () => { mapPage--; Build(); PresentSceneEntrance(); }, enabled: mapPage > 0);
-        Button("next", "Next  ›", 1050, 685, 160, 50, () => { mapPage++; Build(); PresentSceneEntrance(); }, enabled: mapPage < campaign.Chapters.Count - 1);
-        Button("current", "My next level", 715, 685, 185, 50, () => { mapPage = (profile.Unlocked - 1) / 20; Build(); });
-        Button("jump", "Go to level…", 910, 685, 130, 50, JumpLevel);
+        var activities=new[]{("gems","Gem Garden"),("wheel","Lucky wheel"),("journal","Journal"),("endless","Endless")};
+        for(int i=0;i<activities.Length;i++){var item=activities[i];var b=Button("map-"+item.Item1,item.Item2,24,220+i*99,90,86,()=>{if(item.Item1=="gems")OpenGems();else if(item.Item1=="endless")StartEndless();else ShowOverlay(item.Item1);},Color.FromArgb(184,62,82));b.MenuIcon=item.Item1;}
+        Button("prev","\u2039",170,720,58,49,()=>{mapPage--;Build();PresentSceneEntrance();},Color.FromArgb(154,87,173),mapPage>0);
+        Button("current","My next level",405,720,260,52,()=>{mapPage=(profile.Unlocked-1)/20;Build();},Color.FromArgb(106,206,47));
+        Button("jump","Go to level...",690,724,170,44,JumpLevel,Color.FromArgb(246,217,167));
+        Button("next","\u203a",1035,720,58,49,()=>{mapPage++;Build();PresentSceneEntrance();},Color.FromArgb(154,87,173),mapPage<campaign.Chapters.Count-1);
     }
-    static PointF MapPoint(int i)
-    {
-        int row = i / 5, col = row % 2 == 0 ? i % 5 : 4 - i % 5;
-        return new(270 + col * 187, 243 + row * 116 + (col % 2 == 0 ? 0 : 17));
-    }
+    static PointF MapPoint(int i)=>AdventureMapArt.Route[i];
     void JumpLevel()
     {
         using var dialog = new Form { Text = "Find a level", ClientSize = new(330, 155), FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MaximizeBox = false, MinimizeBox = false };
@@ -376,7 +376,12 @@ public sealed partial class GameWindow : Form
     void BuildOverlay()
     {
         Button("closeOverlay", "×", 1004, 148, 46, 44, () => { overlay = ""; Build(); });
-        if (overlay == "shop")
+        if(overlay=="wheel"){Button("spinWheel",$"Spin  |  {session.Wheel.Spins}",460,585,360,55,SpinWheel,Color.FromArgb(107,208,44),!wheelSpinning&&session.Wheel.Spins>0);}
+        else if (overlay == "levelPreview")
+        {
+            Button("playPreview","Play",450,555,380,70,()=>{overlay="";StartAdventure(previewLevel);},Color.FromArgb(105,211,44));
+        }
+        else if (overlay == "shop")
         {
             var helpers = VisibleHelpers().Skip(powerupPage * 3).Take(3).ToArray();
             for (int i = 0; i < helpers.Length; i++)
@@ -426,9 +431,10 @@ public sealed partial class GameWindow : Form
     {
         g.SmoothingMode = SmoothingMode.AntiAlias;
         g.TranslateTransform(offsetX, offsetY); g.ScaleTransform(scale, scale);
-        artwork.DrawLandscape(g, CurrentChapter.Theme);
-        if (screen != "home") Art.Box(g, new(425, 24, 430, 48), Color.FromArgb(185, artwork.Cream), 20);
-        if (screen != "home") Art.Text(g, "MEADOW PEAKS", 445, 36, 23, artwork.Ink, true, 390, true);
+        if(screen=="map")AdventureMapArt.Landscape(g);else artwork.DrawLandscape(g, CurrentChapter.Theme);
+        ChapterScenery.Draw(g,CurrentChapter.Number);
+        if (screen != "home" && screen!="map") Art.Box(g, new(425, 24, 430, 48), Color.FromArgb(185, artwork.Cream), 20);
+        if (screen != "home" && screen!="map") Art.Text(g, "MEADOW PEAKS", 445, 36, 23, artwork.Ink, true, 390, true);
         if (screen == "home") PaintHome(g);
         if (screen == "map") PaintMap(g);
         if (screen == "play") PaintHand(g);
@@ -470,19 +476,19 @@ public sealed partial class GameWindow : Form
     }
     void PaintMap(Graphics g)
     {
-        Art.Box(g, new(205, 93, 870, 112), Color.FromArgb(225, artwork.Cream), 24);
-        Art.Text(g, CurrentChapter.World + " / " + CurrentChapter.Name, 225, 105, 28, artwork.Ink, true, 830, true);
-        Art.Text(g, $"Chapter {mapPage + 1} / {campaign.Chapters.Count}   ·   Levels {mapPage * 20 + 1}–{mapPage * 20 + 20}", 290, 158, 17, artwork.Teal, false, 700, true);
-        Art.Box(g, new(190, 207, 900, 443), Color.FromArgb(135, 247, 244, 214), 28);
-        using var path = new Pen(Color.FromArgb(193, 177, 133), 12) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
-        g.DrawLines(path, Enumerable.Range(0, 20).Select(MapPoint).ToArray());
-        for (int i = 0; i < 20; i++)
+        AdventureMapArt.Trail(g);
+        AdventureMapArt.Ribbon(g,new(433,85,420,72),CurrentChapter.World,$"CHAPTER {mapPage+1:N0}");
+        int cleared=0;
+        for(int i=0;i<20;i++)
         {
-            var p = MapPoint(i); int n = mapPage * 20 + i + 1; int earned = profile.Stars.GetValueOrDefault(n);
-            Art.Text(g, earned > 0 ? new string('★', earned) : n == profile.Unlocked ? "YOU ARE HERE" : "", p.X - 69, p.Y + 38, earned > 0 ? 17 : 10, earned > 0 ? Color.FromArgb(145, 96, 25) : artwork.Teal, true, 138, true);
+            var p=MapPoint(i);int n=mapPage*20+i+1;int earned=profile.Stars.GetValueOrDefault(n);if(earned>0)cleared++;
+            if(earned>0)for(int j=0;j<earned;j++)FestiveArt.Star(g,p.X+(j-(earned-1)/2f)*18,p.Y+37,10,Color.FromArgb(255,217,67));
+            if(n==profile.Unlocked){Art.Box(g,new(p.X-31,p.Y-60,62,24),Color.FromArgb(214,61,77),9);Art.Text(g,"PLAY",p.X-31,p.Y-56,12,Color.White,true,62,true);}
         }
-        PaintChapterDetails(g);
-        Art.Text(g, $"{profile.Stars.Count:N0} / {campaign.LevelCount:N0} cleared", 260, 701, 18, artwork.Cream, true);
+        Art.Box(g,new(445,660,390,50),Color.FromArgb(238,255,247,221),17);
+        Art.Text(g,$"{cleared}/20 blossoms  |  Gift: 150 coins + 1 Wild",450,671,12,artwork.Ink,true,380,true);
+        Art.Box(g,new(460,695,360,7),Color.FromArgb(190,190,157),4);if(cleared>0)Art.Box(g,new(460,695,18*cleared,7),Color.FromArgb(122,195,67),4);
+        FestiveArt.Pip(g,1127,585,.8f);Art.Box(g,new(1042,623,190,60),Color.FromArgb(245,255,247,220),16);Art.Text(g,"Every little step is\nsomething lovely.",1050,635,15,artwork.Teal,true,174,true);
     }
     void PaintHand(Graphics g)
     {
@@ -492,7 +498,7 @@ public sealed partial class GameWindow : Form
         Art.Text(g, endless ? $"Deal {level:N0}  ·  no finish line" : $"Level {level:N0} / {campaign.LevelCount:N0}", 147, 133, 23, artwork.Ink, true);
         Art.Text(g, "SCORE", 565, 108, 12, artwork.Teal, true); Art.Text(g, hand.Score.ToString("N0"), 565, 131, 25, artwork.Ink, true);
         Art.Text(g, "STREAK", 733, 108, 12, artwork.Teal, true); Art.Text(g, $"{hand.Streak}  ✦", 733, 131, 25, artwork.Ink, true);
-        Art.Text(g, "CARDS LEFT", 914, 108, 12, artwork.Teal, true); Art.Text(g, hand.Removed.Count(x => !x).ToString(), 914, 131, 25, artwork.Ink, true);
+        StoryProgressArt.Draw(g,new(906,103,220,62),hand.BestStreak,hand.Removed.Count(x=>!x));
         Art.Text(g, (hand.Deal.Bonus ? "\U0001f381 " : "") + hand.Deal.Formation + (hand.Deal.Difficulty is { Tier: > 0 } difficulty ? "  |  " + difficulty.Badge : ""), 150, 179, 11, artwork.Cream, true);
         var liveBombs = hand.Deal.Cards.Select((c, i) => new { c, i }).Where(x => x.c.Kind == CardKind.Bomb && !hand.Removed[x.i]).Select(x => (hand as IAdventureHand)?.CardStatus(x.i)).ToArray();
         if ((hand as IAdventureHand)?.Failed == true)
@@ -502,7 +508,7 @@ public sealed partial class GameWindow : Form
         Art.Box(g, new(113, 193, 1055, 327), Color.FromArgb(50, 12, 65, 47), 26);
         for (int i = 0; i < hand.Removed.Count; i++)
         {
-            if (hand.Removed[i] || hand.IsExposed(i)) continue;
+            if (hand.Removed[i] || hand.IsExposed(i) || !profile.ReducedMotion && dealReveals.TryGetValue(i,out double reveal) && effects.Time<reveal) continue;
             var r = CardBounds(i);
             var slot=hand.Deal.Layout[i];
             if(slot.DrawX.HasValue){var state=g.Save();g.TranslateTransform(r.X+r.Width/2,r.Y+r.Height/2);g.RotateTransform(slot.Angle);artwork.DrawCard(g,new(-38,-53,73,99),hand.Deal.Cards[i],false,false,false);g.Restore(state);}
@@ -541,7 +547,18 @@ public sealed partial class GameWindow : Form
     {
         using var shade = new SolidBrush(Color.FromArgb(155, 12, 41, 33)); g.FillRectangle(shade, 0, 0, 1280, 800);
         Art.Box(g, new(215, 128, 850, 557), artwork.Cream, 28);
-        if (overlay == "shop")
+        if(overlay=="wheel")PaintWheel(g);
+        else if(overlay=="levelPreview")
+        {
+            AdventureMapArt.Ribbon(g,new(315,142,650,75),$"Level {previewLevel:N0}","A LOVELY ADVENTURE");
+            int earned=profile.Stars.GetValueOrDefault(previewLevel);
+            for(int i=0;i<3;i++)FestiveArt.Star(g,490+i*150,310-(i==1?15:0),i==1?65:52,i<earned?artwork.Gold:Color.FromArgb(188,133,118));
+            Art.Box(g,new(350,396,580,55),Color.FromArgb(240,212,176),21);Art.Text(g,"Clear all cards!",350,405,28,Color.FromArgb(144,57,67),true,580,true);
+            Art.Text(g,StoryLayoutsV2.NameFor(previewLevel)+"  |  A lovely adventure.",330,644,18,artwork.Teal,true,620,true);
+            var items=session.Powerups.All.Where(p=>session.HelperDiscovered(p.Id)).Take(3).ToArray();
+            for(int i=0;i<items.Length;i++){Art.Box(g,new(440+i*140,475,120,50),Color.FromArgb(163,115,179),18);Art.Text(g,$"{items[i].Name} x{session.Inventory.Count(items[i].Id)}",440+i*140,490,12,Color.White,true,120,true);}
+        }
+        else if (overlay == "shop")
         {
             Art.Text(g, "A little help along the way", 260, 177, 35, artwork.Ink, true, 760, true);
             Art.Text(g, $"Your wallet: {profile.Coins:N0} coins  ·  All helpers are bought with earned coins", 260, 230, 17, artwork.Teal, false, 760, true);
@@ -613,8 +630,8 @@ public sealed partial class GameWindow : Form
                 }
                 image.Save(Path.Combine(outputDirectory, "screenshots", name + ".png"));
             }
-            void Click(string name) { if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); var stableCards=Controls.OfType<GameButton>().Where(c=>c.Name.StartsWith("card")&&c.Name!=name).ToDictionary(c=>c.Name);b.PerformClick();if(overlay.Length==0 && screen=="play" && (name=="draw"||name.StartsWith("card")))foreach(var pair in stableCards)if(Controls.Find(pair.Key,false).FirstOrDefault() is Control current&&!ReferenceEquals(current,pair.Value))throw new Exception("Untouched card control was replaced"); }
-            Shot("01-home"); Click("adventure"); Shot("02-adventure"); Click("level1"); Shot("03-solitaire");
+            void Click(string name) { if(name.StartsWith("card")&&effects.Time<dealUntil)AdvancePresentation((float)(dealUntil-effects.Time+.01)); if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); var stableCards=Controls.OfType<GameButton>().Where(c=>c.Name.StartsWith("card")&&c.Name!=name).ToDictionary(c=>c.Name);b.PerformClick();if(overlay.Length==0 && screen=="play" && (name=="draw"||name.StartsWith("card")))foreach(var pair in stableCards)if(Controls.Find(pair.Key,false).FirstOrDefault() is Control current&&!ReferenceEquals(current,pair.Value))throw new Exception("Untouched card control was replaced"); }
+            Navigate("home"); Shot("01-home"); Click("adventure"); Shot("02-adventure"); Click("map-wheel"); Shot("25-lucky-wheel"); Click("spinWheel"); Shot("26-wheel-result",4.3f); if(session.Wheel.Spins!=0||profile.WheelSpinsUsed!=1)throw new Exception("Wheel UI did not consume a welcome spin"); Click("closeOverlay"); Click("level1"); Shot("02-level-preview"); Click("playPreview"); Shot("03-solitaire",1.2f);
             var path = hand!.Deal.Solution.ToArray();
             Click("card" + path[0].Index);
             if (effects.Count == 0) throw new Exception("Card effects did not start");

@@ -280,3 +280,26 @@ The browser face markup lives in `app.mjs`, with styling in `style.css`.
 stock-draw flights. These presentation changes do not alter deal generation or the
 saved hand schema. Keep reduced-motion behavior and surviving node identity intact
 when replacing presentation parts.
+
+
+### Adventure presentation and reward strategies (1.9)
+
+`PrizeWheel` owns earned-spin accounting and reward application. The injectable
+`IPrizeWheelPolicy` chooses rewards; `GardenWheelPolicy` supplies eight equal
+segments. `GameSession.SpinWheel` persists the result before presentation starts.
+`WheelSpinsUsed` defaults to zero for older saves. Availability is one plus
+completed hands divided by five, minus consumed spins. This is separate from
+Garden gift claims, and a restored save cannot reclaim a consumed spin.
+
+`AdventureMapArt`, `ChapterScenery`, `LuckyWheelArt` and `StoryProgressArt` own native
+presentation; `GameWindow.Wheel` coordinates the wheel animation. Browser map and
+chapter scenery live in `adventure-map.mjs` and `chapter-scene.mjs`. Both renderers
+use the same 1280x800 map route and packaged original village illustration. Layout
+rendering and navigation do not change hand state. Dealing effects are presentation
+objects and reduced motion suppresses flights.
+
+`StoryLayoutsV2` adds 16 formation families. `StoryDealProvider` selects MP19 for
+new hands while preserving the MP16 and MP18 providers. Saved geometry and explicit
+cover graphs remain authoritative when restoring a hand. The browser implements
+this version boundary in `story-layouts-v2.mjs`, `core.mjs` and the deal-code parser.
+The chapter seed never enters deck RNG or alters a shared deal.

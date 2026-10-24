@@ -18,6 +18,7 @@ void Check(bool condition, string description)
 }
 if (args.Contains("--effects-only"))
 {
+    WheelTests.Run(Check);
     StoryTests.Run(Check);
     TemporaryTests.Run(Check);
     ProgressionTests.Run(Check);

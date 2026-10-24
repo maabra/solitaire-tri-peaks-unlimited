@@ -82,3 +82,33 @@ Reference recordings and extracted frames are development-only material under ex
 and artifacts; neither directory is included in distributable packages. These changes
 adapt presentation cues; they do not copy the reference game's assets or claim feature
 parity with it.
+
+
+Live star preview (1.8.2)
+The play screen now shows a three-star progress meter in Windows and web. Clear
+the entire board to earn the displayed stars: one for completion, two with a best
+uninterrupted streak of at least 5, three with at least 9. Drawing resets the
+current streak, but your best streak still counts. Undo restores the previous
+best streak and updates the meter. The display previews existing rewards; it does
+not grant coins or stars before completion. This follows the compact, visible
+progress feedback in the second supplied gameplay recording, using original art.
+
+
+### Adventure menu and offline wheel (1.9)
+
+The opening screen is now the illustrated adventure map rather than the home
+page. It uses the packaged village painting, a winding trail and raised markers.
+Level selection opens a ribbon-topped preview panel before starting the deal.
+The Home button still opens the welcoming home screen. Small screens can pan
+the map horizontally without making the document overflow.
+
+The wheel uses saved earned spins and credits rewards before animation, matching
+Windows accounting. Eight segments have equal odds; one welcome spin is followed
+by one spin per five completed hands. No reward requires a server or purchase.
+
+New deals use MP19 and 32 formation families. MP16 and MP18 remain supported.
+Cards deal from the stock without replacing the tableau during later moves.
+Chapter scenery has seeded ornament placement and eight lighting/weather
+families over shared original painted foundations. These are procedural variations,
+not separate painted artwork for every chapter. Reduced motion skips flights
+and uses an immediate wheel result.

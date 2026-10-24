@@ -12,6 +12,8 @@ public sealed class GameSession
     public IEconomyPolicy Economy { get; }
     public PowerupCatalog Powerups { get; }
     public ICampaignCatalog Campaign { get; }
+    public PrizeWheel Wheel { get; }
+    public WheelPrize? SpinWheel(){var prize=Wheel.Spin();if(prize!=null)Save();return prize;}
     public PicnicTrail Picnic { get; }
     public Progress Profile { get; }
     public Wallet Wallet { get; }
@@ -27,7 +29,7 @@ public sealed class GameSession
 
     public GameSession(ISolitaireFactory solitaire, ICoinGameFactory coinGames,
         IProfileStore store, IEconomyPolicy economy, PowerupCatalog powerups,
-        IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null, IPicnicPolicy? picnicPolicy = null)
+        IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null, IPicnicPolicy? picnicPolicy = null, IPrizeWheelPolicy? wheelPolicy = null)
     {
         if (economy.GardenInterval <= 0 || economy.UndoCost < 0 || economy.DailyGift < 0 || economy.GardenGift < 0 || economy.ChapterGift < 0 || economy.ChapterWilds < 0)
             throw new ArgumentException("Invalid economy policy.", nameof(economy));
@@ -45,6 +47,7 @@ public sealed class GameSession
         LoadWarning = warning;
         Wallet = new(Profile);
         Inventory = new(Profile);
+        Wheel=new(Profile,Wallet,Inventory,random,wheelPolicy);
         Picnic = new(Profile,clock,Wallet,Inventory,Powerups,picnicPolicy);
         if(Profile.ActiveGarden is {} garden && coinGames is IPersistentCoinGameFactory persistent)CoinGame=persistent.Restore(garden);
         if (Profile.Active != null)
@@ -108,7 +111,7 @@ public sealed class GameSession
         if(!Profile.Favorites.Add(level)) Profile.Favorites.Remove(level);
         return true;
     }
-    public string? ShareCode => Hand==null || Hand.Deal.Generation is not ("MP16" or "MP18") ? null : DealCodes.Encode(new(Level,Seed,Endless,Hand.Deal.Generation));
+    public string? ShareCode => Hand==null || Hand.Deal.Generation is not ("MP16" or "MP18" or "MP19") ? null : DealCodes.Encode(new(Level,Seed,Endless,Hand.Deal.Generation));
     public bool StartSharedDeal(string code)
     {
         if(!DealCodes.TryParse(code,out var reference) || reference==null || !reference.Endless && reference.Level>Profile.Unlocked) return false;

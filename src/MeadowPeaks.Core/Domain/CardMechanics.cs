@@ -70,8 +70,9 @@ public sealed class AdventureDealProvider : IDealProvider
 {
     readonly IDealProvider source;
     readonly IDifficultyProgression progression;
-    public AdventureDealProvider(IDealProvider source, IDifficultyProgression? progression = null)
-    { this.source = source; this.progression = progression ?? new CampaignProgression(); }
+    readonly string? generation;
+    public AdventureDealProvider(IDealProvider source, IDifficultyProgression? progression = null,string? generation=null)
+    { this.source = source; this.progression = progression ?? new CampaignProgression(); this.generation=generation; }
     public Deal Generate(int seed, int level)
     {
         var deal = source.Generate(seed, level);
@@ -115,7 +116,7 @@ public sealed class AdventureDealProvider : IDealProvider
         // Only remove reserve draws after the witness prefix; never its solution draws.
         int keep = Math.Max(draws, deal.Stock.Count-profile.ReserveTrim);
         bool story=deal.Layout.Any(s=>s.DrawX.HasValue);
-        return new Deal { Generation = story ? "MP18" : "MP16", Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
-            Solution = solution, TemporaryRules = true, Bonus = level%25==0, OpeningEffect = level%25 != 0 ? "" : level >= 900 && level/25%3==0 ? "shelter" : level >= 700 && level/25%3==1 ? "harvest" : level >= 600 ? "glow" : "", Formation = story ? StoryLayouts.NameFor(level) : AdventureLayouts.NameFor(level), Difficulty = profile };
+        return new Deal { Generation = generation ?? (story ? "MP18" : "MP16"), Layout = deal.Layout, Cards = cards, Stock = deal.Stock.Take(keep).ToArray(), Waste = deal.Waste,
+            Solution = solution, TemporaryRules = true, Bonus = level%25==0, OpeningEffect = level%25 != 0 ? "" : level >= 900 && level/25%3==0 ? "shelter" : level >= 700 && level/25%3==1 ? "harvest" : level >= 600 ? "glow" : "", Formation = generation=="MP19" ? StoryLayoutsV2.NameFor(level) : story ? StoryLayouts.NameFor(level) : AdventureLayouts.NameFor(level), Difficulty = profile };
     }
 }

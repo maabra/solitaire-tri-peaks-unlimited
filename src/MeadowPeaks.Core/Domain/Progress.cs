@@ -2,6 +2,7 @@ namespace MeadowPeaks;
 
 public sealed class Progress
 {
+    public int WheelSpinsUsed { get; set; }
     public double FreshDealCooldown { get; set; }
     public long GardenRefreshAt { get; set; }
     public GemRun? ActiveGarden { get; set; }

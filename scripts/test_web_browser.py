@@ -16,6 +16,24 @@ async def main():
         errors=[]
         page.on('pageerror', lambda e: errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/', wait_until='networkidle')
+        await page.screenshot(path=str(OUT/'adventure-map.png'),full_page=True)
+        assert await page.locator('.story-node').count()==20
+        await page.locator('[data-action="wheel"]').click()
+        await page.screenshot(path=str(OUT/'lucky-wheel.png'),full_page=True)
+        await page.locator('[data-action="spinWheel"]').click()
+        await page.wait_for_function("document.querySelector('#wheel-result').textContent.startsWith('You found')")
+        assert (await page.evaluate('JSON.parse(localStorage.getItem("meadow-peaks-profile")).WheelSpinsUsed'))==1
+        assert await page.locator('[data-action="spinWheel"]').is_disabled()
+        await page.locator('[data-action="close"]').click()
+        await page.reload()
+        await page.locator('[data-action="wheel"]').click()
+        assert await page.locator('[data-action="spinWheel"]').is_disabled()
+        await page.locator('[data-action="close"]').click()
+        await page.locator('[data-action="preview:1"]').click()
+        assert 'Clear all cards!' in await page.locator('.level-preview').inner_text()
+        await page.screenshot(path=str(OUT/'level-preview.png'),full_page=True)
+        await page.locator('[data-action="close"]').click()
+        await page.locator('[data-action="home"]').first.click()
         await page.screenshot(path=str(OUT/'home.png'), full_page=True)
         await page.locator('[data-action="continue"]').click()
         assert await page.locator('.tool').count()==3
@@ -61,6 +79,7 @@ async def main():
         page=await context.new_page()
         page.on('pageerror',lambda e: errors.append(str(e)))
         await page.goto('http://127.0.0.1:8765/')
+        await page.locator('[data-action="home"]').first.click()
         await page.locator('[data-action="continue"]').click()
         assert 'Level 2,104' in await page.locator('h1').inner_text()
         assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')

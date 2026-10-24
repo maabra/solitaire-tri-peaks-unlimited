@@ -23,7 +23,7 @@ static class StoryTests
         check(session.HelperDiscovered("thaw")&&session.HelperRelevant("thaw"),"Playing an ice level discovers its helper");
         session.StartHand(1,false);
         check(!session.HelperRelevant("thaw"),"Irrelevant helpers disappear on return to a normal board");
-        check(share.StartsWith("MP18-")&&session.StartSharedDeal(share),"Story deals use a new reproducible code generation");
+        check(share.StartsWith("MP19-")&&session.StartSharedDeal(share),"Story deals use a new reproducible code generation");
         check(session.StartSharedDeal(DealCodes.Encode(new(1,105726,false)))&&session.Hand!.Deal.Generation=="MP16","Old MP16 deal codes still use their original generator");
         int count=all?MeadowCampaign.TotalLevels:512;
         var patterns=new HashSet<string>();

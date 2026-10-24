@@ -3,7 +3,9 @@
 export function patchBoard(host,markup,incremental,reduced){
  const template=document.createElement('template');template.innerHTML=markup;
  const board=host.querySelector('.board'),next=template.content;
- if(!incremental||!board){host.replaceChildren(next);if(!reduced)for(const card of host.querySelectorAll('.board .card')){card.classList.add('entering');setTimeout(()=>card.classList.remove('entering'),500)}return}
+ if(!incremental||!board){host.replaceChildren(next);if(!reduced){const stock=host.querySelector('[data-action="draw"]')?.getBoundingClientRect();if(stock)for(const [i,card]of [...host.querySelectorAll('.board .card')].entries()){const to=card.getBoundingClientRect(),dx=stock.x+stock.width/2-to.x-to.width/2,dy=stock.y+stock.height/2-to.y-to.height/2,angle=card.style.getPropertyValue('--angle')||'0deg';card.animate([{transform:`translate(${dx}px,${dy}px) rotate(-8deg) scale(.8)`,opacity:0},{transform:`translate(${dx*.8}px,${dy*.8}px) rotate(-5deg) scale(.9)`,opacity:1,offset:.15},{transform:`translate(0,0) rotate(${angle}) scale(1)`,opacity:1}],{duration:430,delay:i*18,easing:'cubic-bezier(.2,.7,.3,1)',fill:'backwards'})}}return}
+
+ const oldTableauCount=board.children.length;
  const fresh=next.querySelector('.board');
  for(const card of [...board.children])if(!fresh.querySelector(`[data-action="${card.dataset.action}"]`)){
   if(!reduced){const target=host.querySelector('.hand-row .pile:nth-child(3) .card'),from=card.getBoundingClientRect(),to=target.getBoundingClientRect(),copy=card.cloneNode(true),w=card.offsetWidth,h=card.offsetHeight;
@@ -26,7 +28,7 @@ export function patchBoard(host,markup,incremental,reduced){
  const stock=host.querySelector('[data-action="draw"]'),newStock=next.querySelector('[data-action="draw"]');
  const oldCount=Number(host.querySelector('.stock-count')?.textContent),nextCount=Number(next.querySelector('.stock-count')?.textContent);
  // Draw feedback is local: never replace or redeal the tableau.
- if(!reduced&&nextCount===oldCount-1){
+ if(!reduced&&nextCount===oldCount-1&&fresh.children.length===oldTableauCount&&host.querySelector('.hand-row .pile:nth-child(3) .card').innerHTML!==next.querySelector('.hand-row .pile:nth-child(3) .card').innerHTML){
   const destination=host.querySelector('.hand-row .pile:nth-child(3) .card'),face=next.querySelector('.hand-row .pile:nth-child(3) .card');
   const from=stock.getBoundingClientRect(),to=destination.getBoundingClientRect(),copy=face.cloneNode(true);
   copy.removeAttribute('data-action');copy.style.cssText=`position:fixed;left:${from.x}px;top:${from.y}px;width:${from.width}px;height:${from.height}px;--cw:${from.width}px;z-index:10000;pointer-events:none`;
@@ -36,7 +38,7 @@ export function patchBoard(host,markup,incremental,reduced){
  const waste=host.querySelector('.hand-row .pile:nth-child(3) .card');
  const newWaste=next.querySelector('.hand-row .pile:nth-child(3) .card');
  if(waste&&newWaste){waste.className=newWaste.className;if(waste.innerHTML!==newWaste.innerHTML)waste.innerHTML=newWaste.innerHTML}
- for(const selector of ['.run-stat:first-child','.run-stat:last-child','.stock-count','.hand-row .pile small','.subhead .meta','.tools','.play-actions']){
+ for(const selector of ['.run-stat:first-child','.run-stat:last-child','.stock-count','.hand-row .pile small','.subhead .meta','.star-meter','.tools','.play-actions']){
   const old=host.querySelector(selector),fresh=next.querySelector(selector);
   if(old&&fresh&&old.innerHTML!==fresh.innerHTML)old.innerHTML=fresh.innerHTML;
  }

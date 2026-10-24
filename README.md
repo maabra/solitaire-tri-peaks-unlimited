@@ -3,13 +3,13 @@
 A Windows and browser solitaire game with an original illustrated countryside,
 large cards, **480,000 adventure levels**, an endless mode, and a match-three coin garden.
 
-![Meadow Peaks](docs/home.png)
+![Meadow Peaks adventure map](docs/adventure-map.png)
 
 ## Play on Windows
 
-The latest local build is **`MeadowPeaks-1.6.exe`** (the existing `MeadowPeaks.exe` may still be an earlier running build). Close an older game before opening the new one so both do not save the same profile.
+The latest local build is **`MeadowPeaks-1.9.exe`** (the existing `MeadowPeaks.exe` may still be an earlier running build). Close an older game before opening the new one so both do not save the same profile.
 
-The easiest release option is **`MeadowPeaks.exe`**, the single-file Windows x64 build.
+Download [MeadowPeaks-1.9.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v1.9.0/MeadowPeaks-1.9.exe), the single-file Windows x64 build.
 Double-click it to play. No extraction, installer, administrator access, .NET
 installation, or internet connection is needed. It bundles the game, runtime,
 and license notices. The first launch extracts its bundled runtime to a local
@@ -25,8 +25,8 @@ packages are in `artifacts/` and are intentionally excluded from Git.
 ## What's included
 
 - 480,000 distinct, reproducible adventure deals across 24,000 map chapters and 20 themed worlds.
-- 480,000 distinct generated adventure formations plus classic opening boards, drawn from a standard 52-card base deck. Later tiers trim only surplus stock. The first four levels introduce the rules; every later campaign level has its own formation. Mirrored and horizontally shifted duplicates are rejected.
-- 4-8 overlapping card rows with adaptive card placement and readable exposed cards.
+- 480,000 distinct generated adventure formations plus classic opening boards, drawn from a standard 52-card base deck. Later tiers trim only surplus stock. The first four levels introduce the rules; every later campaign level has its own formation.
+- 32 formation families with rotated fans, rings, scattered packets and five-to-eight stacks, with explicit cover relationships and readable exposed cards.
 - Armored cards start at two hits and cap at four; vines start at two consecutive clears and cap at three. Lantern, clover and shield cards start temporary effects.
 - Ice cards that thaw through clears, keys and locks, move-count bombs, +3 stock gifts, and upward/downward +2 stock rewards. Gift cards arrive at 50, then ice at 100, locks at 200, bombs at 300, directional cards at 400, armor at 500, lanterns at 600, clovers at 700, vines at 800 and shields at 900.
 - Every 100 levels introduces or emphasizes a component. After level 900, rotating upgrades add thicker ice, multi-key locks, tighter fuses, layered armor, longer vine streaks and smaller stock reserves. Strength caps keep the endgame fair; later tiers vary combinations.
@@ -183,3 +183,36 @@ a layered stock fan and a short stock-to-waste flight without refreshing the tab
 Reduced-motion settings suppress the flight. Existing progression, consumables,
 one-hour Fresh Garden cooldown, saved hands and shared deal codes remain compatible.
 See [web presentation notes](docs/WEB.md) for details.
+
+
+Live star preview (1.8.2)
+The play screen now shows a three-star progress meter in Windows and web. Clear
+the entire board to earn the displayed stars: one for completion, two with a best
+uninterrupted streak of at least 5, three with at least 9. Drawing resets the
+current streak, but your best streak still counts. Undo restores the previous
+best streak and updates the meter. The display previews existing rewards; it does
+not grant coins or stars before completion. This follows the compact, visible
+progress feedback in the second supplied gameplay recording, using original art.
+
+
+### 1.9: illustrated adventure menu and earned prize wheel
+
+The game now opens on an illustrated village map with a winding trail, raised
+level markers, a chapter ribbon and activity buttons. Selecting a level opens a
+star preview with a Play button. The home screen remains available through Home.
+
+- Lucky wheel: one welcome spin, then one additional spin per five solitaire
+  wins. Eight equal-probability segments award 25/40/50/75/100 coins or one Wild,
+  Fresh Cards or Remove consumable. Rewards and spent spins persist immediately.
+- 32 formation families, including five to eight tilted islands, spirals,
+  diamond packets, bouquets and double ribbons. Every deal still has a verified
+  legal removal path. New hands use MP19; MP16 and MP18 codes retain their generators.
+- Cards deal outward from the stock, and the live three-star meter previews
+  existing streak rewards. Normal stock draws keep their cooldown.
+- Chapter scenery uses seeded decorative placement and eight lighting/weather
+  treatments, including snow and night. It combines procedural variation with
+  shared original painted backgrounds, rather than 24,000 separate paintings.
+- All play and rewards work locally. There are no purchases, ads, accounts,
+  leaderboards, multiplayer or network-dependent reward systems.
+
+Reference videos and extracted frames remain excluded from distributions.

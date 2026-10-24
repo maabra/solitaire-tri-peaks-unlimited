@@ -144,3 +144,36 @@ CARD PRESENTATION (1.8.1)
 Read the large central rank and the suit in the upper corner. Red cards are hearts
 and diamonds; dark cards are spades and clubs. The browser animates a stock card
 moving to the waste when you draw. Enable Reduced motion to skip this flight.
+
+
+Live star preview (1.8.2)
+The play screen now shows a three-star progress meter in Windows and web. Clear
+the entire board to earn the displayed stars: one for completion, two with a best
+uninterrupted streak of at least 5, three with at least 9. Drawing resets the
+current streak, but your best streak still counts. Undo restores the previous
+best streak and updates the meter. The display previews existing rewards; it does
+not grant coins or stars before completion. This follows the compact, visible
+progress feedback in the second supplied gameplay recording, using original art.
+
+ADVENTURE MENU (1.9)
+The illustrated map is now the opening menu. Follow the sandy trail and tap an
+unlocked level marker. The level panel shows your saved stars, formation and bag;
+press Play to begin. Grey markers unlock as you clear earlier levels. Use the
+side activities for Gem Garden, the Lucky Wheel, your Journal and Endless. On a
+small browser screen, swipe the map sideways. Chapter arrows and Go to level
+let you browse; My next level finds your current stop. Home keeps the welcoming
+messages and other garden activities.
+
+LUCKY WHEEL
+You receive one welcome spin, then one more for every five solitaire wins,
+including replay and endless wins. Spins cannot be bought. Eight equal segments
+award coins (25, 40, 50, 75 or 100) or one Wild, Fresh Cards or Remove helper.
+The prize is saved when a spin starts, so closing the wheel cannot lose a prize
+or repeat it. Helpers are single-use and keep their normal temporary durations.
+
+FORMATIONS AND SCENERY
+New deals rotate through 32 formation families, with additional tilted packets,
+five to eight islands, spirals, bouquets and double ribbons. Existing saved
+hands and MP16/MP18 deal codes keep their original formations. New codes use MP19.
+Chapter-specific decorative placement and lighting/weather change the backdrop.
+Reduced motion skips card deal flights and the long wheel spin.

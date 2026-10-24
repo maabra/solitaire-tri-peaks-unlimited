@@ -4,6 +4,10 @@ namespace MeadowPeaks;
 
 internal sealed class GameButton : Control
 {
+    public double RevealAt { get; set; } = -1;
+    public bool MapNode { get; set; }
+    public bool CurrentNode { get; set; }
+    public string MenuIcon { get; set; } = "";
     public string Subtitle { get; set; } = "";
     public Color Fill { get; set; }
     public Color Fore { get; set; }
@@ -28,7 +32,7 @@ internal sealed class GameButton : Control
         float previous = entry, oldHover = hoverAmount;
         entry = reduced ? 1 : Math.Clamp((float)(time - entryTime) / .36f, 0, 1);
         hoverAmount = reduced ? (hover ? 1 : 0) : hoverAmount + ((hover ? 1 : 0) - hoverAmount) * .24f;
-        if (entry < 1 || previous != entry || Math.Abs(oldHover - hoverAmount) > .005f || (Hint && !reduced) || MatchGlow > 0 || VisualOffset != PointF.Empty) Invalidate();
+        if (now<RevealAt+.1 || entry < 1 || previous != entry || Math.Abs(oldHover - hoverAmount) > .005f || (Hint && !reduced) || MatchGlow > 0 || VisualOffset != PointF.Empty) Invalidate();
     }
     bool hover;
     readonly IGameArtwork artwork;
@@ -41,7 +45,8 @@ internal sealed class GameButton : Control
         SetStyle(ControlStyles.Selectable|ControlStyles.ResizeRedraw,true);
         MouseEnter += (_, _) => { hover = true; Invalidate(); }; MouseLeave += (_, _) => { hover = false; Invalidate(); };
     }
-    public void PerformClick() { if(Enabled) OnClick(EventArgs.Empty); }
+    public void PerformClick() { if(Enabled&&now>=RevealAt) OnClick(EventArgs.Empty); }
+    protected override void OnClick(EventArgs e){if(now>=RevealAt)base.OnClick(e);}
     protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if(e.Button==MouseButtons.Left) {Focus();pressed=true;Invalidate();} }
     protected override void OnMouseUp(MouseEventArgs e) { pressed=false;Invalidate();base.OnMouseUp(e); }
     protected override void OnKeyDown(KeyEventArgs e) { base.OnKeyDown(e); if(e.KeyCode is Keys.Enter or Keys.Space) {PerformClick();e.Handled=true;e.SuppressKeyPress=true;} }
@@ -56,6 +61,7 @@ internal sealed class GameButton : Control
     }
     protected override void OnPaint(PaintEventArgs e)
     {
+        if(now<RevealAt)return;
         var g = e.Graphics; g.SmoothingMode = SmoothingMode.AntiAlias;
         g.TranslateTransform(VisualOffset.X, VisualOffset.Y);
         var r = new RectangleF(1, 1, Width - 3, Height - 7);
@@ -82,9 +88,11 @@ internal sealed class GameButton : Control
         else
         {
             if(pressed) g.TranslateTransform(0,2);
-            HandmadeArt.Button(g,r,Fill,Enabled,hoverAmount,Name.StartsWith("level"));
+            if(MapNode)AdventureMapArt.Node(g,r,Fill,Enabled,CurrentNode);else HandmadeArt.Button(g,r,Fill,Enabled,hoverAmount,false);
+            if(MenuIcon.Length>0)AdventureMapArt.Icon(g,r,MenuIcon);
             using var font = new Font(Text.Any(char.IsSurrogate) ? "Segoe UI Emoji" : "Segoe UI", Math.Max(11, Height * .27f), Text.Any(char.IsSurrogate) ? FontStyle.Regular : FontStyle.Bold, GraphicsUnit.Pixel);
-            if(Subtitle.Length==0) HandmadeArt.Label(g,Text,font,r,Enabled ? Fore : Color.FromArgb(77,98,88));
+            if(MenuIcon.Length>0){using var small=new Font("Segoe UI",Math.Max(9,Height*.14f),FontStyle.Bold,GraphicsUnit.Pixel);HandmadeArt.Label(g,Text,small,new(0,Height*.73f,Width,Height*.22f),Color.FromArgb(255,245,214));}
+            else if(Subtitle.Length==0) HandmadeArt.Label(g,Text,font,r,MapNode ? Color.White : Enabled ? Fore : Color.FromArgb(77,98,88));
             else
             {
                 HandmadeArt.Label(g,Text,font,new(5,3,Width-10,Height*.53f),Enabled ? Fore : Color.FromArgb(77,98,88));

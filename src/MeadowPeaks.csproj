@@ -6,11 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>MeadowPeaks</AssemblyName>
-    <Version>1.8.1</Version>
+    <Version>1.9.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/MeadowPeaks.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../web/assets/adventure-village.png" LogicalName="MeadowPeaks.AdventureVillage.png" />
     <EmbeddedResource Include="../web/assets/story-meadow.png" LogicalName="MeadowPeaks.StoryMeadow.png" />
     <Compile Remove="MeadowPeaks.Core/**/*.cs" />
     <ProjectReference Include="MeadowPeaks.Core/MeadowPeaks.Core.csproj" />

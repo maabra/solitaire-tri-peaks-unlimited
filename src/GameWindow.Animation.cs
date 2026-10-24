@@ -40,6 +40,8 @@ public sealed partial class GameWindow
         if (overlay == "win") backdropDirty = true;
         foreach (var button in Controls.OfType<GameButton>()) button.Advance(effects.Time, profile.ReducedMotion);
         UpdateGemAnimation();
+        AdvanceWheel();
+        if(effects.Time<dealUntil+.1){backdropDirty=true;Invalidate();}
     }
     void RefreshBackdrop()
     {
@@ -52,8 +54,21 @@ public sealed partial class GameWindow
         previous?.Dispose();
     }
     string GardenRefreshCaption() => session.GardenRefreshRemaining>0 ? "Fresh garden " + TimeSpan.FromSeconds(Math.Ceiling(session.GardenRefreshRemaining)).ToString(@"hh\:mm\:ss") : "Fresh garden";
+    readonly Dictionary<int,double> dealReveals=new();
+    double dealUntil=-100,dealStarted=-100;
     void PresentSceneEntrance()
     {
+        if(screen=="play"&&hand!=null&&!profile.ReducedMotion)
+        {
+            dealStarted=effects.Time;dealReveals.Clear();int order=0;
+            for(int index=0;index<hand.Removed.Count;index++)if(!hand.Removed[index])
+            {
+                float delay=order++*.018f;effects.Add(new DealingCard(hand.Deal.Cards[index],hand.IsExposed(index),new(469,600),CardCenter(index),hand.Deal.Layout[index].Angle,delay));
+                dealReveals[index]=effects.Time+delay+.43;
+                if(Controls.Find("card"+index,false).FirstOrDefault() is GameButton card)card.RevealAt=effects.Time+delay+.43;
+            }
+            dealUntil=effects.Time+order*.018+.48;return;
+        }
         int i = 0;
         foreach (var button in Controls.OfType<GameButton>().Where(b => b.Name.StartsWith("card") || b.Name.StartsWith("level") || b.Name.StartsWith("gem"))) button.BeginEntrance(effects.Time, i++ * .018f);
     }
@@ -130,6 +145,8 @@ public sealed partial class GameWindow
         if(profile.ReducedMotion){reducedGemFrame=animated.LastAnimation.FirstOrDefault(f=>f.Kind==GemFrameKind.Match);reducedGemUntil=effects.Time+.22;return;}
         gemAnimation = new(animated.LastAnimation, effects.Time);
         UpdateGemAnimation();
+        AdvanceWheel();
+        if(effects.Time<dealUntil+.1){backdropDirty=true;Invalidate();}
     }
     void UpdateGemAnimation()
     {
