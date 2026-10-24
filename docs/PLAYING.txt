@@ -122,3 +122,11 @@ Tab/Enter: select/play. D: draw. U: undo. W: Wild. H: 3-second hint.
 Esc: close/home. F11: maximize. Buttons work with mouse or keyboard.
 Saves: %LOCALAPPDATA%\MeadowPeaks\progress.json (plus backup).
 Old saves keep their original active board. New hands use the new generator.
+
+FRESH CARD TIMERS (1.7)
+Every stock draw recharges for 2 seconds. You may play cards during the wait.
+Undo and saving do not bypass the recharge. Fresh-deal remix waits 30 seconds.
+The +5 rescue helper creates five cards with a 10-second use window. Unused
+rescue cards disappear; ordinary stock and card-gift rewards do not expire.
+Effect clocks pause on menus, guides and inactive windows. No level countdown.
+Browser: Settings can export/import compatible progress JSON files.

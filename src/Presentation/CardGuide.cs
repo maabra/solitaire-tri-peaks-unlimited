@@ -75,6 +75,6 @@ public sealed partial class GameWindow
         Art.Text(g,"1. Clear covering cards to reveal the cards underneath.",292,433,18,artwork.Ink);
         Art.Text(g,"2. No match? Draw a new card from the stock. Aces wrap to Kings.",292,471,18,artwork.Ink);
         Art.Text(g,"3. Clear the whole board to win coins. Helpers are optional and one-use.",292,509,18,artwork.Ink);
-        Art.Text(g,"No level countdown. Hints and boosts last only a few seconds.\nKeys: D draw - U undo - H hint - W Wild - Esc back - F11 maximize",280,551,14,artwork.Teal,false,720,true);
+        Art.Text(g,"No level countdown. Stock draws recharge in 2s; helpers last a few seconds.\nKeys: D draw - U undo - H hint - W Wild - Esc back - F11 maximize",280,551,14,artwork.Teal,false,720,true);
     }
 }

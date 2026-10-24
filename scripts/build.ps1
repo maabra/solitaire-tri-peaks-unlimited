@@ -29,7 +29,7 @@ try {
     New-Item -ItemType Directory -Path $docOutput -Force | Out-Null
     Get-ChildItem -LiteralPath docs -File | Copy-Item -Destination $docOutput -Force
     # Ship game files and runtime notices; exclude diagnostic screenshots and reports.
-    $files = Get-ChildItem -LiteralPath $output -Force | Where-Object { $_.Name -ne 'screenshots' -and $_.Name -ne 'smoke-result.txt' -and $_.Extension -ne '.pdb' }
+    $files = Get-ChildItem -LiteralPath $output -Force | Where-Object { $_.Name -ne 'screenshots' -and $_.Name -ne 'smoke-result.txt' -and $_.Name -ne 'MeadowPeaks-startup.txt' -and $_.Name -ne 'MeadowPeaks-error.txt' -and $_.Extension -ne '.pdb' }
     Compress-Archive -LiteralPath $files.FullName -DestinationPath artifacts/MeadowPeaks-win-x64.zip -Force
     Write-Output "Ready: $projectRoot/artifacts/MeadowPeaks-win-x64.zip"
 } finally { Pop-Location }

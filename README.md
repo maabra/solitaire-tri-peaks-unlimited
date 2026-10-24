@@ -158,3 +158,9 @@ and are MIT licensed. Reference games are inspiration for familiar
 TriPeaks mechanics, not dependencies or affiliated products. The optional sound
 uses Windows' built-in notification chime. Bundled Microsoft runtime files are
 covered by their included licenses and third-party notices.
+
+## Browser edition and release 1.7
+
+Play without installing through GitHub Pages once the repository Pages source is set to GitHub Actions. [Browser setup and parity contract](docs/WEB.md). The browser game includes the same campaign, card mechanics, helpers, coins and Gem Garden, with compatible exported saves and deal codes.
+
+Release 1.7 replaces native button painting to remove black corners and keep animated labels centered, adds illustrated explanations, and handles startup errors in a readable report. Stock draws now have a 2-second cooldown; +5 rescue cards expire after 10 seconds; fresh deals recharge for 30 seconds. No level countdown or permanent boosts.

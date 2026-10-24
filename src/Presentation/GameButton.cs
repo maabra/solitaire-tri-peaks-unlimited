@@ -89,6 +89,13 @@ internal sealed class GameButton : Control
             Art.Box(g, new(r.X + 3, r.Bottom - r.Height * .25f, r.Width - 6, r.Height * .23f), tint, 4);
             Art.Text(g, CardBadge, r.X + 2, r.Bottom - r.Height * .23f, Math.Max(8, r.Width * .125f), Color.White, true, r.Width - 4, true);
         }
+        if (CardValue != null && !Face && CardBadge.Length > 0)
+        {
+            var clock = new RectangleF(r.X+5,r.Y+r.Height*.38f,r.Width-10,r.Height*.27f);
+            Art.Box(g,clock,artwork.Cream,6);
+            using var timerFont=new Font("Segoe UI",Math.Max(11,r.Width*.22f),FontStyle.Bold,GraphicsUnit.Pixel);
+            HandmadeArt.Label(g,CardBadge,timerFont,clock,artwork.Ink);
+        }
         if (Hint && !reducedMotion)
         {
             using var pen = new Pen(Color.FromArgb(85 + (int)(70 * Math.Sin(now * 3)), artwork.Gold), 2);

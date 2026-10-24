@@ -194,12 +194,12 @@ public sealed partial class GameWindow : Form
         }
         if (!endless) Button("favorite", profile.Favorites.Contains(level) ? "\u2605 Saved" : "\u2606 Save", 449, 117, 88, 42, () => { session.ToggleFavorite(level); Save(); Build(); }, artwork.Gold);
         var draw = Button("draw", "", 426, 540, 86, 119, Draw);
-        draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = (hand as ITemporaryHand)?.Effects.DrawCooldown<=0 && hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
+        draw.CardValue = new(1, 0); draw.Face = false; draw.AccessibleName = $"Draw a card. {hand.Stock.Count} left"; draw.Enabled = ((hand as ITemporaryHand)?.Effects.DrawCooldown ?? 0)<=0 && hand.Stock.Count > 0 && !hand.Won && (hand as IAdventureHand)?.Failed != true;
         var waste = Button("waste", "", 561, 540, 86, 119, () => Tell("Play one rank higher or lower. Aces connect Kings and Twos."));
         waste.CardValue = hand.Waste; waste.TabStop = false; waste.AccessibleName = "Waste pile " + Art.Rank(hand.Waste.Rank);
         Button("hint", "\U0001f50e Hint 3s", 742, 551, 156, 47, Hint, enabled:(hand as ITemporaryHand)?.Effects.HintCooldown<=0);
         Button("retry", "Replay deal", 742, 609, 156, 43, () => { confirmAction = () => { session.Replay(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("retry"); });
-        Button("remix", "\U0001f3b2 Remix", 140, 609, 110, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); });
+        Button("remix", profile.FreshDealCooldown>0 ? $"Fresh in {Math.Ceiling(profile.FreshDealCooldown)}s" : "\U0001f3b2 Remix", 140, 609, 110, 43, () => { confirmAction = () => { session.Remix(); selectedPowerup = null; overlay = ""; Save(); Build(); }; ShowOverlay("remix"); },enabled:profile.FreshDealCooldown<=0);
         Button("shareDeal", "\U0001f517 Share", 260, 609, 110, 43, () => ShowOverlay("share"));
         Button("undo", hand.FreeUndos > 0 ? $"↶  Undo · {hand.FreeUndos} free" : $"↶  Undo · {session.Economy.UndoCost} coins", 158, 698, 210, 57, Undo, enabled: hand.CanUndo);
         var helpers = session.Powerups.All.Skip(powerupPage * 3).Take(3).ToArray();
