@@ -15,6 +15,14 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '6.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify shared browser engine and save compatibility
+        run: node --test web/tests/engine.test.mjs
       - name: Prepare portable shared renderer
         shell: pwsh
         run: ./scripts/prepare_webview_runtime.ps1
@@ -30,6 +38,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: MeadowPeaks-win-x64
+          compression-level: 0
           path: |
             artifacts/MeadowPeaks-win-x64.zip
             artifacts/MeadowPeaks.exe

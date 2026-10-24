@@ -11,7 +11,7 @@ try {
     if ($OfflineInstalledRuntime) {
         dotnet publish src/MeadowPeaks.csproj -c Release --self-contained false -o artifacts/framework-dependent --ignore-failed-sources
         if ($LASTEXITCODE -ne 0) { throw 'Publish failed.' }
-        python scripts/offline_bundle.py artifacts/framework-dependent artifacts/MeadowPeaks-win-x64
+        python scripts/offline_bundle.py artifacts/framework-dependent $output
         if ($LASTEXITCODE -ne 0) { throw 'Offline runtime bundling failed.' }
     } else {
         dotnet publish src/MeadowPeaks.csproj -c Release -r win-x64 --self-contained true -p:DebugType=None -o $output

@@ -2,7 +2,7 @@ name: Play on GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['web/**', 'shared/**', '.github/workflows/pages.yml']
+    paths: ['web/**', 'shared/**', 'src/MeadowPeaks.csproj', 'scripts/package_web.py', 'LICENSE', '.github/workflows/pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,14 +22,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - run: node --test web/tests/engine.test.mjs
       - uses: actions/configure-pages@v5
       - name: Stage original browser game
         run: |
-          mkdir -p _site
-          cp web/index.html web/style.css web/icon.svg web/app.mjs web/core.mjs web/session.mjs web/game-art.mjs web/chapter-scene.mjs web/adventure-map.mjs web/story-layouts-v2.mjs web/story-layouts.mjs web/helper-discovery.mjs web/board-view.mjs web/gem-view.mjs web/gem-art.mjs _site/
-          cp -r web/assets _site/assets
-          cp LICENSE _site/LICENSE.txt
+          python scripts/package_web.py
+          python -m zipfile -e artifacts/MeadowPeaks-web.zip _site
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
