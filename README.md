@@ -173,3 +173,13 @@ coin bursts, falling gems and cascades. Helpers follow mechanic discovery and
 level relevance. Fresh Garden recharges for one hour in real time and preserves
 the board and deadline across restarts. Flowery scene messages remain;
 promotional free/no-purchases claims have been removed from the interface.
+
+
+### 1.8.1 card presentation
+
+The Windows and web games now use large, easily scanned central card ranks with
+small corner suits, informed by the supplied gameplay recording. The browser adds
+a layered stock fan and a short stock-to-waste flight without refreshing the tableau.
+Reduced-motion settings suppress the flight. Existing progression, consumables,
+one-hour Fresh Garden cooldown, saved hands and shared deal codes remain compatible.
+See [web presentation notes](docs/WEB.md) for details.

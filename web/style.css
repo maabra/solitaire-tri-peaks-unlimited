@@ -13,3 +13,15 @@
 .gems{position:relative;overflow:hidden}.gem.matched{outline:3px solid #fff2a1;filter:brightness(1.25);box-shadow:0 0 18px #fff2aa,inset 0 0 0 2px #fff9;z-index:1}.gem-links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;filter:drop-shadow(0 0 6px #ffd965)}.gem-links path{fill:none;stroke:#fff5bc;stroke-width:6;stroke-linecap:round;animation:gembeam .48s ease-in-out}.gem-reward{position:absolute;z-index:3;transform:translate(-50%,-90%);padding:8px 12px;border-radius:20px;background:#fff0aa;color:#785b20;border:2px solid #dcaf4c;font:bold 17px system-ui;white-space:nowrap;box-shadow:0 4px 10px #25452d44;animation:gemreward .6s ease-out}@keyframes gembeam{from{opacity:0;stroke-width:1}50%{opacity:1;stroke-width:9}to{opacity:.6;stroke-width:4}}@keyframes gemreward{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 -8px}}
 
 .gem{display:grid;place-items:center;background:linear-gradient(145deg,#ffffff22,#0b302b22)!important;border-color:#bfe1c155;box-shadow:inset 0 1px 2px #def5cf44,0 2px 2px #17382e44}.gem:disabled{opacity:1;cursor:default}.jewel{width:82%;height:82%;overflow:visible;filter:drop-shadow(0 3px 1px #143e3d66)}.gem.matched .jewel{filter:brightness(1.2) drop-shadow(0 0 8px #fff4b0)}
+
+/* Rank-first story faces: a clean silhouette, legible even in layered fans. */
+.card:not(.back){background:linear-gradient(135deg,#fffef8,#fff9e9);border:1px solid #b8b4a7;box-shadow:0 3px 1px #25483d55,inset 0 0 0 3px #fff;isolation:isolate}
+.card .rank{position:absolute;left:8%;top:4%;font:bold calc(var(--cw,76px)*.22) system-ui;line-height:1.1}
+.card .rank small{display:none}
+.card .face-suit{position:absolute;right:8%;top:3%;font:bold calc(var(--cw,76px)*.25) system-ui;line-height:1.15}
+.card .face-rank{position:absolute;inset:23% 0 0;display:flex;align-items:center;justify-content:center;font:900 calc(var(--cw,76px)*.78)/1 system-ui;letter-spacing:-.065em;padding-right:.065em;text-shadow:0 1px #fff,1px 1px #172c3440}
+.card.red .face-rank{color:#b63e37}.card:not(.red) .face-rank{color:#263a48}
+.card .obstacle{z-index:3}.card-lock{z-index:4}
+.pile:has([data-action="draw"]){isolation:isolate}
+.pile:has([data-action="draw"])::before,.pile:has([data-action="draw"])::after{content:'';position:absolute;width:70%;height:68%;top:3px;left:4%;border:2px solid #fff9e8;border-radius:7px;background:repeating-linear-gradient(45deg,#338fc1 0 3px,#409dcc 3px 5px);box-shadow:-7px 0 0 -2px #419bc9,-9px 0 0 -2px #fff9e8;z-index:-1;transform:translateX(-12px) rotate(-5deg)}
+.pile:has([data-action="draw"])::after{transform:translateX(-6px) rotate(-2deg)}

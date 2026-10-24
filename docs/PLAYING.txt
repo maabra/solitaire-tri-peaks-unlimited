@@ -139,3 +139,8 @@ Helpers appear as you discover their mechanics. Ice/lock/bomb/vine/phase helpers
 are hidden from a level toolbar when that obstacle is absent or already cleared.
 Fresh Garden recharges for ONE HOUR in real time. The board, moves and deadline
 survive closing/reopening. Gem matches highlight before clearing and falling.
+
+CARD PRESENTATION (1.8.1)
+Read the large central rank and the suit in the upper corner. Red cards are hearts
+and diamonds; dark cards are spades and clubs. The browser animates a stock card
+moving to the waste when you draw. Enable Reduced motion to skip this flight.

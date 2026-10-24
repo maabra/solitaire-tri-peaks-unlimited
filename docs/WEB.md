@@ -52,7 +52,7 @@ not a measured playtime guarantee or an artificial play limit.
 
 New deals use 16 story formation families with deterministic geometry variations:
 rotated fans, rings, twin arches, butterflies, ribbons, diamond loops, starbursts,
-5?8 towers, crowns, hourglasses and serpents. Explicit cover graphs match rotated
+5-8 towers, crowns, hourglasses and serpents. Explicit cover graphs match rotated
 card intersections. Old saved boards and MP16 codes keep their original rules;
 new layouts use MP18 codes.
 
@@ -66,3 +66,19 @@ discovered, and obstacle helpers stay off boards where they have no target.
 Fresh Garden has a minimum one-hour real-time recharge. Its deadline, gem board
 and successful swaps are saved, including across browser reloads and Windows
 restarts. Menus do not pause this deadline.
+
+
+### Recording-based card presentation (1.8.1)
+
+The supplied October 24 gameplay recording informed the new rank-first card faces:
+a large central rank, small corner rank and suit, cream paper, blue patterned backs,
+and strong red/dark suit contrast. Both Windows and browser render these faces using
+original drawing code. Existing formations, obstacle rules, timers, saves and MP16/MP18
+shared codes retain their behavior. The browser stock now has a layered fan silhouette
+and a 300 ms stock-to-waste draw animation. Reduced motion skips that flight.
+Untouched tableau nodes remain in place throughout a draw.
+
+Reference recordings and extracted frames are development-only material under examples
+and artifacts; neither directory is included in distributable packages. These changes
+adapt presentation cues; they do not copy the reference game's assets or claim feature
+parity with it.

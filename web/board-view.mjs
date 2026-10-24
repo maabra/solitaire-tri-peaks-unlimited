@@ -24,6 +24,14 @@ export function patchBoard(host,markup,incremental,reduced){
   if(wasFocused&&!card.disabled)card.focus({preventScroll:true});
  }
  const stock=host.querySelector('[data-action="draw"]'),newStock=next.querySelector('[data-action="draw"]');
+ const oldCount=Number(host.querySelector('.stock-count')?.textContent),nextCount=Number(next.querySelector('.stock-count')?.textContent);
+ // Draw feedback is local: never replace or redeal the tableau.
+ if(!reduced&&nextCount===oldCount-1){
+  const destination=host.querySelector('.hand-row .pile:nth-child(3) .card'),face=next.querySelector('.hand-row .pile:nth-child(3) .card');
+  const from=stock.getBoundingClientRect(),to=destination.getBoundingClientRect(),copy=face.cloneNode(true);
+  copy.removeAttribute('data-action');copy.style.cssText=`position:fixed;left:${from.x}px;top:${from.y}px;width:${from.width}px;height:${from.height}px;--cw:${from.width}px;z-index:10000;pointer-events:none`;
+  document.body.append(copy);copy.animate([{transform:'rotate(-8deg) scaleX(.12)',opacity:1},{transform:`translate(${to.x-from.x}px,${to.y-from.y}px) rotate(0deg) scaleX(1)`,opacity:1}],{duration:300,easing:'cubic-bezier(.2,.7,.3,1)'}).finished.finally(()=>copy.remove());
+ }
  stock.disabled=newStock.disabled;
  const waste=host.querySelector('.hand-row .pile:nth-child(3) .card');
  const newWaste=next.querySelector('.hand-row .pile:nth-child(3) .card');

@@ -85,7 +85,7 @@ internal static class Art
     public static string Rank(int rank) => rank switch { 0 => "★", 1 => "A", 11 => "J", 12 => "Q", 13 => "K", _ => rank.ToString() };
     public static string Suit(int suit) => new[] { "♠", "♥", "♦", "♣" }[suit % 4];
     public static Color SuitColor(int suit) => suit is 1 or 2 ? Color.FromArgb(184,64,74) : Ink;
-    public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover)
+    public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover, bool labels = true)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);
         var paper = card.Kind switch { CardKind.Ice => Color.FromArgb(216, 240, 255), CardKind.Bomb => Color.FromArgb(255, 224, 217), CardKind.Key or CardKind.Lock => Color.FromArgb(255, 240, 190), CardKind.Gift => Color.FromArgb(225, 243, 210), CardKind.Up or CardKind.Down => Color.FromArgb(237, 225, 250), CardKind.Stone => Color.FromArgb(220, 223, 230), CardKind.Vine => Color.FromArgb(211, 237, 196), CardKind.Lantern => Color.FromArgb(255, 245, 190), CardKind.Lucky => Color.FromArgb(221, 247, 212), CardKind.Shield => Color.FromArgb(210, 245, 242), CardKind.Gate => card.Strength==0 ? Color.FromArgb(255,240,180) : Color.FromArgb(227,221,250), CardKind.ColorSeal => card.Strength==1 ? Color.FromArgb(255,219,227) : Color.FromArgb(221,228,239), _ => Cream };
@@ -120,8 +120,8 @@ internal static class Art
         else
         {
             var color = card.Rank == 0 ? Color.FromArgb(173, 117, 37) : SuitColor(card.Suit);
-            Text(g, Rank(card.Rank), r.X + 9, r.Y + 4, r.Width * .30f, color, true);
-            Text(g, card.Rank == 0 ? "✦" : Suit(card.Suit), r.X, r.Y + r.Height * .36f, r.Width * .42f, color, false, r.Width, true);
+            if (labels) Text(g, Rank(card.Rank), r.X + 9, r.Y + 4, r.Width * .30f, color, true);
+            if (labels) Text(g, card.Rank == 0 ? "✦" : Suit(card.Suit), r.X, r.Y + r.Height * .36f, r.Width * .42f, color, false, r.Width, true);
             if (hover) { using var b = new SolidBrush(Color.FromArgb(28, 255, 211, 104)); using var p = Round(r, 9); g.FillPath(b, p); }
         }
     }

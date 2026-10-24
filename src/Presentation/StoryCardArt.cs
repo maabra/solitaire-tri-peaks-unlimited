@@ -4,7 +4,7 @@ internal static class StoryCardArt
 {
     public static void Draw(Graphics g,RectangleF r,Card c,bool face,bool hint,bool hover)
     {
-        Art.Card(g,r,c,face,hint,hover);
+        Art.Card(g,r,c,face,hint,hover,labels:false);
         using var inset=Art.Round(new(r.X+4,r.Y+4,r.Width-8,r.Height-8),6);
         if(!face)
         {
@@ -17,18 +17,18 @@ internal static class StoryCardArt
         }
         else
         {
-            var color=Art.SuitColor(c.Suit);
-            using var shine=new Pen(Color.FromArgb(210,255,255,255),1.5f);g.DrawPath(shine,inset);
-            using var small=new Font("Segoe UI",Math.Max(8,r.Width*.15f),FontStyle.Bold,GraphicsUnit.Pixel);
-            HandmadeArt.Label(g,Art.Suit(c.Suit),small,new(r.X+5,r.Y+r.Height*.23f,r.Width*.3f,r.Height*.16f),color);
-            var saved=g.Save();g.TranslateTransform(r.Right-8,r.Bottom-10);g.RotateTransform(180);
-            HandmadeArt.Label(g,Art.Rank(c.Rank),small,new(0,0,r.Width*.22f,r.Height*.17f),color);g.Restore(saved);
-            if(c.Rank>=11)
-            {
-                using var gold=new SolidBrush(Color.FromArgb(224,180,71));
-                float x=r.X+r.Width*.5f,y=r.Y+r.Height*.57f,s=r.Width*.21f;
-                g.FillPolygon(gold,new[]{new PointF(x-s,y-s*.5f),new PointF(x-s*.7f,y+s*.5f),new PointF(x+s*.7f,y+s*.5f),new PointF(x+s,y-s*.5f),new PointF(x+s*.35f,y-s*.1f),new PointF(x,y-s),new PointF(x-s*.35f,y-s*.1f)});
-            }
+            var color=c.Rank==0?Color.FromArgb(173,117,37):Art.SuitColor(c.Suit);
+            // Rank-first faces remain readable in fans and on small screens.
+            using var shine=new Pen(Color.FromArgb(220,255,255,255),1.5f);g.DrawPath(shine,inset);
+            using var corner=new Font("Segoe UI",Math.Max(8,r.Width*.21f),FontStyle.Bold,GraphicsUnit.Pixel);
+            using var suit=new Font("Segoe UI Symbol",Math.Max(9,r.Width*.23f),FontStyle.Bold,GraphicsUnit.Pixel);
+            using var rank=new Font("Segoe UI",Math.Max(15,r.Width*(c.Rank==10?.70f:.83f)),FontStyle.Bold,GraphicsUnit.Pixel);
+            HandmadeArt.Label(g,Art.Rank(c.Rank),corner,new(r.X+5,r.Y+3,r.Width*.36f,r.Height*.24f),color);
+            HandmadeArt.Label(g,Art.Suit(c.Suit),suit,new(r.X+r.Width*.63f,r.Y+3,r.Width*.31f,r.Height*.24f),color);
+            HandmadeArt.Label(g,Art.Rank(c.Rank),rank,new(r.X+2,r.Y+r.Height*.22f,r.Width-4,r.Height*.73f),color);
+            if(c.Kind==CardKind.Ice){using var frost=new Pen(Color.FromArgb(150,88,170,225),2);g.DrawLines(frost,new[]{new PointF(r.Right-8,r.Y+5),new PointF(r.Right-18,r.Y+r.Height*.36f),new PointF(r.Right-6,r.Y+r.Height*.55f)});}
+            if(hover){using var glow=new SolidBrush(Color.FromArgb(25,255,203,80));g.FillPath(glow,inset);}
+
         }
         if(c.Kind==CardKind.Lock)
         {

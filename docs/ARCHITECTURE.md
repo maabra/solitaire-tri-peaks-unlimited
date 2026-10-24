@@ -270,3 +270,13 @@ reproduction, unlock checks, daily payout idempotency, day resets, JSON recovery
 favorite persistence and all bonus opening styles. Real UI smoke checks include
 preview visibility/expiry, both guide pages, share view, favorite navigation and
 picnic reward claiming, without touching the player's profile or clipboard.
+
+
+### Card presentation boundaries
+
+`StoryCardArt` owns the native rank-first card artwork behind `IGameArtwork`.
+The browser face markup lives in `app.mjs`, with styling in `style.css`.
+`board-view.mjs` reconciles existing tableau nodes and owns local flip, clear and
+stock-draw flights. These presentation changes do not alter deal generation or the
+saved hand schema. Keep reduced-motion behavior and surviving node identity intact
+when replacing presentation parts.
