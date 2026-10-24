@@ -116,9 +116,7 @@ No repository or release is created by the local build scripts.
 ## Originality and license
 
 Game code, UI, vector-drawn landscapes, cards and gems were created for this project
-and are MIT licensed. No assets, binaries, levels, characters, music or code from
-the supplied reference folders are shipped. `examples/` is excluded from Git,
-the app project and the source export. Reference games are inspiration for familiar
+and are MIT licensed. Reference games are inspiration for familiar
 TriPeaks mechanics, not dependencies or affiliated products. The optional sound
 uses Windows' built-in notification chime. Bundled Microsoft runtime files are
 covered by their included licenses and third-party notices.
