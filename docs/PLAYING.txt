@@ -202,3 +202,8 @@ Pack/trophy/arrow card rewards are banked when you win. Match frozen cards twice
 Joker selects one exposed card; TNT clears every currently exposed card.
 Browser play requires explicit local-saving permission on the first visit.
 Full rules: docs/ADVENTURES.md.
+
+
+2.4: new MP24 deals pace card introductions and bounded difficulty through 50,000
+levels. Nine original mode paintings provide distinct special-mode scenery.
+See docs/PROGRESSION.md for the complete schedule and compatibility rules.

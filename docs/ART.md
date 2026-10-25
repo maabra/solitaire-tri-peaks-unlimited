@@ -34,3 +34,14 @@ chapter-worlds.png: original 4x4 destination overview artwork.
 
 See [JOURNEY.md](JOURNEY.md) for the current portrait worlds, earned cosmetics,
 Pip navigation, MP22 formation generation and compatibility details.
+
+
+2.4: new MP24 deals pace card introductions and bounded difficulty through 50,000
+levels. Nine original mode paintings provide distinct special-mode scenery.
+See docs/PROGRESSION.md for the complete schedule and compatibility rules.
+
+
+Current 2.4 collection counts supersede the historical counts above: 100 matched
+chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
+Cards rotate to a player-facing angle without changing cover geometry; scenery
+blur is isolated from the sharp cards and UI.

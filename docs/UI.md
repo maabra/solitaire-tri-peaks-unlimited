@@ -40,3 +40,9 @@ the complete helper rules. Long activity instructions move into an accessible
 Details disclosure, preserving rules on the same screen. Pip gives one brief
 next step; its information button opens the full explanation, including special
 card mechanics. Accessible names preserve the intent of compact buttons.
+
+
+Current 2.4 collection counts supersede the historical counts above: 100 matched
+chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
+Cards rotate to a player-facing angle without changing cover geometry; scenery
+blur is isolated from the sharp cards and UI.

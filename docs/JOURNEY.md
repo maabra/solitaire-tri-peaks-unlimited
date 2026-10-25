@@ -36,3 +36,9 @@ All 480,000 campaign seeds passed actual mutation-aware winning-witness replay.
 Browser checks cover all 51 chapter pictures, natural feature tours, retrospective
 cosmetics, persistence and table fitting at six viewport sizes, including 320 pixels.
 The expansion preserves local-only saves and contains no reference game assets.
+
+
+Current 2.4 collection counts supersede the historical counts above: 100 matched
+chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
+Cards rotate to a player-facing angle without changing cover geometry; scenery
+blur is isolated from the sharp cards and UI.

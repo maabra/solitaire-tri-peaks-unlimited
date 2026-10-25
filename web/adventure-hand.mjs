@@ -1,10 +1,11 @@
+import {campaignProgression} from './progression.mjs';
 import {storyLayoutV3,storyNameV3} from './story-layouts-v3.mjs';
 import {Hand,generate,SeededRandom,K,clone,adjacent} from './core.mjs';
 export const specialGoal=level=>level%75===0?{name:'Clear all gold cards',suit:null,gold:true}:level%40===0?{name:'Clear all diamond cards',suit:2}:level%60===0?{name:'Clear all spade cards',suit:0}:null;
 export function adventureDeal(seed,level,balloon=false,generation="MP21"){for(let attempt=0;attempt<16;attempt++){try{return buildAdventureDeal((seed+attempt*7919)%2147483647,level,balloon,generation)}catch(error){if(attempt===15)throw error;}}}
 function buildAdventureDeal(seed,level,balloon=false,generation="MP21"){
- const d=generate(seed,level,'MP19',generation==='MP22'?storyLayoutV3(level):null),rng=new SeededRandom(seed+71);d.Generation=generation;if(generation==='MP22')d.Formation=storyNameV3(level);d.AdventureSeed=seed;const originalSolution=clone(d.Solution),originalRanks=d.Cards.map(c=>c.Rank);d.AdventureRules=true;d.Objective=specialGoal(level);d.Balloon=balloon;
- d.Cards=d.Cards.map((c,i)=>({...c,Pack:level>=15&&i===d.Solution.filter(x=>x.Index!=null).at(-1)?.Index?1+Math.min(4,Math.floor(level/300)%5):0,Trophy:level>=25&&i%13===7?20+10*(i%4):0,Arrow:balloon&&i%7===3?1:0,Gold:d.Objective?.gold&&i%5===2||false,Motion:level>=400&&[K.Up,K.Down].includes(c.Kind)?c.Kind===K.Up?1:-1:0,Kind:level>=1100&&i%23===11&&c.Kind===0?15:level>=1400&&i%19===9&&c.Kind===0?16:c.Kind}));
+ const pacing=generation==='MP24'?campaignProgression(level):null,ruleLevel=pacing?.rulesLevel??level;const d=generate(seed,level,'MP19',['MP22','MP24'].includes(generation)?storyLayoutV3(level):null,pacing),rng=new SeededRandom(seed+71);d.Generation=generation;if(['MP22','MP24'].includes(generation))d.Formation=storyNameV3(level);d.AdventureSeed=seed;const originalSolution=clone(d.Solution),originalRanks=d.Cards.map(c=>c.Rank);d.AdventureRules=true;d.Objective=specialGoal(level);d.Balloon=balloon;
+ d.Cards=d.Cards.map((c,i)=>({...c,Pack:level>=15&&i===d.Solution.filter(x=>x.Index!=null).at(-1)?.Index?1+Math.min(4,Math.floor(level/300)%5):0,Trophy:level>=25&&i%13===7?20+10*(i%4):0,Arrow:balloon&&i%7===3?1:0,Gold:d.Objective?.gold&&i%5===2||false,Motion:ruleLevel>=400&&[K.Up,K.Down].includes(c.Kind)?c.Kind===K.Up?1:-1:0,Kind:ruleLevel>=1100&&i%23===11&&c.Kind===0?15:ruleLevel>=1400&&i%19===9&&c.Kind===0?16:c.Kind}));
  d.GoalCards=d.Cards.map(c=>d.Objective?(d.Objective.gold?c.Gold:c.Suit===d.Objective.suit):true);
  if(d.Objective)d.Cards.forEach((c,i)=>c.Goal=d.GoalCards[i]);
  // Ice now has two matching interactions, independent of unrelated clears.
@@ -25,7 +26,7 @@ function buildAdventureDeal(seed,level,balloon=false,generation="MP21"){
   if(c.Kind===K.ColorSeal)c.Strength=[1,2].includes(h.Waste.Suit)?1:0;
   if(c.Kind===K.Ice&&!h.s.IceThawed.includes(i)){if(!h.play(i))throw Error('Invalid planned ice hit.');path.push({Index:i});}
   if(!h.play(i))throw Error('Invalid planned mutation at '+i+' kind '+c.Kind+' turn '+h.s.Turns+' run '+h.s.Run+' rank '+h.face(i).Rank+' waste '+h.Waste.Rank+' keys '+h.s.Keys+' failed '+h.Failed);path.push({Index:i});
-  if(bombs.has(i)&&h.Removed[i])bombs.set(i,h.s.Turns+3);
+  if(bombs.has(i)&&h.Removed[i])bombs.set(i,h.s.Turns+(pacing?.difficulty.BombSlack??3));
  }
  for(const [i,fuse]of bombs)d.Cards[i].Strength=Math.min(199,fuse);
  d.Solution=path;d.WitnessReady=true;const verified=new AdventureHand(d);for(const step of path){if(step.Index<0){if(!verified.draw())throw Error('Draw witness failed.');verified.tick(2);}else if(!verified.play(step.Index))throw Error('Mutation witness failed at '+step.Index+' turn '+verified.s.Turns+' rank '+verified.face(step.Index).Rank+' waste '+verified.Waste.Rank+' kind '+verified.face(step.Index).Kind+' failed '+verified.Failed);}if(!verified.Won)throw Error('Mutation deal has no verified finish.');

@@ -8,7 +8,7 @@ campaign levels**, 64 formation families, an endless mode and a match-three coin
 ## Play
 
 [Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
-[download MeadowPeaks-2.3.1.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.3.1/MeadowPeaks-2.3.1.exe).
+[download MeadowPeaks-2.4.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.0/MeadowPeaks-2.4.exe).
 
 The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
 no installer, administrator access, existing browser or network connection is
@@ -38,10 +38,10 @@ moves cards, coins, inventory, progress and the saved garden between them.
 - 480,000 seeded levels across 4,800 chapters of 100 levels, with explicit cover graphs and verified solutions.
 - 64 formation families: peaks, fans, rings, ribbons, spirals, tilted packets,
   bouquets, and five to eight separate stacks or islands.
-- 51 independently painted, narrow portrait chapter worlds with distinct names, matching
+- 100 independently painted, narrow portrait chapter worlds with distinct names, matching
   Travel Hub pictures and 100 scrollable stops along a thick, winding road. Later
-  journeys reuse these worlds with numbered names. No color filters create variation.
-- 64 table surfaces and 56 original card-back motifs. Completing each chapter earns
+  journeys reuse these 100 worlds with numbered names. No color filters create variation.
+- 100 linked chapter tables and 100 original card-back designs. Completing each chapter earns
   a selectable back and table; later backs add distinct ornamental seals. Existing
   completed chapters unlock their cosmetics automatically.
 - Pip the bird introduces activities and special cards as they unlock. Direct map,
@@ -69,6 +69,24 @@ moves cards, coins, inventory, progress and the saved garden between them.
 There are no purchases, ads, accounts, leaderboards or online reward dependencies.
 Reference videos, example games and extracted reference frames are excluded from
 Git and distribution packages. Original project artwork is included.
+
+## Connected collections in 2.4
+
+100 named chapter sets each link an original portrait scene, card back and table.
+Card Studio and Travel Hub use the same chapter identity. Cards face the player
+without changing cover geometry; soft scenery blur leaves cards and controls sharp.
+The level header uses illustrated chapter and star cues.
+
+Treasure Trail turns rolls earned from new campaign wins into coins, packs and
+helpers. Matching Garden uses seeds earned from new wins for a memory-pair game,
+with rewards returning to solitaire and the album. See [activity rules](docs/SIDE-GAMES.md).
+
+## Pacing and special worlds in 2.4
+
+New MP24 hands introduce special cards gradually through level 48,000 and reach
+full difficulty at 50,000. Existing bonus rewards and activities remain. Nine new
+paintings give special modes their own scenery and matching automatic tables.
+Old hands and codes keep their rules. See [the progression schedule](docs/PROGRESSION.md).
 
 ## Visual clarity in 2.3.1
 
@@ -109,7 +127,7 @@ Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
 ```powershell
 ./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.3.1.exe
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.4.exe
 python scripts/package_web.py
 python scripts/package_source.py
 ```
@@ -120,7 +138,7 @@ never in the source archive. See [architecture](docs/ARCHITECTURE.md) for the ho
 [web notes](docs/WEB.md) for shared presentation and [player guide](docs/PLAYING.txt).
 
 ```powershell
-node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs web/tests/journey.test.mjs
+node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs web/tests/journey.test.mjs web/tests/progression.test.mjs web/tests/side-activities.test.mjs
 dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --effects-only
 # Exhaustive formation and solution verification:
 dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all

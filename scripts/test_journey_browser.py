@@ -14,13 +14,13 @@ async def main():
   await page.locator('[data-action=birdGo]').click();assert await page.locator('.bird-guide.in-panel').count()==1
   await page.locator('[data-action="level:1"]').click();await page.wait_for_selector('.painted-table');assert 'One higher' in await page.locator('.bird-guide').inner_text()
   await page.locator('[data-action=birdDismiss]').click();await page.screenshot(path=str(OUT/'table-first.png'))
-  profile=await page.evaluate("async()=>{let {defaults}=await import('./session.mjs');let {features}=await import('./journey-guide.mjs');let p=defaults();p.Unlocked=5101;for(let i=1;i<=5100;i++)p.Stars[i]=3;p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:16},(_,i)=>'mechanic'+(i+1))];return p}")
+  profile=await page.evaluate("async()=>{let {defaults}=await import('./session.mjs');let {features}=await import('./journey-guide.mjs');let p=defaults();p.Unlocked=5101;for(let i=1;i<=10000;i++)p.Stars[i]=3;p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:16},(_,i)=>'mechanic'+(i+1))];return p}")
   await c.close();c,page=await context(profile)
   # Fifty-one genuinely different paintings are sampled directly from original columns.
-  result=await page.evaluate("""async()=>{const {chapterPicture}=await import('./chapter-worlds.mjs');const {chapterTitles}=await import('./art-catalog.mjs');let hashes=new Set();for(let i=1;i<=51;i++){let url=await chapterPicture(i);hashes.add(url);}return {titles:new Set(chapterTitles).size,images:hashes.size}}""")
-  assert result=={'titles':51,'images':51},result
-  cosmetics=await page.evaluate("""async()=>{const {backPicture}=await import('./customization.mjs');const {tableSurface}=await import('./chapter-worlds.mjs');const backs=new Set(),tables=new Set();for(let i=1;i<=51;i++)backs.add(await backPicture(i));for(let i=1;i<=64;i++)tables.add(await tableSurface(i,300,180));return [backs.size,tables.size]}""")
-  assert cosmetics==[51,64],cosmetics
+  result=await page.evaluate("""async()=>{const {chapterPicture}=await import('./chapter-worlds.mjs');const {chapterTitles}=await import('./art-catalog.mjs');let hashes=new Set();for(let i=1;i<=100;i++){let url=await chapterPicture(i);hashes.add(url);}return {titles:new Set(chapterTitles).size,images:hashes.size}}""")
+  assert result=={'titles':100,'images':100},result
+  cosmetics=await page.evaluate("""async()=>{const {backPicture}=await import('./customization.mjs');const {tableSurface}=await import('./chapter-worlds.mjs');const backs=new Set(),tables=new Set();for(let i=1;i<=100;i++)backs.add(await backPicture(i));for(let i=1;i<=100;i++)tables.add(await tableSurface(i,300,180));return [backs.size,tables.size]}""")
+  assert cosmetics==[100,100],cosmetics
   await page.locator('[data-action="ev:customize"]').first.click();await page.wait_for_function("[...document.querySelectorAll('.skin-card img')].every(i=>i.complete&&i.naturalWidth>0)")
   await page.screenshot(path=str(OUT/'card-studio.png'))
   await page.locator('[data-action="ev:back-1"]').click();assert await page.locator('body').evaluate('e=>e.classList.contains("custom-backs")')
@@ -42,5 +42,5 @@ async def main():
   profile['Unlocked']=15;profile['Stars']={};profile['GuideSeen']=[x for x in profile['GuideSeen'] if x!='album']
   c,page=await context(profile);assert 'parcel of memories' in (await page.locator('.bird-guide').inner_text()).lower();await page.locator('[data-action=birdGo]').click();assert await page.locator('.event-album').count()==1
   await c.close();assert not errors,errors;await browser.close()
- print('PASS: 51 original portrait worlds, Pip welcome/navigation/unlock tours, earned skins, persistence and fitted isolated tables at six viewport sizes.')
+ print('PASS: 100 matched chapter scenes, card backs and tables, Pip welcome/navigation/unlock tours, earned skins, persistence and fitted isolated tables at six viewport sizes.')
 asyncio.run(main())

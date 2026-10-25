@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import {Session,ProfileStore,defaults,validateProfile} from '../session.mjs';
+import {playerFacingAngle} from '../card-orientation.mjs';
+for(const [input,expected] of [[0,0],[180,0],[200,20],[160,-20],[-170,10],[360,0],[540,0]])assert.equal(playerFacingAngle(input),expected);
+for(let a=-1080;a<=1080;a++){const b=playerFacingAngle(a);assert.ok(b>=-90&&b<=90);assert.ok(Math.abs(Math.abs(Math.cos(a*Math.PI/180))-Math.abs(Math.cos(b*Math.PI/180)))<1e-10);}
+let s=new Session(new ProfileStore(null));s.level=1;s.side.onWin(true);assert.equal(s.side.a.Rolls,0);s.level=12000;s.side.onWin(false);assert.equal(s.side.a.Rolls,0);s.side.onWin(true);assert.equal(s.side.a.Rolls,1);assert.equal(s.side.a.Seeds,1);const before=s.p.Coins;const r=s.side.roll();assert.ok(r.die>=1&&r.die<=6);assert.equal(s.p.Coins,before+r.coins);assert.equal(s.side.roll(),null);
+s.side.a.Seeds=20;const packs=s.events.a.Album.Packs.length;const cards=s.side.memoryCards();for(let face=0;face<6;face++){const indices=cards.flatMap((f,i)=>f===face?[i]:[]);const coins=s.p.Coins;assert.ok(s.side.flip(indices[0]).first);assert.equal(s.side.flip(indices[0]),null);assert.ok(s.side.flip(indices[1]).matched);assert.ok(s.p.Coins>=coins+20);}assert.equal(s.side.a.Memory.Round,1);assert.equal(s.inventory('joker'),1);assert.equal(s.events.a.Album.Packs.length,packs+1);assert.equal(s.side.a.Seeds,14);assert.ok(validateProfile(s.p));
+let now=1000;s=new Session(new ProfileStore(null),undefined,()=>now);s.side.a.Seeds=2;const deck=s.side.memoryCards(),a=0,b=deck.findIndex(f=>f!==deck[a]);s.side.flip(a);assert.equal(s.side.flip(b).matched,false);assert.equal(s.side.flip(2),null);now+=1201;s.side.settle();assert.deepEqual(s.side.a.Memory.Revealed,[]);assert.equal(s.side.a.Seeds,1);
+console.log('PASS: player-facing angles preserve cover geometry; new-win currencies, roll consumption, memory pairs, mismatch delay, round prizes and save validation.');
