@@ -2,6 +2,8 @@ namespace MeadowPeaks;
 
 public sealed class Progress
 {
+    public int Hearts { get; set; } = 3;
+    public int GemHeartProgress { get; set; }
     public int WheelSpinsUsed { get; set; }
     public double FreshDealCooldown { get; set; }
     public long GardenRefreshAt { get; set; }

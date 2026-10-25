@@ -1,0 +1,27 @@
+/* Map UI has its own bounded layout, independent of the scrolling world. */
+.locked-feature-preview .goal-progress{max-width:390px;margin:14px auto}
+.goal-progress progress::-webkit-progress-value{transition:width .4s ease-out}
+.game-icon.semantic-icon{background:none!important;background-image:none!important;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex-shrink:0}
+.semantic-icon svg{display:block;width:100%;height:100%;filter:drop-shadow(0 2px 1px #6e4b4e30)}
+.goal-progress{display:flex;align-items:center;gap:9px;padding:10px 12px;margin:10px 0;border:2px solid #e9c995;border-radius:16px;background:linear-gradient(#fff9e5,#f2dfbb);color:#705069;min-width:0;text-shadow:none}
+.goal-progress>div{flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px}
+.goal-progress span{font:700 11px/1.3 var(--font-ui);overflow-wrap:break-word}
+.goal-progress strong{font:900 14px/1.3 var(--font-ui);white-space:nowrap}
+.goal-progress progress{grid-column:1/-1;width:100%;height:9px;accent-color:#84b95b;margin:0}
+.goal-progress progress::-webkit-progress-bar{background:#d9c8a3;border-radius:8px}
+.goal-progress progress::-webkit-progress-value{background:linear-gradient(#b3dd72,#79af4e);border-radius:8px}
+.skin-card .goal-progress{padding:7px 6px;width:100%;gap:5px}
+.skin-card .goal-progress>div{grid-template-columns:1fr;gap:3px}
+.skin-card .goal-progress span{font-size:10px}
+.skin-card .goal-progress strong{font-size:12px}
+
+.resource-badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap;vertical-align:middle;line-height:1.25;margin-inline:2px;color:inherit}
+.resource-badge>b{font-weight:900;font-variant-numeric:tabular-nums}
+.resource-badge>.game-icon{width:24px;height:24px;min-width:24px;margin:0!important}
+.resource-strip{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px}
+.resource-strip>.resource-badge,.resource-goal{padding:6px 10px;background:linear-gradient(#fff9df,#f0dfba);border:1px solid #e1c495;border-radius:16px;box-shadow:inset 0 2px #fff9,0 2px #b5967130;color:#68516c}
+.resource-goal{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;max-width:100%;white-space:nowrap}
+.resource-goal .resource-badge{margin:0}.resource-arrow{font-weight:900;color:#a47657}
+.garden-resources{font-size:16px}.lives-panel .resource-goal{margin-bottom:8px}
+#toast .resource-badge{color:inherit}#toast .resource-badge>.game-icon{width:22px;height:22px}
+@media(max-width:500px){.garden-resources{font-size:14px;gap:6px}.resource-strip>.resource-badge,.resource-goal{padding:5px 7px}.resource-badge>.game-icon{width:22px;height:22px;min-width:22px}}

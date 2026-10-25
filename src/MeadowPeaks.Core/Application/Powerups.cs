@@ -15,7 +15,7 @@ public sealed class ExtraCardsPowerup : IPowerup
 {
     public string Id => "extra";
     public string Name => "\u2660 +5 cards";
-    public string Description => "Five rescue cards for 10s.\nUse when stock is empty.";
+    public string Description => "Five rescue cards. Keep until used.\nUse when stock is empty.";
     public int Price => 60;
     public bool RequiresTarget => false;
     public bool CanUse(ISolitaireHand hand) => !hand.Won && hand is not IAdventureHand { Failed: true } && hand.Stock.Count == 0;

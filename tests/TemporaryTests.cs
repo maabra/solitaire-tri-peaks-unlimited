@@ -25,11 +25,11 @@ static class TemporaryTests
         h.AdvanceTime(11); check(h.Play(1) && h.Stock.Count == 3, "+1 stops at expiry");
         check(h.Undo() && h.Effects.LuckySeconds == 0, "Undo does not restore expired effect duration");
         var rescue = new Hand(new Deal {TemporaryRules=true, Cards=plain.Cards, Layout=plain.Layout, Waste=plain.Waste},rules);
-        check(rescue.Extra(42) && rescue.Stock.Count==5 && rescue.Stock.All(c=>c.TemporaryStock), "Fresh rescue cards have a ten second timer");
-        check(rescue.Draw() && rescue.Stock.Count==4, "Fresh rescue card can be drawn within its window");
+        check(rescue.Extra(42) && rescue.Stock.Count==5 && rescue.Stock.All(c=>!c.TemporaryStock), "Fresh rescue cards remain until used");
+        check(rescue.Draw() && rescue.Stock.Count==4, "Fresh rescue card can be drawn");
         rescue.AdvanceTime(11);
-        check(rescue.Stock.Count==0 && rescue.Effects.FreshSeconds==0, "Unused rescue cards expire");
-        check(rescue.Undo() && rescue.Stock.Count==0, "Undo cannot restore expired rescue cards");
+        check(rescue.Stock.Count==4 && rescue.Effects.FreshSeconds==0, "Unused rescue cards do not expire");
+        check(rescue.Undo() && rescue.Stock.Count==5, "Undo restores a drawn rescue card");
         h = new Hand(Board(new Card(6,0) { Kind=CardKind.Ice, Strength=99 },new(7,0)),rules);
         check(!h.CanPlay(0) && h.UseEffect("thaw") && h.CanPlay(0), "Temporary thaw bypasses ice");
         h.AdvanceTime(9); check(!h.CanPlay(0), "Ice returns when thaw expires");
@@ -45,9 +45,9 @@ static class TemporaryTests
         check(h.Draw() && h.Effects.Run==0 && !h.CanPlay(2), "Drawing closes vines again");
         h = new Hand(plain,rules);
         check(h.Wild(), "Temporary wild starts"); h.AdvanceTime(13);
-        check(h.Waste.Rank==5, "Unused wild expires back to prior rank");
-        check(h.Wild() && h.Play(0), "Wild can be used within its window"); h.AdvanceTime(13);
-        check(h.Undo() && h.Waste.Rank==5, "Undo cannot resurrect an expired wild");
+        check(h.Waste.Rank==0, "Unused wild stays armed without a time limit");
+        check(!h.Wild() && h.Play(0), "An armed Wild cannot be stacked and is consumed by a match"); h.AdvanceTime(13);
+        check(h.Undo() && h.Waste.Rank==0, "Undo restores the armed Wild");
         h.UseEffect("lucky"); h.AdvanceTime(3); h.StartHelperCooldown();
         var saved = JsonSerializer.Deserialize<SavedRun>(JsonSerializer.Serialize(h.Capture(1,1,false)))!;
         var factory = new SolitaireFactory(new StaticDeals(plain),rules,new StaticDeals(plain));

@@ -24,9 +24,11 @@ jobs:
       - name: Verify complete chapter artwork
         run: node scripts/validate_chapter_collection.mjs
       - name: Verify shared browser engine and save compatibility
-        run: node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs web/tests/journey.test.mjs web/tests/progression.test.mjs web/tests/side-activities.test.mjs
+        run: node --test web/tests/*.test.mjs
       - name: Verify mutation-aware campaign deals
         run: node scripts/verify_adventure_deals.mjs
+      - name: Verify all long garden deals
+        run: node scripts/verify_long_deals.mjs
       - name: Prepare portable shared renderer
         shell: pwsh
         run: ./scripts/prepare_webview_runtime.ps1

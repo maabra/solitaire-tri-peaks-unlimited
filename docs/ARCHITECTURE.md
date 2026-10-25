@@ -2,7 +2,7 @@
 
 ## Shipping application
 
-Version 2.0 has one shipping interface and gameplay implementation in `web/`.
+The application has one shared interface and gameplay implementation in `web/`.
 GitHub Pages serves it directly. The Windows EXE embeds the same assets as manifest
 resources and displays them in `DesktopGameWindow`, a WinForms WebView2 host.
 The older GDI renderer remains available only for legacy diagnostics; it is not
@@ -29,9 +29,24 @@ and Windows 10 permissions follow [Microsoft's distribution documentation](https
 - `gem-view.mjs` owns swap, connector, match, fall/refill and cascade presentation.
 - `game-art.mjs` owns icon names, atlas lookup and semantic aliases; gameplay does
   not depend on the artwork's pixel arrangement.
-- `chapter-scene.mjs` selects one of ten painted environments and seeded decoration.
+- `semantic-icons.mjs` owns original vector symbols for distinct UI meanings;
+  `progress-view.mjs` renders named current/target counters without changing state.
+- `LevelPreview` in `level-preview.mjs` owns preview markup and pending selection.
+  Its API is `show(level, options)` and one-shot `take()`. It receives a session
+  getter and modal callback; it does not start a hand or spend a life.
+- `LivesPanel` in `lives-panel.mjs` owns the hearts screen; `Lives` in `lives.mjs`
+  owns capped heart counters. Only Session commands perform attempt transitions.
+- `ui-markup.mjs` provides escaped text and shared action-button markup.
+- `MenuJourney`, `BirdGuide`, tutorial data, music, reward presentation and small
+  visual effects live in their own modules. Replacing presentation must not alter
+  reward accounting, RNG or save validation.
+- `chapter-worlds.mjs` and `chapter-collection.mjs` select the 100 linked chapter
+  worlds, tables and backs. `chapter-scene.mjs` supplies baseline environments.
 - `adventure-map.mjs` owns logical route geometry and activity artwork.
 - `style.css` owns the common colorful theme, spacing, cards, panels and responsive rules.
+- `help-ui.css`, `progress-ui.css` and `lives-ui.css` own focused feature overrides;
+  `map-ui.css` owns map layout and shared presentation refinements. New CSS files
+  are included by the web packager and Windows resource glob automatically.
 
 Windows receives validated save messages only from the packaged origin. The close
 handler flushes the current state before disposing the view. A named mutex prevents
@@ -46,14 +61,14 @@ embedded geometry are migrated in memory. Invalid active hands or garden rounds 
 be removed while preserving valid wallet and campaign progress. Startup checks do
 not save these in-memory changes. Normal save writes retain the recovery backup.
 
-New hands use MP19. `StoryDealProvider` and the browser retain MP16 and MP18 providers
-for old codes; saved geometry and explicit blockers remain authoritative. Visual
+New shared-engine hands use MP24. Legacy providers retain MP16, MP18, MP19, MP21
+and MP22 code compatibility; saved geometry and explicit blockers remain authoritative. Visual
 changes never enter the deck RNG. C# remains the compatibility/reference domain,
 with Windows/browser fixture parity tests, rather than a second shipping UI.
 
 ## Presentation invariants
 
-The map is a 1280x800 logical scene. A single camera scales its background, SVG route
+The map is a 960x10200 logical portrait scene. A single camera scales its background, SVG route
 and markers together. HUD panels are outside the transformed scene and remain fixed
 while the world pans. Six-digit level labels use smaller type, rather than clipping.
 The view preserves image proportions and supports pointer dragging and touch panning.
@@ -111,3 +126,16 @@ Current 2.4 collection counts supersede the historical counts above: 100 matched
 chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
 Cards rotate to a player-facing angle without changing cover geometry; scenery
 blur is isolated from the sharp cards and UI.
+
+
+MP26 adds an original structured-layout catalog in `story-layouts-v4.mjs` while
+retaining each earlier generation unchanged. `progression.mjs` still controls the
+50,000-level mechanic ramp. Only MP26 allows multiple decks for occasional long
+gardens, capped at 120 cards; older active-hand limits remain 52. The view fits the
+whole deal, not the remaining cards. `RankShuffle` mutates persisted face ranks
+without changing deal identities or cover links. Surface and wheel presentation
+are separate modules. The desktop host embeds these same modules unchanged.
+
+Menu scenery is an independent presentation decorator (`menu-scenes.mjs`) with a
+shared responsive stylesheet (`adventure-restyle.css`). It does not mutate profile
+or activity state, replace event handlers, or introduce a second navigation stack.

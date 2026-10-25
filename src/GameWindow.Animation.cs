@@ -115,7 +115,7 @@ public sealed partial class GameWindow
                 string subtitle=PowerupCaption(helper);
                 if(button.Subtitle!=subtitle) {button.Subtitle=subtitle;button.Invalidate();}
             }
-            if(button.Name=="draw") {button.Enabled=hand.Stock.Count>0 && !hand.Won && (hand as IAdventureHand)?.Failed!=true && timed.Effects.DrawCooldown<=0;button.CardBadge=timed.Effects.DrawCooldown>0 ? $"{timed.Effects.DrawCooldown:0.0}s" : "";button.Invalidate();}
+            if(button.Name=="draw") {button.Enabled=hand.Stock.Count>0 && !hand.Won && (hand as IAdventureHand)?.Failed!=true;button.CardBadge="";button.Invalidate();}
             if (button.Name == "hint") { button.Enabled = timed.Effects.HintCooldown <= 0 && (hand as IAdventureHand)?.Failed != true; button.Text = timed.Effects.HintCooldown > 0 ? $"Hint in {Math.Ceiling(timed.Effects.HintCooldown)}s" : "\U0001f50e Hint 3s"; }
         }
         if(Controls.Find("remix",false).FirstOrDefault() is GameButton remix) {remix.Enabled=profile.FreshDealCooldown<=0;remix.Text=profile.FreshDealCooldown>0 ? $"Fresh in {Math.Ceiling(profile.FreshDealCooldown)}s" : "\U0001f3b2 Remix";}

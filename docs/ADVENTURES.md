@@ -38,7 +38,7 @@ including extra ice hits, live rank movement and tornado replacements.
 - Fog alternates visible and obscured action windows. The planned parity varies
   per card. Its face is hidden while obscured; another action changes the window.
 - Every five consecutive collected cards adds two regular stock cards. Drawing
-  resets the streak. Regular stock draw cooldowns remain in force.
+  resets the streak. Regular stock draws have no cooldown.
 - Pack cards appear from level 15, trophies from 25, TNT from 75, rank motion from
   400, tornadoes from 1,100 and fog from 1,400. Existing mechanics keep their
   gradual introduction. Discovery still hides unavailable helpers.

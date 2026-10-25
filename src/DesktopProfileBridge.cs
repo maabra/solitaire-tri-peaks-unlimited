@@ -13,6 +13,7 @@ internal static class DesktopProfileBridge
     {
         if(json.Length>64*1024*1024)throw new InvalidDataException("Save is too large.");
         using var data=JsonDocument.Parse(json);var p=data.RootElement;
+        if(p.TryGetProperty("Hearts",out var hearts)&&hearts.GetInt32() is <0 or >999)throw new InvalidDataException("Invalid hearts.");
         if(p.GetProperty("Version").GetInt32()!=1||p.GetProperty("Coins").GetInt32()<0||p.GetProperty("Unlocked").GetInt32() is <1 or >480000)throw new InvalidDataException("Invalid adventure save.");
         if(!Shared(json))ProfileCodec.Decode(json);
     }

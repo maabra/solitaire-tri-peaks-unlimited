@@ -45,3 +45,5 @@ Current 2.4 collection counts supersede the historical counts above: 100 matched
 chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
 Cards rotate to a player-facing angle without changing cover geometry; scenery
 blur is isolated from the sharp cards and UI.
+
+Current character/state artwork: `pip-expressions.png` contains 16 original illustrated Pip expressions; `chest-states.png` contains six closed and six opened chest tiers. Both are transparent built-in imagegen outputs. Generation prompts, selectors and integration details are in PIP-AND-TREASURE.md and CHEST-ART-PROMPT.txt. No reference screenshots are included in these assets.

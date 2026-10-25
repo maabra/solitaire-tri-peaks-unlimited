@@ -45,7 +45,7 @@ python scripts/test_presentation_edges.py
 The browser checks cover a full legal win, connected gem animation, garden persistence,
 shops/settings, six viewport shapes, aligned markers, maximum level labels, stable
 resize, repeated draws, saved-hand resumption, confirmation before replacing a hand,
-stale tabs and immediate Wild/Thaw expiry graphics. Invalid hands and garden swaps
+stale tabs and Wild consumption and immediate Thaw expiry graphics. Invalid hands and garden swaps
 preserve valid wallet/map data. Invalid saves cannot replace a valid stored profile.
 
 Future UI and gameplay features belong in the shared modules, rather than a separate
@@ -61,3 +61,7 @@ Pip navigation, MP22 formation generation and compatibility details.
 
 The 2.3 menu frame, contextual help layers and presentation contract are documented
 in [UI.md](UI.md). Both stylesheets are embedded in Windows and packaged for web.
+
+New games use MP26 codes. MP16, MP18, MP19, MP21, MP22 and MP24 codes remain
+readable and keep their original generation rules. Scenery/table preference,
+Shuffle ranks and long-garden progress are included in exported shared saves.

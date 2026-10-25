@@ -1,0 +1,52 @@
+/* Shared scenic menu language. Keep gameplay geometry and map stacking independent. */
+#dialog{background:#fff9e9;border:3px solid #ffe3a5;box-shadow:0 9px 0 #725743,0 24px 70px #102e3866}
+#modal[data-menu-scene]{--menu-ink:#285966;color:var(--menu-ink);background:linear-gradient(#fff9e9eb,#fff9e9 260px),var(--menu-scene) center top/cover no-repeat;border-radius:22px}
+#modal .menu-navigation{background:linear-gradient(#397f8c,#256172);border-bottom:3px solid #e7c980;padding:10px 16px;min-height:58px;gap:10px}
+#modal .menu-navigation button{border-color:#ffe4ac}
+#modal .dialog-content{padding:20px 24px 26px}
+#modal .panel-heading{min-height:66px;padding:10px 18px;margin:4px 0 20px;gap:14px;border:2px solid #f8d895;border-radius:20px 20px 28px 12px;background:linear-gradient(120deg,#4c9da2,#2b697e);box-shadow:0 5px #1e5266, inset 0 2px #fff6;color:#fff9df;overflow:visible}
+#modal .panel-heading h2{color:#fff9df;text-shadow:0 2px #234e62;font-size:29px;line-height:1.15;overflow-wrap:anywhere;margin:0;min-width:0}
+#modal .heading-art{width:54px;height:54px;flex:0 0 54px;border-radius:18px;background:radial-gradient(#fffcdf,#f5cf7a);border:2px solid #fff0bb;box-shadow:0 3px #b48b53;transform:rotate(-6deg)}
+#modal .heading-art>.game-icon{transform:rotate(6deg)}
+#modal .activity-tabs{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:7px 3px 12px;margin:0 0 12px;gap:9px;scroll-snap-type:x proximity}
+#modal .activity-tabs button{flex:0 0 auto;scroll-snap-align:start;min-height:44px}
+#modal .activity-tabs::-webkit-scrollbar{display:none}
+#modal .picture-flow{background:#e9f3e2;border:1px solid #bfd6b0;gap:22px;padding:9px;margin:12px 0 18px;border-radius:18px}
+#modal .picture-flow .game-icon{width:36px;height:36px}
+#modal .activity-group{display:flex;align-items:center;gap:9px;font-size:19px;color:#386b70;margin:20px 0 10px}
+#modal .event-hub{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+#modal .event-hub .event-tile{position:relative;display:grid;grid-template-columns:65px minmax(0,1fr);grid-template-rows:auto auto;align-content:center;align-items:center;text-align:left;column-gap:9px;min-height:108px;padding:13px 12px;border-radius:23px 16px 23px 16px;background:linear-gradient(135deg,#fff9d8,#e5f1d5);border:2px solid #fff0b9;color:#285b62;box-shadow:0 5px #98af83,inset 0 2px #fff;overflow:visible}
+#modal .event-tile>.game-icon{grid-row:1/3;width:61px;height:61px;filter:drop-shadow(0 4px 1px #58684333)}
+#modal .event-tile strong{font-size:17px;line-height:1.2;min-width:0;overflow-wrap:anywhere}
+#modal .event-tile .activity-status{font-size:12px;color:#526d60;margin:5px 0 0;line-height:1.4}
+#modal .event-tile:nth-child(3n+2){background:linear-gradient(135deg,#fff9e4,#e4e6ff);box-shadow:0 5px #a197bc,inset 0 2px #fff}
+#modal .event-tile:nth-child(3n){background:linear-gradient(135deg,#fff9e4,#ffdfbd);box-shadow:0 5px #c3a079,inset 0 2px #fff}
+#modal .visual-totals{width:fit-content;max-width:100%;margin:14px auto 20px;background:linear-gradient(#fff8dc,#ffe6a2);border-radius:30px;border-color:#eccb78;box-shadow:0 3px #d1ae68;padding:9px 22px}
+#modal .shop{grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+#modal .shop article{display:flex;align-items:center;padding:14px 14px 17px;gap:8px;min-width:0;border:2px solid #ddc795;border-radius:24px;background:radial-gradient(ellipse at 50% 0,#fff2bc,transparent 70%),#fffdf1;box-shadow:0 5px #baa47a}
+#modal .shop article>.icon{width:78px;height:78px;background:none;border:0;margin:0;padding:0;box-shadow:none}
+#modal .shop article>.icon>.game-icon{width:72px;height:72px;filter:drop-shadow(0 4px 2px #927b4a44)}
+#modal .shop article h3{font-size:19px;line-height:1.15;text-align:center;margin:0;color:#356b72}
+#modal .shop .basket-count{background:#edf0dc;border-radius:20px;padding:3px 10px}
+.helper-description{width:100%;text-align:center;font-size:12px}.helper-description summary{cursor:pointer;color:#567377;padding:5px;font-weight:800}.helper-description p{font-size:12px!important;margin:5px 0!important;line-height:1.5}
+#modal .shop article>button:last-child{margin-top:auto;width:100%;min-height:42px}
+#modal .event-row,#modal .goal{background:linear-gradient(110deg,#fffdf2,#edf3e3);border:1px solid #c7d6b5;border-radius:19px;padding:13px;margin:11px 0;box-shadow:0 3px #cccfad;gap:12px}
+#modal .reward-track>article,#modal .sticker-card,#modal .skin-card,#modal .album-category{border-color:#d8c48c;background:linear-gradient(#fffdf1,#f3eccb);box-shadow:0 4px #baa77c;border-radius:19px}
+#modal .related-places{border-top:1px solid #d7d7b4;margin-top:20px;padding:16px 4px 7px;gap:12px}
+#modal .related-places .visual-control{flex-direction:row;min-height:45px;flex-basis:auto}
+#modal .switch,#modal .volume-control{border-color:#c3d5c4;background:linear-gradient(110deg,#fffdf0,#e9f0df);color:#356471;border-radius:18px}
+#modal .audio-sliders{grid-template-columns:repeat(2,minmax(0,1fr))}
+#modal .field-notes{background:#eff1e4;border-color:#c4d2bf;color:#42636a}
+#modal .mode-picture-banner{height:86px;border-radius:20px;background-position:center 42%;border:2px solid #e9d29a;margin-bottom:16px}
+#modal .regatta-sea{border-radius:23px;border:3px solid #b4e1da;box-shadow:inset 0 0 25px #16516b55}
+#app>.hero{background:linear-gradient(100deg,#fff8def5 10%,#fff8dee6 55%,#fff8de48),url('assets/spring-village.png') center/cover;border:3px solid #ffe7ac;box-shadow:0 7px #b39c6a,0 18px 40px #173b3233;gap:22px;padding:30px 35px}
+#app>.hero h1{color:#286674;text-shadow:0 2px #fff3bf;font-family:var(--font-display);font-weight:800}
+#app>.hero .primary{background:linear-gradient(#bcf475,#6cbb36);border:2px solid #efffb8;box-shadow:0 5px #4c8337;color:#28532e}
+#app>.cards-grid{gap:18px;margin-top:23px}
+#app>.cards-grid .tile{padding:20px 22px;background:linear-gradient(135deg,#fff9e9,#e7efda);border:2px solid #ffe9af;box-shadow:0 5px #9fba8d;min-width:0}
+#app>.cards-grid .tile:nth-child(2){background:linear-gradient(135deg,#fff9e9,#d6eef0);box-shadow:0 5px #84b5b7}
+#app>.cards-grid .tile:nth-child(3){background:linear-gradient(135deg,#fff9e9,#f3ddf2);box-shadow:0 5px #b69cc2}
+#app>.cards-grid .icon{height:65px;font-size:45px}#app>.cards-grid h3{color:#326a72}#app>.cards-grid p{font-size:14px}
+@media(max-width:700px){#modal .dialog-content{padding:14px 13px 21px}#modal .panel-heading{padding:11px 12px;gap:10px}#modal .panel-heading h2{font-size:23px}#modal .heading-art{width:45px;height:45px;flex-basis:45px}#modal .heading-art>.game-icon{width:39px;height:39px}#modal .event-hub{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal .event-hub .event-tile{display:flex;flex-direction:column;text-align:center;min-height:142px;padding:12px 7px;gap:5px}#modal .event-tile strong{font-size:15px}#modal .event-tile .activity-status{font-size:11px;margin:0}#modal .shop{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal .shop article{padding:12px 8px 14px}#modal .shop article h3{font-size:16px}#modal .audio-sliders{grid-template-columns:1fr}#app>.hero{padding:23px 20px}#app>.cards-grid .tile{padding:17px}#modal .menu-navigation{padding:9px 12px}}
+#modal .event-panel{min-width:0;max-width:100%}#modal .activity-tabs{width:100%;max-width:100%;min-width:0}#modal .event-panel>*{min-width:0}
+#modal .activity-tabs{overflow-x:auto!important;overflow-y:hidden!important;padding-top:8px;padding-bottom:13px}

@@ -1,0 +1,103 @@
+/* A card-first stage: compact furniture, readable suit colors and quick feedback. */
+body.playing>header{padding-top:10px;padding-bottom:9px}
+.playing .brand small{display:none}
+.playing #app{padding-top:6px;padding-bottom:12px}
+.playing .subhead{padding:10px 17px;margin-bottom:10px;border-radius:22px;gap:12px;flex-wrap:nowrap}
+.playing .subhead>div:first-child{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 13px;min-width:0}
+.playing .subhead .chapter-chip{grid-column:1/-1;font-size:11px;margin:0 0 2px}
+.playing .subhead .level-heading{font-size:26px;margin:0;gap:6px}
+.playing .subhead .meta{display:flex;gap:4px;align-items:center;font-size:12px;font-weight:900;white-space:nowrap}
+.playing .subhead .actions{border:0;background:none;padding:0;gap:7px;flex-wrap:nowrap}
+.playing .star-meter{height:48px;width:145px}.playing .star-meter small{top:34px}
+.playing .board-shell.painted-table{padding:16px 24px 15px}
+.playing .board-shell>.effects{height:29px;min-height:29px}
+.playing .board{margin:0 auto 9px}
+.playing .card:not(.back){background:linear-gradient(135deg,#fff,#fffdf4);border:2px solid #c4c5bd;box-shadow:0 3px 0 #263d3a99,inset 0 0 0 1px white}
+.playing .card[data-suit="0"]{--suit-color:#315c8b}
+.playing .card[data-suit="1"]{--suit-color:#d34d50}
+.playing .card[data-suit="2"]{--suit-color:#df783c}
+.playing .card[data-suit="3"]{--suit-color:#34413d}
+.playing .card:not(.back) .rank,.playing .card:not(.back) .face-suit,.playing .card:not(.back) .face-rank{color:var(--suit-color,#34413d)}
+.playing .card .face-rank{font-family:var(--font-display);font-size:calc(var(--cw,76px)*.84);font-weight:900;-webkit-text-stroke:.6px #24393b90;text-shadow:0 2px 0 #fff,1px 2px 0 #25363844}
+.playing .card .rank{font-weight:1000}
+.playing .card:enabled:hover{filter:brightness(1.06);box-shadow:0 5px 0 #263d3a99,0 0 0 3px #ffe6a99e}
+.playing .hand-row{gap:24px;margin:10px 0 12px;align-items:center}
+.playing .hand-row .card{--cw:86px;width:86px;height:119px}
+.playing .hand-row .pile small{display:block;font-size:10px;max-width:120px;padding-top:4px;line-height:1.3;min-height:22px;color:#fff7db;text-shadow:0 1px 3px #18382e}
+.playing .stock-count{top:108px;bottom:auto;right:3px}
+.playing .run-stat{min-width:82px}.playing .run-stat strong{font-family:var(--font-display);font-size:26px;line-height:1.2}
+.playing .run-stat small{font-size:10px;color:#fff0c8}
+.streak-pips{display:flex;justify-content:center;gap:4px;margin-top:5px}
+.streak-pips i{width:9px;height:9px;border-radius:50%;border:1px solid #e5d5a8;background:#183f3c}
+.streak-pips i.filled{background:#ffda72;box-shadow:0 0 6px #ffcf61}
+.playing .tools{gap:11px;margin:10px auto 12px;min-height:0}
+.playing .helper-slot{flex-basis:74px;min-width:64px}
+.playing .helper-slot>.tool{min-height:65px;padding:7px 5px 6px;gap:3px}
+.playing .tool>.game-icon{width:32px;height:32px}.playing .tool-name{font-size:10px}
+.playing .play-actions{padding-top:10px;gap:8px;margin-top:8px}
+.playing .play-actions button{min-height:38px;padding:6px 9px;font-size:11px}
+.playing .play-actions .game-icon{width:23px;height:23px}
+/* Pip sits alongside the table and never changes its measured geometry. */
+.playing .bird-guide.in-play{position:fixed;left:14px;right:auto;bottom:14px;width:290px;max-width:calc(100vw - 28px);padding:10px 12px;margin:0;z-index:100}
+.playing .bird-guide.in-play>.pip-sprite{width:54px;height:54px;align-self:flex-start}
+.playing .bird-guide.in-play .guide-copy{display:block}.playing .bird-guide.in-play .guide-copy>small{display:none}
+.playing .bird-guide.in-play strong{font-size:14px}.playing .bird-guide.in-play p{font-size:12px;margin:4px 0 8px}
+.playing .bird-guide.in-play .guide-actions{margin-top:6px}
+.guide-hand{width:34px;height:34px;pointer-events:none;font-size:0!important;filter:drop-shadow(0 3px 1px #60432588);z-index:10001!important}
+.guide-hand:before{content:'';display:block;width:34px;height:34px;background:linear-gradient(#fff3b0,#ffc746);clip-path:polygon(32% 0,68% 0,68% 48%,100% 48%,50% 100%,0 48%,32% 48%)}
+@media(max-width:700px){
+ .playing>header{padding:8px 12px}.playing #app{padding-left:10px;padding-right:10px}
+ .playing .subhead{padding:9px 11px;gap:6px}.playing .subhead .chapter-chip>span{max-width:130px}.playing .subhead .chapter-chip{font-size:9px;gap:4px}
+ .playing .subhead .level-heading{font-size:21px}.playing .subhead .level-heading>.game-icon{width:23px;height:23px}
+ .playing .subhead>div:first-child{gap:2px 6px}.playing .subhead .meta{font-size:10px}.playing .subhead .actions{gap:3px}
+ .playing .star-meter{width:85px;height:45px}.playing .star-icons .game-icon{width:24px;height:24px}.playing .star-meter small{top:31px;font-size:9px}
+ .playing .subhead [data-action=favorite]{font-size:0;min-width:28px;width:28px;height:32px;padding:3px;border-radius:12px}.playing .subhead [data-action=favorite]>.game-icon{width:21px;height:21px}
+ .playing .subhead .table-code{min-width:28px;width:28px;height:32px;padding:3px;border-radius:12px}.playing .table-code>.game-icon{width:21px;height:21px}
+ .playing .board-shell.painted-table{padding:13px 8px 12px}.playing .hand-row{gap:6px;margin:8px 0 10px;flex-wrap:nowrap;min-height:110px}
+ .playing .hand-row .pile{min-width:0;flex:0 0 64px}
+ .playing .hand-row .card{--cw:64px;width:64px;height:89px}.playing .hand-row .pile small{font-size:9px;max-width:85px}
+ .playing .stock-count{top:78px;right:0}
+ .playing .run-stat{min-width:38px}.playing .run-stat strong{font-size:22px}.playing .run-stat small{font-size:8px}.streak-pips{gap:2px}.streak-pips i{width:7px;height:7px}
+ .playing .tools{gap:10px;row-gap:14px}.playing .helper-slot{flex-basis:59px;min-width:52px}.playing .helper-slot>.tool{min-height:63px}
+ .playing .play-actions{gap:7px}.playing .play-actions button{padding:6px 8px;min-height:38px;font-size:10px}
+ .playing .bird-guide.in-play{bottom:8px;left:8px;width:255px;padding:8px 10px;gap:6px}.playing .bird-guide.in-play>.pip-sprite{width:44px;height:44px}
+}
+@media(prefers-reduced-motion:reduce){.guide-hand{animation:none!important}}
+.reduced .guide-hand{animation:none!important}
+@media(max-width:380px){.playing .subhead{flex-wrap:wrap}.playing .subhead .actions{margin-left:auto}}
+#dialog:has(.victory){max-width:650px}
+.victory{position:relative;padding:4px 12px 10px;text-align:center}
+.victory>h2{margin:0 0 12px;padding:12px 18px;border:2px solid #b9eee6;border-radius:19px;background:linear-gradient(#69c8ce,#388d9f);box-shadow:inset 0 2px #e4ffff80,0 4px #285a7066;color:#fff9e3;font-size:30px;line-height:1.25;text-shadow:0 2px #276975}
+.victory .win-pip{position:absolute;right:10px;top:80px;height:73px;rotate:8deg;pointer-events:none}
+.victory .win-pip>.pip-sprite{width:73px;height:73px}
+.victory .result-stars{gap:12px;margin:16px auto 10px}
+.victory .result-star{width:72px;height:78px;display:grid;place-items:center;border-radius:22px;background:radial-gradient(#eed4a3,#ead4b333);rotate:-7deg}
+.victory .result-star:nth-child(2){rotate:0deg;scale:1.12}.victory .result-star:nth-child(3){rotate:7deg}
+.victory .result-star:not(.earned)>.game-icon{filter:grayscale(1);opacity:.27}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px auto;max-width:420px}
+.result-stats>div{margin:0;padding:0 0 12px;border:2px solid #d7a775;border-radius:18px;overflow:hidden;background:linear-gradient(#efdbb9,#fff3d4);color:#74513e;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.result-stats small{display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;background:linear-gradient(#79cbd0,#4497a9);border-bottom:2px solid #548696;color:#fff9e3;font-weight:1000;font-size:15px}
+.result-stats strong{font:900 31px/1.3 var(--font-display);color:#76523e}.result-stats strong b{font:inherit}
+.result-prize-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin:10px 0 18px}
+.result-prize-chips>span{display:flex;align-items:center;gap:5px;background:#fff3ce;border:2px solid #e8cb91;border-radius:15px;padding:4px 9px;font-size:14px}
+.victory>.panel-heading{background:linear-gradient(#69c8ce,#388d9f);border-color:#b9eee6;box-shadow:inset 0 2px #e4ffff80,0 4px #285a7066}
+.victory>.panel-heading h2{text-shadow:0 2px #276975!important}
+.victory>.actions{justify-content:center;gap:10px}.victory>.actions>.story-play{flex-basis:100%;max-width:320px;margin:2px calc((100% - 320px)/2);min-height:57px;font-size:23px}
+@media(max-width:600px){.victory{padding:0 0 8px}.victory>h2{font-size:24px;padding:10px}.victory .win-pip{right:-3px;top:65px}.victory .win-pip>.pip-sprite{width:46px;height:46px}.victory .result-stars{gap:7px}.victory .result-star{width:58px;height:62px}.victory .result-star>.game-icon{width:54px;height:54px}.result-stats{gap:8px;margin:12px auto}.result-stats small{font-size:13px}.result-stats strong{font-size:26px}.victory>.actions>.story-play{margin:0;max-width:100%;font-size:22px}}
+@media(min-width:700px) and (max-height:720px){
+ .playing .board-shell.painted-table{padding-top:10px;padding-bottom:10px}
+ .playing .helper-slot{flex-basis:46px;min-width:42px}.playing .tools{gap:7px;margin-top:8px;margin-bottom:8px}
+ .playing .helper-slot>.tool{min-height:59px;padding:5px 2px}.playing .tool-name{font-size:9px}.playing .tool>.game-icon{width:27px;height:27px}
+ .playing .hand-row .card{--cw:70px;width:70px;height:97px}.playing .hand-row{min-height:110px;margin-top:6px;margin-bottom:6px}
+ .playing .stock-count{top:86px}
+ .playing .helper-slot>.helper-info{width:18px;min-width:18px;height:18px;min-height:18px;font-size:12px;left:-3px;top:-6px}.playing .tool .count{min-width:16px;height:16px;font-size:9px;top:-6px;right:-2px}
+ .playing .subhead .chapter-chip{font-size:10px}.playing .mode-cue{padding:3px 8px;font-size:10px;margin-bottom:3px}
+ .victory>.panel-heading{min-height:56px;padding:7px 11px;margin-bottom:8px}.victory>.panel-heading h2{font-size:24px!important}
+ .victory>.panel-heading .heading-art{width:40px;height:40px;flex-basis:40px}.victory>.panel-heading .heading-art>.game-icon{width:33px;height:33px}
+ .victory .result-stars{margin:8px auto;gap:8px}.victory .result-star{width:54px;height:56px}.victory .result-star>.game-icon{width:50px;height:50px}
+ .victory .result-objective{margin:6px 0}.victory .win-pip{top:55px}.victory .win-pip>.pip-sprite{width:50px;height:50px}
+ .victory .result-stats{margin:8px auto}.victory .result-stats small{padding:5px;font-size:13px}.victory .result-stats strong{font-size:24px}
+ .victory .result-prize-chips{margin:6px 0 10px}.victory>.actions{gap:8px}.victory>.actions>.story-play{min-height:46px;font-size:21px}
+}
+
+@media(max-width:700px){.playing .subhead [data-action=favorite]>span:not(.game-icon){display:none}.playing .subhead [data-action=favorite]{display:inline-flex;align-items:center;justify-content:center}}

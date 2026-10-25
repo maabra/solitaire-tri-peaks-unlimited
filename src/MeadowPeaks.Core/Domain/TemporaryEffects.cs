@@ -16,12 +16,7 @@ public sealed partial class Hand : ITemporaryHand
         if (!double.IsFinite(seconds) || seconds <= 0 || Won || Failed) return;
         double Tick(double value) => Math.Max(0, value - seconds);
         state = state with { HintSeconds = Tick(state.HintSeconds), HintCooldown = Tick(state.HintCooldown), HelperCooldown = Tick(state.HelperCooldown), LuckySeconds = Tick(state.LuckySeconds), ThawSeconds = Tick(state.ThawSeconds), ShieldSeconds = Tick(state.ShieldSeconds), WildSeconds = Tick(state.WildSeconds), KeySeconds = Tick(state.KeySeconds), PruneSeconds = Tick(state.PruneSeconds), PhaseSeconds = Tick(state.PhaseSeconds), PeekSeconds = Tick(state.PeekSeconds), FreshSeconds=Tick(state.FreshSeconds), DrawCooldown=Tick(state.DrawCooldown) };
-        if(state.FreshSeconds<=0) stock.RemoveAll(c=>c.TemporaryStock);
-        if (Deal.TemporaryRules && state.WildSeconds <= 0 && state.WildReturn != null)
-        {
-            if (Waste.Rank == 0) Waste = state.WildReturn;
-            state = state with { WildReturn = null };
-        }
+
     }
     public bool RequestHint()
     {

@@ -1,165 +1,200 @@
 # Meadow Peaks
 
-An illustrated solitaire adventure for Windows and the browser, with **480,000
-campaign levels**, 64 formation families, an endless mode and a match-three coin garden.
+A colorful TriPeaks adventure for **Windows and the browser**. Follow Pip through
+480,000 campaign levels, collect chapter designs, and earn helpers through connected
+side games. Both platforms run the same game code and original artwork. Pip shares rotating
+solitaire thoughts on the home screen; tap him for another.
 
-![Meadow Peaks adventure map](docs/adventure-map.png)
+![The current map, with level stops built into the road](docs/screenshots/map.png)
 
 ## Play
 
-[Play in your browser](https://maabra.github.io/solitare-tri-peaks-unlimited/) or
-[download MeadowPeaks-2.4.1.exe](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe).
+[Play online](https://maabra.github.io/solitare-tri-peaks-unlimited/) ·
+[Download Windows EXE](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe) ·
+[Releases](https://github.com/maabra/solitare-tri-peaks-unlimited/releases)
 
-The Windows x64 EXE bundles .NET and its own WebView2 renderer. Double-click it;
-no installer, administrator access, existing browser or network connection is
-needed. First launch unpacks the bundled runtimes into a local cache. The download
-is larger because the complete renderer is included. Windows 10 or 11 x64 is required.
-Older EXEs retain their older interface; use version 2.3 for the current unified UI.
+**Release status:** those links point to the published game. The screenshots and
+features below show the newer development source, including lives, music, revised
+navigation and unlock tutorials. These changes require a new build and deployment
+before they appear in the downloadable EXE and live website.
 
-The portable ZIP contains the same game. Extract the entire archive before opening
-MeadowPeaks.exe. Source archives contain source and original art, rather than an EXE.
+The portable Windows x64 EXE includes .NET and its own WebView2 renderer. On
+Windows 10 or 11, double-click it; first launch extracts the bundled runtime.
+The complete game then works offline. For the ZIP version, extract the entire
+archive before opening `MeadowPeaks.exe`.
 
-## One interface on both platforms
+## A card adventure
 
-Windows embeds the exact HTML, CSS, JavaScript and artwork used by GitHub Pages.
-The map, cards, animations, menus, padding, helpers, timers and gameplay now have one
-shipping implementation. Settings shows the same build version on both platforms.
+Remove an uncovered card one rank above or below the waste. Ace connects to King
+and Two. Build streaks for extra stock, watch special-card badges, and use earned
+coins to buy temporary helpers. Play opens a level preview before starting a hand.
 
-The map camera keeps scenery, the trail and markers in the same coordinate system.
-Its controls stay anchored while the world pans. Drag the scenery or swipe to
-explore. The interface adapts to desktop, tall, wide and phone viewports.
+The card table fits the complete formation, so compact fans and loops use larger
+cards while every surviving card stays in place. Suit colors distinguish spades,
+hearts, diamonds and clubs. Pip points to tutorial moves; flights and flips take
+160 ms and 140 ms. Results separate score from coins and make Next level the main
+action. Ordinary win rewards are saved automatically.
 
-Windows keeps the existing JSON profile in Local AppData/MeadowPeaks; the web game
-uses browser storage. Saves are local and independent. Export/import in Settings
-moves cards, coins, inventory, progress and the saved garden between them.
+![The current card table, with ice, rewards, stock, helpers and progress indicators](docs/screenshots/cards.png)
 
-## Features
+- **480,000 seeded levels**, organized into 4,800 chapters of 100. 128
+  formation families include peaks, fans, rings, arches, braids and multiple stacks.
+  New hands begin with 13 to 20 cards. Occasional long gardens grow from 60 to 120
+  cards; ordinary hands keep a shorter pace. Deal generation verifies winning paths.
+- **100 coordinated chapter collections:** distinct portrait scenes, names, card
+  backs and tables. Later chapters reuse the world collection with numbered
+  identities. Completing a chapter earns its matching cosmetic designs.
+- **Scenic or table play:** choose illustrated scenery or your collected table in
+  Settings and Card studio. A swipeable helper tray keeps controls together.
+- **Shuffle:** unlocks at level 200; refreshes ranks while preserving obstacles,
+  cover links and prize badges. Shares the five-second helper cooldown.
+- **Gradual mechanics:** ice, keys, locks, bombs, armor, vines, moving ranks,
+  lanterns, shields, phase gates, color seals, tornadoes and fog. MP26 difficulty
+  reaches its full feature range around level 50,000.
+- **Consumable helpers and timers:** hints, stock draws and temporary bonuses
+  have visible cooldowns. Helpers follow discovery and board relevance.
+- **Lives:** start with 3 hearts and store up to 999. Losing or abandoning an
+  attempt costs one heart; browsing, pausing and resuming are free. Earn hearts
+  from rewards and every ten successful Gem Garden swaps. See [heart rules](docs/LIVES.md).
+- **Endless mode and bonus levels**, with dedicated mode artwork and tables.
 
-- 480,000 seeded levels across 4,800 chapters of 100 levels, with explicit cover graphs and verified solutions.
-- 64 formation families: peaks, fans, rings, ribbons, spirals, tilted packets,
-  bouquets, and five to eight separate stacks or islands.
-- 100 independently painted, narrow portrait chapter worlds with distinct names, matching
-  Travel Hub pictures and 100 scrollable stops along a thick, winding road. Later
-  journeys reuse these 100 worlds with numbered names. No color filters create variation.
-- 100 linked chapter tables and 100 original card-back designs. Completing each chapter earns
-  a selectable back and table; later backs add distinct ornamental seals. Existing
-  completed chapters unlock their cosmetics automatically.
-- Pip the bird introduces activities and special cards as they unlock. Direct map,
-  activity and reward-screen links connect the garden, albums, flight and other events.
-- 80 original illustrated icons, plus transparent ice, lock-and-chain and vine
-  overlays. Suit and rank remain readable under special-card artwork.
-- Ice, keys, locks, bombs, directional stock bonuses, armor, vines, lanterns,
-  lucky cards, shields, phase gates and color seals. Mechanics arrive gradually;
-  capped difficulty upgrades mix them every 100 levels.
-- Consumable helpers bought with earned coins. Helpers follow discovery and
-  board relevance; temporary bonuses expire rather than becoming permanent boosts.
-- Three-second hints with a 15-second recharge; two-second stock draw cooldown;
-  five rescue cards lasting ten seconds; a live three-star preview.
-- Gem Garden: connected-match highlights, swap and fall animations, refills,
-  cascades and immediate coin rewards. Its saved board and one-hour Fresh Garden
-  cooldown survive closing and reopening.
-- Lucky wheel: one welcome spin, then one per five solitaire wins. Eight equal
-  segments award coins or one-use helpers; the prize is saved before the animation.
-- Chapter gifts, bonus levels, a journal, daily picnic rewards, favorites,
-  reproducible deal codes, sound and reduced motion.
-- Stale browser tabs cannot overwrite newer saves. Damaged hands can be discarded
-  while preserving valid wallet and map progress. Timed Wild/Thaw expiry updates
-  card artwork immediately, and resizing preserves the current tableau.
+## More ways to play
 
-There are no purchases, ads, accounts, leaderboards or online reward dependencies.
-Reference videos, example games and extracted reference frames are excluded from
-Git and distribution packages. Original project artwork is included.
+Gem Garden earns coins and hearts without requiring lives. Albums turn earned
+packs into collections; duplicates become tokens for more packs. Campaign wins
+also feed flights, bingo, sailing and other activities.
 
-## Map and Pip fixes in 2.4.1
+| Activity | How it connects |
+| --- | --- |
+| Gem Garden | Match gems → coins and hearts → return to your saved hand |
+| Albums | Collect pack cards → win → open packs and complete sets |
+| Balloon Trail / Souvenir Hunt | Win a flight → arrows → uncover island prizes |
+| Bingo | Win hands → draws → complete lines for rewards |
+| Regatta / Voyage | New campaign wins → sailing and milestone rewards |
+| Treasure Trail / Matching Garden | New wins → rolls or seeds → rewards |
+| Picnic / Milestones | Play normally → fill visible targets → claim rewards |
+| Chapter collections | Clear levels → stars, postcards, chests and designs |
 
-A contained cream chapter header replaces the old red ribbon. Soft map scenery
-and a matching ambient backdrop keep the road and buttons sharp. Play opens the
-current level; the compass locates it. Pip has a proper clickable bird, working
-Play and Cards shortcuts from the first level, and direct links to unlocked places.
-Future places explain their unlock instead of offering an unavailable action.
+![Album navigation, collection progress and illustrated sets](docs/screenshots/album.png)
 
-## Connected collections in 2.4
+Pip introduces features through short, numbered tutorials. Exclamation badges mark
+new features and helpers. Current/target counters sit beside their goals. Distinct
+symbols identify saved levels, deal codes, rolls, seeds and customization. Locked
+previews lead with **Play to unlock**.
 
-100 named chapter sets each link an original portrait scene, card back and table.
-Card Studio and Travel Hub use the same chapter identity. Cards face the player
-without changing cover geometry; soft scenery blur leaves cards and controls sharp.
-The level header uses illustrated chapter and star cues.
+Rewards have card flights, star reveals, gift opening, coin trails, bounces and
+sparkles. Original synthesized music and sound effects have separate saved volume
+controls; enable them in Settings. Reduced motion is supported.
 
-Treasure Trail turns rolls earned from new campaign wins into coins, packs and
-helpers. Matching Garden uses seeds earned from new wins for a memory-pair game,
-with rewards returning to solitaire and the album. See [activity rules](docs/SIDE-GAMES.md).
+## Saves and offline play
 
-## Pacing and special worlds in 2.4
+Windows stores the profile under `%LOCALAPPDATA%\MeadowPeaks`; the browser asks
+permission to use local storage. Their saves are independent. Settings → Export
+and Import moves progress, active hands, hearts, inventory and collections between
+them. Browser saves remain tied to the browser and site origin.
 
-New MP24 hands introduce special cards gradually through level 48,000 and reach
-full difficulty at 50,000. Existing bonus rewards and activities remain. Nine new
-paintings give special modes their own scenery and matching automatic tables.
-Old hands and codes keep their rules. See [the progression schedule](docs/PROGRESSION.md).
+Stale-tab checks prevent an older tab from overwriting newer progress. Validation
+and backups recover damaged hands where possible. Rewards are committed before
+their animations; repeated claims do not grant them twice.
 
-## Visual clarity in 2.3.1
+There are no purchases, ads, accounts or online reward requirements. Regatta rivals
+are offline CPU crews. Reference games, videos and extracted reference frames stay
+in ignored `examples/`; they are excluded from Git and distribution archives.
 
-Larger illustrated controls, short labels, red title ribbons and gold selection
-states make the menus easier to scan. Shop cards show art, quantity and price.
-Long instructions live behind information buttons and Details, while Pip gives
-one short next step.
+## Run the source
 
-## Presentation in 2.3
+Serve the shared game locally using Python:
 
-A shared illustrated menu frame connects Map, My cards, Activities and Shop.
-Activities are grouped into play, collections and rewards, with useful progress
-badges and related-place tabs. Contextual **i** buttons explain activities and
-helpers without losing your menu or hand. Consistent buttons, readable headings,
-responsive panels and gentle transitions follow the reduced-motion preference.
-See [UI details](docs/UI.md).
+```powershell
+python -m http.server 8765 --directory web
+```
 
-## Connected journeys in 2.2
+Open `http://127.0.0.1:8765/`. Use HTTP rather than opening `index.html` directly,
+because the game uses JavaScript modules.
 
-MP22 deals add interwoven formations, boxes, circles, arches, braids and linked
-shapes. Existing saved hands and MP16/18/19/21 deal codes keep their original rules.
-The fitted table surrounds the actual card board and preserves its corners during
-resizing. See [journey and customization details](docs/JOURNEY.md).
-
-## Adventures
-
-Albums with 100 stickers, rarity packs and duplicate tokens; daily missions;
-lifetime milestones; a monthly voyage; trophy tournaments; offline CPU regatta;
-Balloon Trail and the 9x9 Souvenir Hunt; bingo; weekly ticket trails; chapter
-chests and postcards. New MP21 hands add TNT, Joker, two-hit ice, moving ranks,
-tornadoes, fog and five-card streak stock rewards. The browser asks for local-save
-permission before play. See [all rules and compatibility details](docs/ADVENTURES.md).
-
-## Build and verify
-
-Install the .NET 6 SDK, Node.js and Python. Windows builds need Windows.
+Build Windows packages on Windows with the .NET 6 SDK, Node.js and Python:
 
 ```powershell
 ./scripts/prepare_webview_runtime.ps1
 ./scripts/build.ps1
-./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-2.4.1.exe
+./scripts/build-single-exe.ps1 -OutputName MeadowPeaks-preview.exe
 python scripts/package_web.py
 python scripts/package_source.py
 ```
 
-The runtime preparation script downloads Microsoft's pinned official Fixed Version
-WebView2 package and verifies its SHA-256. The runtime is kept under ignored artifacts,
-never in the source archive. See [architecture](docs/ARCHITECTURE.md) for the host boundary,
-[web notes](docs/WEB.md) for shared presentation and [player guide](docs/PLAYING.txt).
+Runtime preparation downloads a pinned Microsoft WebView2 package and verifies
+its hash. Packages are written under ignored `artifacts/`. Both builds include
+all feature modules and stylesheets; examples are never packaged.
+
+## Replaceable parts
+
+`app.mjs` wires commands and screens together. Gameplay, storage, views, audio,
+effects and tutorial content live in focused modules. C# owns the Windows host,
+save bridge and compatibility domain.
+
+| Area | Main components |
+| --- | --- |
+| Rules and saves | `core.mjs`, `adventure-hand.mjs`, `session.mjs`, `lives.mjs` |
+| Collections and side games | `adventure-systems.mjs`, `side-activities.mjs`, `adventure-ui.mjs` |
+| Level and heart screens | `LevelPreview`, `LivesPanel`, `ui-markup.mjs` |
+| Map and chapters | `adventure-map.mjs`, `overworld-view.mjs`, `chapter-worlds.mjs` |
+| Card / gem motion | `board-view.mjs`, `gem-view.mjs` |
+| Navigation and tutorials | `MenuJourney`, `BirdGuide`, `feature-tutorials.mjs` |
+| Progress and symbols | `progress-view.mjs`, `game-art.mjs`, `semantic-icons.mjs` |
+| Audio and effects | `MeadowAudio`, `presentation-flow.mjs`, `celebration-effects.mjs` |
+| Feature styling | `map-ui.css`, `help-ui.css`, `progress-ui.css`, `lives-ui.css` |
+| Windows | `DesktopGameWindow*.cs`, `DesktopProfileBridge.cs`, `MeadowPeaks.Core/` |
+
+See [architecture](docs/ARCHITECTURE.md), [UI contracts](docs/UI.md),
+[activity rules](docs/ADVENTURES.md), [progression](docs/PROGRESSION.md),
+[audio](docs/AUDIO.md), and [original-art notes](docs/ART.md).
+
+## Verification
 
 ```powershell
-node --test web/tests/engine.test.mjs web/tests/adventure.test.mjs web/tests/journey.test.mjs web/tests/progression.test.mjs web/tests/side-activities.test.mjs
-dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --effects-only
-# Exhaustive formation and solution verification:
-dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release -- --story-all
-# Start a local server before real-browser checks:
-python -m http.server 8765 --bind 127.0.0.1 --directory web
-python scripts/test_web_browser.py
-python scripts/test_presentation_edges.py
+node --test web/tests/*.test.mjs
+dotnet build src/MeadowPeaks.csproj -c Release
 ```
 
-Browser checks use Python Playwright with Microsoft Edge. Windows builds run a
-shared-renderer UI smoke test using a separate test profile and workspace cache.
-The native C# domain remains available for import compatibility, deterministic
-fixtures and replaceable component tests. New presentation changes belong in web/.
+Browser checks use Python Playwright and installed Microsoft Edge. Start the local
+server above, install Playwright with `python -m pip install playwright`, then run:
 
-Original code/art use the project LICENSE. Bundled Microsoft components keep their
-own license and notice files; see [third-party notes](docs/THIRD_PARTY.md).
+```powershell
+python scripts/test_lives_browser.py
+python scripts/test_locked_previews.py
+python scripts/test_menu_edges.py
+python scripts/test_presentation_flow.py
+python scripts/test_unlock_tutorials.py
+python scripts/test_progress_clarity.py
+python scripts/test_context_help.py
+python scripts/test_audio_browser.py
+python scripts/audit_ui.py
+python scripts/test_volume_controls.py
+```
+
+These cover compatibility, persistence, duplicate rewards, interrupted animations,
+preview-first play, heart recovery, tutorials, responsive counters and audio.
+Refresh screenshots with `python scripts/capture_readme_screenshots.py`; it uses
+an isolated sample profile.
+
+Project licensing is in [LICENSE](LICENSE). Microsoft runtime notices ship with
+Windows packages; see [third-party notes](docs/THIRD_PARTY.md).
+
+Resource rewards and counters use consistent icon-and-number badges throughout the interface, including Garden swaps toward a heart. Tooltips and accessible labels keep each quantity clear.
+
+The interface uses locally bundled **Nunito** text and **Baloo 2** headings, with consistent menu controls and contextual helper explanations. See [font licenses and sources](docs/THIRD_PARTY.md).
+
+![Six illustrated chest tiers with permanently visible star milestones](docs/screenshots/chest.png)
+
+Pip now uses 16 original illustrated expressions. Six chest tiers have distinct closed/open artwork. Base win rewards are automatic; extra prizes have their own reveal tray. Wild and rescue cards stay ready until used, with the shared helper recharge preserved. See [Pip and treasure](docs/PIP-AND-TREASURE.md).
+
+![An occasional long garden with deep card stacks](docs/screenshots/long-garden.png)
+
+![The refreshed Lucky meadow wheel](docs/screenshots/wheel.png)
+
+Menu presentation is shared by Windows and web: illustrated teal/gold headers,
+compact activity cards, scenic home, expandable helper instructions and swipeable
+activity tabs. The redesign preserves saved hands, rewards and activity rules.
+
+The touch-first UI uses consistent control sizes, sticky dialog navigation,
+phone-friendly activity tabs and a compact home screen, with wider laptop grids.

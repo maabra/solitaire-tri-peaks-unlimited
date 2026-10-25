@@ -50,7 +50,7 @@ internal sealed partial class DesktopGameWindow:Form
                 if(!e.Request.Uri.StartsWith(Origin,StringComparison.Ordinal)){e.Response=environment.CreateWebResourceResponse(null,403,"Offline game","");return;}
                 string path=new Uri(e.Request.Uri).AbsolutePath.TrimStart('/');if(path.Length==0)path="index.html";
                 var stream=typeof(DesktopGameWindow).Assembly.GetManifestResourceStream("MeadowPeaks.Web/"+path);
-                string mime=Path.GetExtension(path) switch {".html"=>"text/html; charset=utf-8",".mjs"=>"text/javascript; charset=utf-8",".css"=>"text/css; charset=utf-8",".svg"=>"image/svg+xml",".png"=>"image/png",_=>"application/octet-stream"};
+                string mime=Path.GetExtension(path) switch {".html"=>"text/html; charset=utf-8",".mjs"=>"text/javascript; charset=utf-8",".css"=>"text/css; charset=utf-8",".svg"=>"image/svg+xml",".png"=>"image/png",".ttf"=>"font/ttf",".woff2"=>"font/woff2",_=>"application/octet-stream"};
                 e.Response=environment.CreateWebResourceResponse(stream,stream==null?404:200,stream==null?"Not found":"OK","Content-Type: "+mime+"\r\nCache-Control: no-store");
             };
             core.DownloadStarting+=(_,e)=>{using var dialog=new SaveFileDialog{FileName="MeadowPeaks-save.json",Filter="Meadow Peaks save (*.json)|*.json"};if(dialog.ShowDialog(this)!=DialogResult.OK){e.Cancel=true;return;}e.ResultFilePath=dialog.FileName;e.Handled=true;};

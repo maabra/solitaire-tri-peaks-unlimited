@@ -16,3 +16,12 @@ The pinned download URL and SHA-256 are recorded in `scripts/prepare_webview_run
 The large runtime CAB is excluded from Git/source exports and downloaded only when
 building the Windows distribution. Refresh the pinned version and checksum when
 updating the bundled renderer, and rerun packaged startup/UI checks.
+
+## Bundled fonts
+
+The game bundles unmodified variable fonts for offline use in Windows and the browser.
+
+- **Nunito**, interface text and readable numerical labels. Copyright 2014 The Nunito Project Authors. Source: https://github.com/google/fonts/tree/main/ofl/nunito . License: `web/assets/fonts/nunito-OFL.txt`.
+- **Baloo 2**, titles and primary play controls. Copyright 2019 The Baloo 2 Project Authors. Source: https://github.com/google/fonts/tree/main/ofl/baloo2 . License: `web/assets/fonts/baloo2-OFL.txt`.
+
+Both fonts use the SIL Open Font License 1.1. Their licenses accompany the font files in the embedded Windows resources and web package. The game does not contact a font service at runtime.

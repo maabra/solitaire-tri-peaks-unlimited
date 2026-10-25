@@ -1,0 +1,48 @@
+/* Shared menu furniture; gameplay cards and map scenery keep their own surfaces. */
+#dialog,#context-help{scrollbar-width:none}#dialog::-webkit-scrollbar,#context-help::-webkit-scrollbar{display:none}
+#dialog .menu-navigation{display:flex;align-items:center;gap:8px;min-height:58px;padding:9px 58px 11px 20px;background:linear-gradient(#fff7db,#f2dfb9);border-bottom:2px solid #e6c697}
+#dialog .menu-navigation button:not(.shell-close){display:inline-flex;flex-direction:row;gap:6px;min-height:35px;padding:6px 11px;border-radius:14px;font-size:12px;line-height:1.3}
+#dialog .menu-navigation button:not(.shell-close)>.game-icon{width:23px;height:23px}
+#dialog .menu-navigation .shell-close{top:10px;right:14px;width:33px;height:33px;min-width:33px;min-height:33px}
+.dialog-content{padding:22px 28px 12px}#modal{padding-bottom:8px}
+.panel-heading{position:relative;min-height:80px;padding:12px 16px;margin-bottom:20px;border:3px solid #ffd19b;border-radius:22px;background:linear-gradient(#ed806f,#d95b77);box-shadow:inset 0 2px #ffbd9d,0 4px #a75e6230}
+.panel-heading .heading-art{width:58px;height:58px;flex-basis:58px;border-radius:19px;rotate:-5deg;background:linear-gradient(#fff8d7,#ffe5a1);box-shadow:0 3px #a8646330}
+.panel-heading .heading-art>.game-icon{rotate:5deg;width:45px;height:45px}
+.panel-heading h2{font-size:30px;line-height:1.4!important;min-width:0}
+.event-panel>.event-back{display:none!important}/* Shell owns the map return. */
+.activity-tabs{display:flex;flex-wrap:wrap;gap:7px;padding:0 0 14px!important;margin:0 0 18px!important;background:none!important;border:0!important;box-shadow:none!important}
+.activity-tabs button{min-height:38px!important;border-radius:15px!important;font-size:12px!important;padding:7px 10px!important}
+.activity-tabs button.current-tab{background:linear-gradient(#fff7ce,#efd192)!important;color:#71503e!important;border-color:#e9bc7c!important;box-shadow:0 3px #bb8a69!important;text-shadow:none!important}
+.collection-progress{display:block;width:100%;margin:0 0 20px}
+progress{appearance:none;height:11px;border:0;border-radius:12px;overflow:hidden;accent-color:#8bbc62;background:#e3d5b3}
+progress::-webkit-progress-bar{background:#e3d5b3;border-radius:12px;box-shadow:inset 0 2px 2px #7b664a20}
+progress::-webkit-progress-value{background:linear-gradient(#bde77e,#78b251);border-radius:12px}
+progress::-moz-progress-bar{background:linear-gradient(#bde77e,#78b251);border-radius:12px}
+.field,textarea,select{max-width:100%;border:2px solid #d8b4c9;border-radius:15px;background:#fffdf4;color:#674863;padding:12px 14px;box-shadow:inset 0 2px #b790a318;font-family:var(--font-ui)}
+.event-row{padding:14px;gap:12px;margin:12px 0}.event-row>div{min-width:0}.event-row>button{flex:none}
+.event-row strong,.travel-list strong,.skin-card strong{font-weight:850;line-height:1.3}
+.reward-track>article,.travel-list article,.sticker-card{border:2px solid #e8c58d!important;border-radius:20px!important;background:linear-gradient(#fffdf1,#faeace)!important;box-shadow:inset 0 2px #fff,0 4px #a77f5b18!important;color:#6b4b63}
+.visual-totals{border-radius:18px;background:linear-gradient(#fff5ce,#f5e2af);border:2px solid #efd29a;gap:8px;font-weight:900}
+.related-places{gap:8px;border-top:2px dashed #e5c699;padding-top:16px;margin-top:20px}
+.related-places:empty{display:none}.related-places .visual-control{min-height:48px;flex-direction:row;flex-basis:auto;padding:8px 12px}
+.bird-guide.in-panel{position:relative!important;top:auto;z-index:1;margin:0 0 18px;max-width:100%}
+.playing .tools{gap:12px;align-items:stretch;margin-bottom:18px}
+.helper-slot{position:relative;flex:0 1 82px;min-width:72px;display:flex}
+.playing .helper-slot>.tool{width:100%;min-width:0;min-height:78px;flex:1;padding:12px 6px 10px;border:2px solid #ecc7a4;border-radius:18px;background:linear-gradient(#b787c2,#805290);box-shadow:inset 0 2px #ffffff65,0 4px #53334e}
+.helper-slot>.helper-info{position:absolute;left:-6px;top:-7px;z-index:4;width:23px;min-width:23px;height:23px;min-height:23px;font-size:14px;border-color:#edd1aa;color:#865476;background:#fff5d7;box-shadow:0 2px #8c6472}
+#app .helper-slot .new-feature-badge{left:auto;right:-6px;top:12px}
+.playing .subhead .table-code{min-width:38px;padding:6px;width:38px;height:38px;border-radius:14px}
+@media(max-width:700px){#dialog .menu-navigation{padding-left:12px;gap:6px;min-height:55px}#dialog .menu-navigation button:not(.shell-close){font-size:11px;padding:6px 9px}.dialog-content{padding:17px 15px 10px}.panel-heading{padding:10px 12px;min-height:72px;gap:10px}.panel-heading h2{font-size:25px}.panel-heading .heading-art{width:49px;height:49px;flex-basis:49px}.panel-heading .heading-art>.game-icon{width:37px;height:37px}.playing .tools{gap:11px}.helper-slot{flex-basis:70px;min-width:64px}.playing .helper-slot>.tool{min-height:74px}.event-row{padding:11px;gap:9px}.activity-tabs{gap:6px}.activity-tabs button .game-icon{width:24px!important;height:24px!important}.related-places .visual-control{font-size:11px}}
+@media(max-width:380px){.panel-heading h2{font-size:23px}.event-row{flex-wrap:wrap}.event-row>div{flex:1;min-width:100px}.event-row>button{margin-left:auto}.helper-slot{flex-basis:65px;min-width:61px}}
+
+#app .map-viewport>.map-dock{left:0;width:83px;padding-left:0;overflow-x:visible}
+#app .map-viewport>.map-dock .map-icon{width:75px;padding-left:4px;padding-right:4px}
+#app .map-dock .map-icon small{white-space:normal!important;max-width:100%;font-size:9px!important;line-height:1.15!important;overflow-wrap:normal}
+.activity-ready{position:absolute;right:-3px;bottom:-3px;display:grid;place-items:center;min-width:23px;height:23px;border-radius:14px;padding:1px 5px;border:2px solid #fff2ae;background:#7bc94a;color:#244e29;font-size:11px;font-weight:1000;box-shadow:0 2px #566e3e}
+.reward-track>article{flex-basis:178px;min-width:174px}.reward-track>article>button{flex-wrap:wrap;gap:5px;min-height:46px;padding:8px;font-size:12px;max-width:100%}
+.event-row>button{flex-wrap:wrap;gap:5px}.event-row>button .resource-badge{margin:0;font-size:12px}.event-row>button .resource-badge>.game-icon,.reward-track>article>button .resource-badge>.game-icon{width:21px;height:21px;min-width:21px}
+@media(max-width:700px){#app .map-viewport>.map-dock{left:0;width:72px}#app .map-viewport>.map-dock .map-icon{width:65px;padding-left:3px;padding-right:3px}.reward-track>article{flex-basis:166px;min-width:162px}}
+
+/* Timer chips occupy one reserved row instead of pushing the tableau on expiry. */
+.playing .board-shell>.effects{display:flex;align-items:flex-start;justify-content:center;gap:6px;height:40px;min-height:40px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.playing .effects::-webkit-scrollbar{display:none}.playing .effects>.effect{flex:none;white-space:nowrap;margin:0}

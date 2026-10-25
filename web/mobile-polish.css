@@ -1,0 +1,45 @@
+/* Illustrated character atlas: 16 original expressions, equal cells, true alpha. */
+.pip-sprite{display:inline-block;flex:none;width:var(--pip-size,88px);height:var(--pip-size,88px);background-image:url('assets/pip-expressions.png');background-size:400% 400%;background-repeat:no-repeat;vertical-align:middle;filter:drop-shadow(0 4px 2px #7c4f3833);pointer-events:none}
+.bird-guide>.pip-sprite{align-self:center}.bird-guide.in-panel>.pip-sprite{width:78px;height:78px}.hero-art>.pip-sprite{position:absolute;bottom:0;left:calc(50% - 55px)}
+.map-companion .bird-help>.pip-sprite{display:block}.win-pip{height:95px;display:flex;justify-content:center}.win-pip>.pip-sprite{animation:pip-celebrate .65s ease-in-out 2}
+@keyframes pip-celebrate{50%{translate:0 -8px;rotate:-5deg}}
+.chapter-chest{text-align:center}.chest-rule{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;line-height:1.4!important;margin:0 0 8px}.chest-art{display:inline-flex;flex:none;width:var(--chest-size,80px);height:var(--chest-size,80px);vertical-align:middle}.chest-art svg{width:100%;height:100%;overflow:visible}
+.chest-hero{display:flex;flex-direction:column;align-items:center;gap:0;margin:4px auto 16px;position:relative}.chest-hero:before{content:'';position:absolute;top:5px;width:190px;height:165px;border-radius:50%;background:radial-gradient(#ffdf8d70,transparent 70%);z-index:-1}.chest-hero>strong{font-family:var(--font-display);font-size:24px}.chest-hero>.resource-badge{font-size:16px}
+.chest-tier-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:12px 5px 16px;margin:12px 0;border-radius:22px;background:linear-gradient(#f4e6c9,#fff7df);border:2px solid #ebcb95;position:relative}
+.chest-tier-track:before{content:'';position:absolute;left:8%;right:8%;top:48px;height:6px;border-radius:6px;background:#d3bd91}
+.chest-tier{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}.chest-tier>.chest-art{width:min(66px,100%);height:66px;z-index:1}.chest-tier>strong{font-size:11px}.chest-tier>span:last-child{display:flex;align-items:center;gap:2px;font-size:12px;font-weight:900}.chest-tier.future .chest-art{opacity:.65}.chest-tier.active:after{content:'';position:absolute;inset:-4px;border:2px solid #f4bc5a;border-radius:16px;box-shadow:0 0 12px #ffd57b77;pointer-events:none}
+.chest-prize{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:16px 0}.chest-prize .resource-badge{padding:5px 10px;border:1px solid #efd098;border-radius:14px;background:#fff3cf}.chest-advice{font-size:12px!important;line-height:1.5!important;margin:14px auto 0!important;max-width:480px}
+/* Leave room for hovering art, shadows, focus rings and badges at scroll edges. */
+.activity-tabs{padding:10px 5px 14px!important;overflow:visible!important}.activity-tabs button{overflow:visible;position:relative}.activity-tabs button:hover:enabled{z-index:2;translate:none;transform:none;filter:brightness(1.1)}
+#dialog .menu-navigation{overflow:visible}.event-hub,.album-categories,.shop,.customization-grid,.sticker-grid,.related-places{padding:5px;overflow:visible}.reward-track{padding:12px 8px 18px!important;scroll-padding-inline:8px}.travel-list{padding:5px}.dialog-content{padding-top:24px}.map-dock{scroll-padding:12px}.map-dock .map-icon:hover:enabled{transform:none;translate:none;filter:brightness(1.1)}
+#app .map-viewport{background-color:#66503e!important;background-image:repeating-linear-gradient(0deg,#ffffff03 0 2px,transparent 2px 7px),linear-gradient(90deg,#4a3e32,#897356 25%,#897356 75%,#4a3e32)!important}
+.map-ambient{opacity:.18!important;filter:sepia(.5) saturate(.35)!important}.map-camera{box-shadow:0 0 0 5px #dbc89b,0 0 0 9px #796044,0 20px 60px #211d1ab0;background:#e6d5a9}
+.level-kind-badge{position:absolute;z-index:3;top:-9px;left:-10px;display:grid;place-items:center;width:29px;height:29px;border:2px solid #fff0bc;border-radius:50%;background:#fff2cf;box-shadow:0 2px #805074;pointer-events:none}
+#app .story-node.level-hard{background:radial-gradient(ellipse at 40% 20%,#dab9ff,#9967bf 65%,#704b92);border-color:#f1d0fa;box-shadow:0 8px #725080,0 10px 4px #34523d66,inset 0 2px #fff8}
+#app .story-node.level-expert{background:radial-gradient(ellipse at 40% 20%,#ffb4ce,#dc679b 65%,#a43870);border-color:#ffd4a6;box-shadow:0 8px #8f426d,0 10px 4px #34523d66,inset 0 2px #fff8}
+#app .story-node.level-bonus,#app .story-node.level-gold{background:radial-gradient(ellipse at 40% 20%,#fff9ac,#ffc85e 65%,#d18a36);border-color:#fff1b2;box-shadow:0 8px #ae763d,0 10px 4px #34523d66,inset 0 2px #fff8}
+#app .story-node.level-diamonds{background:radial-gradient(ellipse at 40% 20%,#c3f7ff,#63bfe3 65%,#447cae);border-color:#d8ffff}#app .story-node.level-spades{background:radial-gradient(ellipse at 40% 20%,#c5b9eb,#7874b7 65%,#494570);border-color:#e2d8ff}
+.level-type{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:5px 14px;border:2px solid #e5bcdd;border-radius:18px;background:#f3e3fa;color:#745081;font-weight:900;margin:0 0 12px}.level-type.level-bonus,.level-type.level-gold{background:#fff0bd;border-color:#edc679;color:#94622e}
+@media(min-width:900px) and (max-height:850px){.dialog-content{padding:16px 24px 10px}.panel-heading{margin-bottom:14px;min-height:70px}.chest-hero>.chest-art{width:125px;height:125px}.chest-hero>strong{font-size:21px}.chest-tier-track{margin:8px 0}.chest-tier>.chest-art{height:53px}.chest-tier-track:before{top:40px}.chest-hero{margin-bottom:8px}}
+@media(max-width:600px){.bird-guide>.pip-sprite,.bird-guide.in-panel>.pip-sprite{width:60px;height:60px}.bird-guide{gap:8px}.chest-rule{font-size:12px}.chest-tier-track{gap:2px;padding:10px 3px 12px}.chest-tier>.chest-art{height:44px}.chest-tier>strong{font-size:8px}.chest-tier>span:last-child{font-size:10px}.chest-tier-track:before{top:34px}.chest-tier .game-icon{width:13px!important;height:13px!important}.chest-hero>.chest-art{width:130px;height:130px}.chest-hero>strong{font-size:22px}.chapter-chest .story-play{font-size:19px}.level-kind-badge{width:25px;height:25px;left:-7px;top:-8px}.level-kind-badge>.game-icon{width:20px;height:20px}}
+
+.hearts-hero{display:flex;align-items:center;justify-content:center;gap:8px}.hearts-hero .lives-total{margin:18px 0}.hearts-hero>.pip-sprite{rotate:-5deg}
+
+#app .map-companion .bird-help{width:100px;height:100px;min-width:100px;min-height:100px;overflow:visible}
+
+.game-icon.chest-painted{display:inline-block;background-image:url('assets/chest-states.png');background-size:300% 400%;background-repeat:no-repeat;width:var(--chest-size);height:var(--chest-size);filter:drop-shadow(0 3px 2px #79513522)}
+#app .map-controls .map-travel small{color:#fff5d6!important}
+@media(min-width:900px) and (max-height:850px){
+ .event-chest>.activity-tabs{padding:4px 5px 8px!important;margin-bottom:8px!important}
+ .event-chest>.panel-heading{padding:8px 14px;min-height:64px;margin-bottom:10px}
+ .event-chest .panel-heading .heading-art{width:44px;height:44px;flex-basis:44px}.event-chest .panel-heading .heading-art>.game-icon{width:34px;height:34px}
+ .event-chest .panel-heading h2{font-size:26px}.event-chest .chest-hero>.chest-art{width:100px;height:100px}.event-chest .chest-hero>strong{font-size:19px}
+ .event-chest .chest-tier-track{padding:7px 5px 10px;margin:6px 0}.event-chest .chest-tier>.chest-art{height:46px;width:46px}.event-chest .chest-tier-track:before{top:29px}
+ .event-chest .goal-progress{margin:8px 0;padding:7px 10px}.event-chest .chest-prize{margin:10px 0}.event-chest .chest-advice{margin-top:8px!important}
+}
+
+.hand-difficulty{font:900 11px/1.2 var(--font-ui);padding:5px 9px;border-radius:12px;background:#ead9f5;border:1px solid #be98d2;color:#77528b}.hand-difficulty.level-expert{background:#f7d7e4;border-color:#d991b3;color:#a24c76}.level-type.level-expert{background:#f7d7e4;border-color:#d991b3;color:#a24c76}
+
+.earned-gift.revealed{opacity:1!important;filter:none!important}.gift-content{position:relative}.gift-open-state{position:absolute;right:-12px;top:-12px;rotate:10deg}
+
+.pip-sprite[data-pip=wave],.pip-sprite[data-pip=curious]{animation:pip-breathe 3.5s ease-in-out infinite;transform-origin:center bottom}@keyframes pip-breathe{50%{transform:translateY(-2px) rotate(2deg)}}

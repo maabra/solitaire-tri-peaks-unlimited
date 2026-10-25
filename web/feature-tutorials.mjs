@@ -1,0 +1,20 @@
+export const featureTutorials={
+ garden:[['Pick a gem, then a neighbor. Connect three or more.','.gems'],['Matches earn coins. Every ten successful swaps earns a heart.','.subhead'],['Use your coins in the helper shop, then resume your cards.','[data-action="shop"]']],
+ wheel:[['Your available spins are shown on the Spin button.','[data-action="spinWheel"]'],['The pointer lands on your prize. Claim appears when it settles.','.prize-wheel']],
+ missions:[['Each task shows how far you have come.','.event-row progress'],['When a task is full, tap its reward to collect it.','.event-row button']],
+ album:[['Each collection shows its sticker count. Pick one to look inside.','.album-categories'],['Open your earned packs here. Duplicate stickers become tokens.','[data-action="ev:pack"]'],['Trade duplicate tokens for more packs.','[data-action="ev:tokenShop"]']],
+ tournament:[['Collect trophy cards and win the hand to keep them.','.event-tournament'],['Fill a target, then collect its reward.','.event-row button']],
+ balloon:[['Start a flight before playing your next level.','[data-action="ev:balloonStart"]'],['Win three new levels in a row. Collect arrows for the hunt.','progress']],
+ hunt:[['Each arrow opens one tile. Pick a covered tile to shoot.','.hunt-board'],['Your island and refill progress are shown here.','progress']],
+ bingo:[['Wins earn draws. Tap here to mark a number.','[data-action="ev:bingoDraw"]'],['Complete lines for prizes. These counters track your board.','.goal-progress']],
+ regatta:[['New-level wins move your boat. Consecutive wins go farther.','.regatta-sea'],['Reach a distance target, then collect its prize.','.reward-track']],
+ voyage:[['Campaign wins fill the next port target.','.goal-progress'],['Collect each unlocked port reward here.','.reward-track']],
+ trail:[['New wins earn rolls. Roll to move around the trail.','[data-action="ev:trailRoll"]'],['Cross chests for packs. Finish a lap for treasure and a heart.','.treasure-trail']],
+ memory:[['New wins earn seeds. One seed lets you turn two tiles.','.visual-totals'],['Match identical tiles. Find all six pairs for the round prize.','.memory-board']],
+ customize:[['Finish a chapter to unlock its matching back and table.','.goal-progress'],['Choose an earned design here. Your card rules stay the same.','.skin-card']],
+ travel:[['Pick a chapter picture to visit its map.','.travel-list'],['Star counts show where you can improve your earlier levels.','.travel-list small']],
+ chest:[['Earn chapter stars to unlock and improve this chest.','.goal-progress'],['Open once when you are happy with the reward tier.','[data-action^="ev:chest-"]']],
+ postcard:[['Reach the star target to earn this postcard.','.goal-progress'],['Collect it once, then keep it in your gallery.','[data-action^="ev:postcard-"]']],
+ tickets:[['Start the trail before playing.','[data-action="ev:ticketStart"]'],['Ten consecutive new-level wins complete the trail.','progress']],
+ milestones:[['Your lifetime actions fill these targets automatically.','.event-row progress'],['Collect a full target to unlock the next tier.','.event-row button']]
+};

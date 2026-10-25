@@ -73,8 +73,8 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     }
     public bool Draw()
     {
-        if (stock.Count == 0 || Won || Failed || state.DrawCooldown>0) return false;
-        Remember(); Waste = stock[0]; stock.RemoveAt(0); Streak = 0; state = mechanics.Advance(state, Deal, removed, null) with {DrawCooldown=2}; return true;
+        if (stock.Count == 0 || Won || Failed) return false;
+        Remember(); Waste = stock[0]; stock.RemoveAt(0); Streak = 0; state = mechanics.Advance(state, Deal, removed, null) with {DrawCooldown=0}; return true;
     }
     public bool Undo()
     {
@@ -94,21 +94,21 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
             PeekSeconds = Math.Min(s.Mechanics?.PeekSeconds ?? 0, current.PeekSeconds),
             WildSeconds = Math.Min(s.Mechanics?.WildSeconds ?? 0, current.WildSeconds)
         };
-        if(state.FreshSeconds<=0) stock.RemoveAll(c=>c.TemporaryStock);
-        if (Deal.TemporaryRules && Waste.Rank == 0 && state.WildSeconds <= 0 && state.WildReturn != null) { Waste = state.WildReturn; state = state with { WildReturn = null }; }
+
+
         if (FreeUndos > 0) FreeUndos--; return true;
     }
     public bool Wild()
     {
         if (Failed || Won || Waste.Rank == 0) return false;
-        history.Clear(); if (Deal.TemporaryRules) state = state with { WildReturn = Waste, WildSeconds = 12 }; Waste = new(0, 0); return true;
+        history.Clear(); if (Deal.TemporaryRules) state = state with { WildReturn = null, WildSeconds = 0 }; Waste = new(0, 0); return true;
     }
     public bool Extra(int seed)
     {
         if (Failed || Won || stock.Count > 0) return false;
         history.Clear(); var rng = new Random(seed);
-        state=state with {FreshSeconds=10};
-        for (int i = 0; i < 5; i++) stock.Add(new(rng.Next(1, 14), rng.Next(4)){TemporaryStock=true});
+        state=state with {FreshSeconds=0};
+        for (int i = 0; i < 5; i++) stock.Add(new(rng.Next(1, 14), rng.Next(4)){TemporaryStock=false});
         return true;
     }
     public bool Remove(int i)
