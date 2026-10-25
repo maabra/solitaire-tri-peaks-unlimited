@@ -46,3 +46,22 @@ Current 2.4 collection counts supersede the historical counts above: 100 matched
 chapter scenes, card backs and tables. See COLLECTIONS.md and SIDE-GAMES.md.
 Cards rotate to a player-facing angle without changing cover geometry; scenery
 blur is isolated from the sharp cards and UI.
+
+
+## Map and Pip fixes 2.4.1
+
+map-ui.css owns the bounded map overlay layout. The chapter header and counters
+use the cream/plum palette, ordinary rounded corners and explicit readable text
+colors. The scrolling mural is softly blurred separately from the road, markers,
+buttons and guide. A blurred tinted ambient layer fills wide-window side margins.
+
+The visible bird has a real 90-pixel click target. Pip always provides Play and
+Cards, even before activities unlock. Topic pictures directly open unlocked
+destinations. Locked topics show their required level without a dead Show me
+button. Welcome guidance changes to Press Play after opening a level preview.
+
+The green map Play button opens the current level preview; a separate compass
+locates its stop. Extra map-camera scroll space and resize focusing keep that
+stop between the header and the guide. The pointer-based map/Pip regression test
+checks five window sizes, clipped text, blur isolation and actual early-level
+navigation. Gameplay, reward rules and saved hands are unchanged.
