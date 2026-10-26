@@ -34,3 +34,38 @@ body::after{content:'';position:fixed;inset:0;z-index:12000;pointer-events:none;
 #app .adventure-map[data-map-art="meadow"]>.map-scenery{background-size:100% auto;background-repeat:repeat-y;background-position:center bottom}
 #app .map-trail .trail-edge-shadow{fill:none;stroke:#3d633e55;stroke-width:84;stroke-linecap:round}
 #app .map-trail .trail-shadow{stroke-width:76;opacity:1}
+
+/* Dedicated 16:9 composition: landmarks stay fixed, the route scrolls above it. */
+#app .map-viewport>.map-scenery{position:fixed;inset:0;width:1280px;height:720px;background-size:100% 100%;background-position:center;background-repeat:no-repeat;z-index:0;pointer-events:none}
+#app .map-viewport:has(>.map-scenery)>.map-camera{z-index:1;background:none;box-shadow:none}
+/* 720p card table: board and stock left, helpers right, navigation below. */
+body.playing #app{padding:8px 12px;overflow:hidden}
+body.playing #app>.subhead{height:72px;min-height:72px;padding:8px 14px;margin:0 0 8px}
+body.playing #app>.subhead .level-heading{font-size:25px;margin-bottom:3px}
+body.playing .board-shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:24px minmax(0,1fr) 20px 112px 48px;grid-template-areas:'effects tools' 'board tools' 'status tools' 'hand tools' 'actions actions';gap:5px 16px;height:540px;min-height:0!important;padding:10px 12px!important;margin:0}
+body.playing .board-shell>.effects{grid-area:effects;height:24px;min-height:24px;margin:0}
+body.playing .board-shell>.board{grid-area:board;align-self:center;max-width:100%;margin:0 auto}
+body.playing .board-shell>.table-status{grid-area:status;min-height:0;margin:0;font-size:12px}
+body.playing .board-shell>.hand-row{grid-area:hand;margin:0;gap:22px;align-self:center}
+body.playing .board-shell>.meta{display:none}
+body.playing .hand-row .card{--cw:76px;width:76px;height:105px}
+body.playing .hand-row .pile small{min-height:16px;padding-top:2px;line-height:1.2}
+body.playing .hand-row .stock-count{top:91px}
+body.playing .board-shell>.tools{grid-area:tools;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:12px 10px;margin:0;padding:10px 5px;min-height:0!important;max-height:100%;overflow-y:auto;overflow-x:hidden;width:100%;border-left:1px solid #ead8ac66}
+body.playing .tools .helper-slot{width:100%;min-width:0}
+body.playing .tools .helper-slot>.tool{min-height:76px;width:100%}
+body.playing .tools .tool-name{font-size:12px}
+body.playing .board-shell>.play-actions{grid-area:actions;flex-wrap:nowrap;margin:0;padding:0;align-items:center;justify-content:center;gap:10px}
+body.playing .play-actions button{min-height:42px;font-size:13px;padding:6px 12px}
+body.playing .play-actions .visual-control{flex-direction:row;gap:6px}
+body.playing .bird-guide.in-play{left:auto;right:28px;top:155px;bottom:auto;width:235px;max-height:240px;overflow:auto}
+/* A landscape greenhouse: control column and a full-size 8x8 board. */
+body[data-game-mode=gems] #app>.paper.tile{display:grid;grid-template-columns:minmax(0,1fr) 480px;grid-template-rows:1fr auto auto;gap:16px 28px;width:1100px;height:600px;margin:0 auto;padding:24px}
+body[data-game-mode=gems] #app>.paper.tile>.subhead{grid-column:1;grid-row:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:24px;margin:0}
+body[data-game-mode=gems] .subhead>.actions{flex-direction:column;align-items:stretch;gap:16px}
+body[data-game-mode=gems] #app .gems{grid-column:2;grid-row:1/4;width:480px;height:480px;max-width:480px;align-self:center;margin:0}
+body[data-game-mode=gems] #app>.paper.tile>.meta{grid-column:1;grid-row:2;margin:0}
+body[data-game-mode=gems] #app>.paper.tile>.actions{grid-column:1;grid-row:3;align-self:start}
+body[data-game-mode=gems] .bird-guide.in-play{position:fixed;left:30px;top:140px;bottom:auto;width:310px;z-index:100}
+
+body.playing .play-actions button{display:flex;flex-direction:row!important;align-items:center;justify-content:center;gap:6px;height:42px;min-height:42px;padding:6px 10px}

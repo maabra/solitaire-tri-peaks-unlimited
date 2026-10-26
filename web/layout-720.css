@@ -1,0 +1,35 @@
+/* Landscape dialogs: artwork supports the activity instead of pushing it away. */
+#dialog{container:dialog / inline-size}
+#dialog:has(.event-trail,.event-memory){width:min(1040px,calc(100vw - 24px))}
+@container dialog (min-width:900px){
+ #modal:has(.event-trail,.event-memory) .menu-navigation{min-height:60px;padding-block:6px}
+ #modal:has(.event-trail,.event-memory) .menu-location{flex:1 1 auto}
+ #modal:has(.event-trail,.event-memory) .dialog-content{padding:12px 18px}
+ #modal .event-trail,#modal .event-memory{display:grid;grid-template-columns:220px minmax(0,1fr);gap:10px 18px;padding:0}
+ #modal .event-trail>.panel-heading,#modal .event-memory>.panel-heading{grid-column:1/-1;grid-row:1;margin:0}
+ #modal .event-trail>.activity-tabs,#modal .event-memory>.activity-tabs{grid-column:1/-1;grid-row:2;margin:0!important;padding-bottom:6px!important}
+ #modal .event-trail>.activity-scene,#modal .event-memory>.activity-scene{grid-column:1;grid-row:3;width:220px;height:110px;object-fit:contain;align-self:start;margin:0;background:#f7edcf}
+ #modal .event-trail>.goal-progress{grid-column:1;grid-row:4;margin:0}
+ #modal .event-trail>.visual-totals{grid-column:1;grid-row:5;margin:0;padding:6px}
+ #modal .event-trail>.treasure-trail{grid-column:2;grid-row:3/7;align-self:center;margin:0;padding:10px;gap:6px}
+ #modal .event-trail .trail-space{min-height:46px;gap:2px}
+ #modal .event-trail>.primary{grid-column:1;grid-row:6;align-self:start;min-height:46px}
+ #modal .event-trail>p,#modal .event-trail>details{grid-column:2;grid-row:7;margin:0;font-size:13px;line-height:1.4}
+ #modal .event-trail>.related-places{grid-column:1/-1;grid-row:8;margin:0;padding-top:8px}
+ #modal .event-memory>.goal-progress,#modal .event-memory>.visual-totals{grid-column:1;margin:0}
+ #modal .event-memory>.memory-board{grid-column:2;grid-row:3/7;align-self:center;margin:0;padding:10px;gap:8px}
+ #modal .event-memory .memory-tile{min-height:64px}
+ #modal .event-memory>p,#modal .event-memory>details{grid-column:2;grid-row:7;margin:0;font-size:13px;line-height:1.4}
+ #modal .event-memory>.related-places{grid-column:1/-1;grid-row:8;margin:0;padding-top:8px}
+}
+@container dialog (min-width:650px){
+ #modal .level-preview{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;align-items:center}
+ #modal .level-preview>.panel-heading{grid-column:1/-1;margin:0 0 8px}
+ #modal .level-preview>.level-type{grid-column:1;margin:0}
+ #modal .level-preview>.preview-stars{grid-column:2;grid-row:2/5;margin:0;font-size:46px}
+ #modal .level-preview .preview-stars span:nth-child(2){font-size:58px}
+ #modal .level-preview>.level-goal,#modal .level-preview>.meta,#modal .level-preview>.preview-bag{grid-column:1;margin:4px 0}
+ #modal .level-preview>.preview-lives{grid-column:2;margin:0}
+ #modal .level-preview>.life-warning,#modal .level-preview>.unlock-requirement{grid-column:1/-1;margin:4px 0}
+ #modal .level-preview>.story-play,#modal .level-preview>.preview-back{grid-column:1/-1;justify-self:center;margin:4px 0}
+}
