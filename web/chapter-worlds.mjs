@@ -9,6 +9,7 @@ export function chapterName(chapter){return chapterTitles[collectionIndex(chapte
 const images=new Map(),cache=new Map();
 function load(src){if(src.startsWith('data:'))return new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>{images.delete(src);reject(Error('Artwork unavailable'));};i.src=src;}));return images.get(src);}
 export async function chapterPicture(chapter){
+ if(collectionIndex(chapter)===0)return 'assets/map-meadow-v2.png';
  if(cache.has(chapter))return cache.get(chapter);
  const promise=paint(chapter);cache.set(chapter,promise);if(cache.size>4)cache.delete(cache.keys().next().value);
  try{return await promise;}catch(e){cache.delete(chapter);throw e;}
