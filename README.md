@@ -43,6 +43,11 @@ The full-height left menu strip has
 floral scrollwork caps above and below its scrolling icon list. A carved wood
 and gold frame with blossom corners surrounds the whole game.
 
+The village map has a dedicated 16:9 painting with space reserved for the road and
+controls. Its landscape stays fixed while the route scrolls. Cards use a side helper
+tray, Gem Garden places controls beside its board, and activity dialogs use landscape
+layouts so their main content fits 720p.
+
 Remove an uncovered card one rank above or below the waste. Ace connects to King
 and Two. Build streaks for extra stock, watch special-card badges, and use earned
 coins to buy temporary helpers. Play opens a level preview before starting a hand.
