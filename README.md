@@ -49,6 +49,10 @@ The village map has a dedicated 16:9 painting with space reserved for the road a
 controls. Its landscape stays fixed while the route scrolls. Cards use a side helper
 tray, Gem Garden places controls beside its board, and activity dialogs use landscape
 layouts so their main content fits 720p.
+Level previews use a compact illustrated notice board. Outer blossom bouquets and
+scrollwork sit outside the playable surface. Card-to-deck flights spin and sparkle
+without delaying input; reduced motion skips them. The complete helper tray, helper
+prompts and Peek information remain inside the 720p table layout.
 
 Remove an uncovered card one rank above or below the waste. Ace connects to King
 and Two. Build streaks for extra stock, watch special-card badges, and use earned
@@ -56,8 +60,8 @@ coins to buy temporary helpers. Play opens a level preview before starting a han
 
 The card table fits the complete formation, so compact fans and loops use larger
 cards while every surviving card stays in place. Suit colors distinguish spades,
-hearts, diamonds and clubs. Pip points to tutorial moves; flights and flips take
-160 ms and 140 ms. Results separate score from coins and make Next level the main
+hearts, diamonds and clubs. Pip points to tutorial moves; decorative spinning flights take 460 ms and
+reveals take 140 ms, while input stays responsive. Results separate score from coins and make Next level the main
 action. Ordinary win rewards are saved automatically.
 
 ![The current card table, with ice, rewards, stock, helpers and progress indicators](docs/screenshots/cards.png)

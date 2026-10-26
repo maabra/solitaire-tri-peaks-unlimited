@@ -7,7 +7,7 @@ async def main():
  out=Path('artifacts/game-frame');out.mkdir(exist_ok=True)
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)
-  for width,height in [(1920,1080),(1075,1757),(1280,720),(700,432),(390,844),(320,640)]:
+  for width,height in [(1920,1080),(1344,761),(1075,1757),(1280,720),(700,432),(390,844),(320,640)]:
    page=await browser.new_page(viewport={'width':width,'height':height},reduced_motion='reduce')
    errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
@@ -15,6 +15,7 @@ async def main():
    await page.wait_for_function("document.querySelector('.map-scenery').style.backgroundImage.includes('map-meadow-720p.png')")
    assert await page.locator('.map-trail pattern image').get_attribute('href')=='assets/road-stone-border.png'
    assert await page.locator('body').evaluate('e=>{const r=e.getBoundingClientRect();return r.width===1280&&r.height===720&&r.x>=0&&r.y>=0}')
+   if width>=1280 and height>=720:assert await page.locator('body').evaluate('e=>{const r=e.getBoundingClientRect();return Math.abs(r.x+r.width/2-innerWidth/2)<.6&&Math.abs(r.y+r.height/2-innerHeight/2)<.6}'),'Game is off-center'
    assert await page.locator('body').evaluate('e=>getComputedStyle(e).transform===\'matrix(1, 0, 0, 1, 0, 0)\''),'Game is scaled'
    assert await page.locator('.map-dock .map-icon').first.evaluate('e=>e.getBoundingClientRect().width===88')
    assert await page.locator('.map-dock-scroll').evaluate('e=>e.scrollHeight>e.clientHeight')

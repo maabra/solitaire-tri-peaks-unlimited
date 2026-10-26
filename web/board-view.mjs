@@ -1,3 +1,4 @@
+import {flyCard} from './card-flight.mjs';
 import {motion} from './motion.mjs';
 // Preserve the board and surviving card nodes during a move. No re-deal,
 // reflow, or entrance animation is applied to untouched cards.
@@ -12,11 +13,7 @@ export function patchBoard(host,markup,incremental,reduced,effect=null){
  const fresh=next.querySelector('.board');
  board.style.cssText=fresh.style.cssText;board.className=fresh.className;
  for(const card of [...board.children])if(!fresh.querySelector(`[data-action="${card.dataset.action}"]`)){
-  if(!reduced){const target=host.querySelector('.hand-row .pile:nth-child(3) .card'),from=card.getBoundingClientRect(),to=target.getBoundingClientRect(),copy=card.cloneNode(true),zoom=host.getBoundingClientRect().width/host.offsetWidth,w=card.offsetWidth*zoom,h=card.offsetHeight*zoom;
-   copy.classList.remove('entering','hint-card');copy.style.cssText=`position:fixed;left:${from.x+from.width/2-w/2}px;top:${from.y+from.height/2-h/2}px;width:${w}px;height:${h}px;z-index:10000;pointer-events:none;--cw:${w}px`;document.body.append(copy);
-   const dx=to.x+to.width/2-from.x-from.width/2,dy=to.y+to.height/2-from.y-from.height/2;
-   copy.animate([{transform:`rotate(${card.style.getPropertyValue('--angle')||'0deg'}) scale(1)`,opacity:1},{transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(.9)`,opacity:.85}],{duration:motion.play,easing:'cubic-bezier(.2,.7,.3,1)'}).finished.finally(()=>copy.remove());
-  }
+  if(!reduced)flyCard(card,host.querySelector('.hand-row .pile:nth-child(3) .card'));
   if(!reduced&&nextScore>oldScore){const r=card.getBoundingClientRect(),label=document.createElement('span');label.className='card-score-flight';label.textContent='+'+(nextScore-oldScore);label.style.left=r.x+'px';label.style.top=r.y+'px';document.body.append(label);label.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(-45px)',opacity:0}],{duration:motion.score}).finished.finally(()=>label.remove());}
   card.remove();
  }
@@ -33,13 +30,11 @@ export function patchBoard(host,markup,incremental,reduced,effect=null){
  }
  const stock=host.querySelector('[data-action="draw"]'),newStock=next.querySelector('[data-action="draw"]');
  const oldCount=Number(host.querySelector('.stock-count')?.textContent),nextCount=Number(next.querySelector('.stock-count')?.textContent);
- if(!reduced&&nextCount>oldCount){const r=stock.getBoundingClientRect();for(let i=0;i<Math.min(nextCount-oldCount,4);i++){const copy=stock.cloneNode(true);copy.removeAttribute('data-action');copy.className='card back stock-reward-flight';copy.style.cssText=`position:fixed;left:${r.x}px;top:${r.y}px;width:${r.width}px;height:${r.height}px;z-index:10000;pointer-events:none`;document.body.append(copy);copy.animate([{transform:`translate(${80+i*20}px,-110px) rotate(25deg)`,opacity:0},{transform:`translate(${45+i*10}px,-70px) rotate(15deg)`,opacity:1,offset:.3},{transform:'translate(0,0) rotate(0)',opacity:1}],{duration:motion.stock,delay:i*motion.stockStagger,easing:'ease-in-out'}).finished.finally(()=>copy.remove());}}
+ if(!reduced&&nextCount>oldCount)for(let i=0;i<Math.min(nextCount-oldCount,4);i++)flyCard(stock,stock,{offset:{x:80+i*20,y:-110},delay:i*motion.stockStagger,kind:'stock'});
  // Draw feedback is local: never replace or redeal the tableau.
- if(!reduced&&nextCount===oldCount-1&&fresh.children.length===oldTableauCount&&host.querySelector('.hand-row .pile:nth-child(3) .card').innerHTML!==next.querySelector('.hand-row .pile:nth-child(3) .card').innerHTML){
+ if(!reduced&&nextCount===oldCount-1&&fresh.children.length===oldTableauCount){
   const destination=host.querySelector('.hand-row .pile:nth-child(3) .card'),face=next.querySelector('.hand-row .pile:nth-child(3) .card');
-  const from=stock.getBoundingClientRect(),to=destination.getBoundingClientRect(),copy=face.cloneNode(true);
-  copy.removeAttribute('data-action');copy.style.cssText=`position:fixed;left:${from.x}px;top:${from.y}px;width:${from.width}px;height:${from.height}px;--cw:${from.width}px;z-index:10000;pointer-events:none`;
-  document.body.append(copy);copy.animate([{transform:'rotate(-8deg) scaleX(.12)',opacity:1},{transform:`translate(${to.x-from.x}px,${to.y-from.y}px) rotate(0deg) scaleX(1)`,opacity:1}],{duration:motion.play,easing:'cubic-bezier(.2,.7,.3,1)'}).finished.finally(()=>copy.remove());
+  flyCard(stock,destination,{face,kind:'draw'});
  }
  stock.disabled=newStock.disabled;
  const waste=host.querySelector('.hand-row .pile:nth-child(3) .card');

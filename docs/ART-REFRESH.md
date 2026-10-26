@@ -44,3 +44,14 @@ x=430–850/y=600–710. Polished painterly spring scenery, orange roofs, turquo
 water, green meadow, pink flowers; no road, UI, text, numbers, characters or frame.
 The application shows the entire painting without vertical tiling; only the road
 and level markers scroll above it.
+
+`web/assets/level-notice-board.png` was generated with the built-in image tool for
+a compact level-preview popup. Prompt: one front-facing square wooden village
+notice board, rounded honey-brown carved frame, gold/cream beveled trim, one large
+blank ivory parchment pinned inside, low-contrast empty center, tiny pink blossoms
+and sage leaves at the outside upper corners, brass pins, soft dimensional
+storybook game lighting. Entire board centered with transparent surrounding margin
+and shadow. No stand, legs, scene, perspective tilt, writing, numbers, buttons,
+cards, character or watermark. Intended for a roughly 520×500 popup inside 720p.
+The generated alpha is preserved. Exterior game bouquets extend the existing
+native vector blossom system in `web/assets/frame-corner-bouquet.svg`.

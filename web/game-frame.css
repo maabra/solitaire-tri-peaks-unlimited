@@ -1,5 +1,5 @@
 html{height:100%;overflow:auto;background:#283e3c}
-html{scrollbar-gutter:stable;scrollbar-color:#d9bf83 #283e3c;scrollbar-width:auto}
+html{scrollbar-gutter:auto;scrollbar-color:#d9bf83 #283e3c;scrollbar-width:auto}
 html::-webkit-scrollbar{width:16px;height:16px}
 html::-webkit-scrollbar-track,html::-webkit-scrollbar-corner{background:#283e3c}
 html::-webkit-scrollbar-thumb{background:#d9bf83;border:3px solid #283e3c;border-radius:10px;min-height:40px}
@@ -42,10 +42,11 @@ body::after{content:'';position:fixed;inset:0;z-index:12000;pointer-events:none;
 body.playing #app{padding:8px 12px;overflow:hidden}
 body.playing #app>.subhead{height:72px;min-height:72px;padding:8px 14px;margin:0 0 8px}
 body.playing #app>.subhead .level-heading{font-size:25px;margin-bottom:3px}
-body.playing .board-shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:24px minmax(0,1fr) 20px 112px 48px;grid-template-areas:'effects tools' 'board tools' 'status tools' 'hand tools' 'actions actions';gap:5px 16px;height:540px;min-height:0!important;padding:10px 12px!important;margin:0}
+body.playing .board-shell{display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:24px minmax(0,1fr) 20px 132px 48px;grid-template-areas:'effects tools' 'board tools' 'status tools' 'hand tools' 'actions actions';gap:5px 16px;height:540px;min-height:0!important;padding:10px 12px!important;margin:0}
 body.playing .board-shell>.effects{grid-area:effects;height:24px;min-height:24px;margin:0}
 body.playing .board-shell>.board{grid-area:board;align-self:center;max-width:100%;margin:0 auto}
-body.playing .board-shell>.table-status{grid-area:status;min-height:0;margin:0;font-size:12px}
+body.playing .board-shell>.table-status{grid-area:status;min-height:0;height:20px;max-height:20px;margin:0;font-size:12px;line-height:20px}
+body.playing .table-status>.game-icon{width:18px;height:18px}
 body.playing .board-shell>.hand-row{grid-area:hand;margin:0;gap:22px;align-self:center}
 body.playing .board-shell>.meta{display:none}
 body.playing .hand-row .card{--cw:76px;width:76px;height:105px}
@@ -55,6 +56,7 @@ body.playing .board-shell>.tools{grid-area:tools;display:grid;grid-template-colu
 body.playing .tools .helper-slot{width:100%;min-width:0}
 body.playing .tools .helper-slot>.tool{min-height:76px;width:100%}
 body.playing .tools .tool-name{font-size:12px}
+body.playing .board-shell>.tools:has(.helper-slot:nth-child(9)){grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 6px;padding:10px 8px 10px 10px;overflow:visible}
 body.playing .board-shell>.play-actions{grid-area:actions;flex-wrap:nowrap;margin:0;padding:0;align-items:center;justify-content:center;gap:10px}
 body.playing .play-actions button{min-height:42px;font-size:13px;padding:6px 12px}
 body.playing .play-actions .visual-control{flex-direction:row;gap:6px}
