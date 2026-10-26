@@ -166,3 +166,12 @@ body.at-home header .brand small{display:none}
 /* Strokes outline overlapping font contours and create seams inside A/5/10/J. */
 .card .face-rank,body.playing .card .face-rank{-webkit-text-stroke:0!important;text-shadow:none!important;font-family:var(--font-display);font-weight:800;font-synthesis:none;letter-spacing:0;padding-right:0;line-height:1}
 .card .face-rank[data-rank="10"],body.playing .card .face-rank[data-rank="10"]{font-size:calc(var(--cw,76px)*.72);letter-spacing:-.025em}
+
+/* Header controls stay inside the carved rail, including their artwork. */
+body>header,body.adventure>header,body.playing>header,body.at-home>header{height:78px;min-height:78px;padding:20px 40px 8px 52px;align-items:center;box-sizing:border-box}
+body>header nav{height:46px;align-items:center;gap:12px}
+body>header nav>button{height:44px;min-height:44px;padding-top:6px;padding-bottom:6px;flex:none}
+body>header nav .heart-counter{padding:6px 12px!important;gap:6px}
+body>header nav .heart-counter>.game-icon{position:static!important;inset:auto!important;width:28px!important;height:28px!important;flex:none}
+body>header nav .wallet{display:inline-flex;align-items:center;gap:8px;min-width:144px;padding:6px 14px!important}
+body>header nav .wallet>.game-icon{position:static!important;inset:auto!important;width:32px!important;height:32px!important;flex:none}
