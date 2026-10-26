@@ -18,7 +18,7 @@ async def main():
    assert await page.locator('.feature-lock .game-icon').evaluate_all('es=>es.length>0&&es.every(e=>{const r=e.getBoundingClientRect();return r.width<=18&&r.height<=18})')
    assert await page.locator('.map-viewport').evaluate("e=>['::before','::after'].every(p=>getComputedStyle(e,p).position==='fixed')"),'Map borders scroll away'
    assert await page.locator('.map-camera').evaluate("e=>getComputedStyle(e).paddingBottom==='0px'"),'Blank space below scenery'
-   assert await page.locator('.map-scenery').evaluate('e=>e.getBoundingClientRect().bottom>=innerHeight-2')
+   assert await page.locator('.map-scenery').evaluate('e=>e.getBoundingClientRect().bottom>=document.body.getBoundingClientRect().bottom-2')
    await page.screenshot(path=str(out/f'fresh-{width}x{height}.png'))
    await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=12000;s.p.GuideSeen=features.map(f=>f.id);s.save()}""")
    await page.reload()

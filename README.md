@@ -36,6 +36,11 @@ archive before opening `MeadowPeaks.exe`.
 
 ## A card adventure
 
+The game uses a centered desktop frame up to 1280×720 (16:9), with blurred
+scenery around it. Controls retain their readable sizes; phones use a responsive
+portrait layout instead of shrinking the interface. The left activity group has
+one decorative frame around its independently scrolling list.
+
 Remove an uncovered card one rank above or below the waste. Ace connects to King
 and Two. Build streaks for extra stock, watch special-card badges, and use earned
 coins to buy temporary helpers. Play opens a level preview before starting a hand.
