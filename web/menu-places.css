@@ -96,3 +96,22 @@
 }
 
 #dialog[data-frame=notice] .dialog-content{background:transparent!important;box-shadow:none}
+
+/* A book is a fixed surface; its pages, not its cover, own the scrollbar. */
+#dialog[data-frame=menu][data-place=study]{width:min(1000px,calc(100vw - 24px))!important;max-width:1000px;height:680px;max-height:min(680px,calc(100dvh - 24px));overflow:hidden;border:0;border-image:none;border-radius:0;background-color:transparent;background-image:var(--place-art);background-size:100% 100%;box-shadow:0 16px 50px #172a3244}
+#dialog[data-frame=menu][data-place=study] #modal{height:100%;min-height:0;display:flex;flex-direction:column;padding:118px 74px 122px!important;overflow:hidden}
+#dialog[data-frame=menu][data-place=study] .menu-navigation{flex:none;position:relative;top:auto;min-height:48px;padding:0 42px 9px 0!important;background:none!important;border-radius:0;border-bottom:1px solid #c8a66c;box-shadow:none}
+#dialog[data-frame=menu][data-place=study] .menu-navigation .shell-close{top:0!important;right:0!important;width:34px;height:34px;min-width:34px;min-height:34px}
+#dialog[data-frame=menu][data-place=study] .dialog-content{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:12px 12px 12px 0!important;background:transparent!important;border-radius:0;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bd965c #eadbb9}
+#dialog[data-place=study] .guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;margin:18px 0}
+#dialog[data-place=study] .guide-grid article{padding:12px 8px;margin:0;border:0;border-bottom:1px solid #d6ba88;border-radius:0;box-shadow:none;background:none}
+#dialog[data-place=study] .guide-grid article h3{font-size:17px;margin:0 0 8px}
+#dialog[data-place=study] .guide-grid article p{font-size:13px;line-height:1.5;margin:8px 0 0}
+#dialog[data-place=study] .panel-heading{margin-top:0}
+@container dialog (max-width:700px){
+ #dialog[data-frame=menu][data-place=study] #modal{padding:100px 44px 70px!important}
+ #dialog[data-place=study] .guide-grid{grid-template-columns:1fr}
+ #dialog[data-place=study] .settings-groups{grid-template-columns:1fr}
+ #dialog[data-place=study] .settings-backups{grid-column:1;display:block}
+ #dialog[data-place=study] .settings-backups .actions{margin-top:10px}
+}

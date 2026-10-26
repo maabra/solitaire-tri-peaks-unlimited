@@ -152,3 +152,10 @@ stroke traced overlapping glyph contours, and the display weight exceeded the
 bundled Baloo font's range. Card faces now use weight 800 without strokes or text
 shadows, with dedicated spacing for two-digit ranks. All 52 rank/suit combinations
 are visually exercised by `scripts/test_card_lettering.py`.
+
+
+In 2.4.21, study menus use the open book as a fixed 680px-high surface.
+Navigation and the scrollable content are inset into the painted pages, leaving
+the quill, lamp, cover and desk visible. Guide entries follow two facing columns
+without individual card backgrounds. Only the page content scrolls, so long
+rules and settings never run past the painted book or move its cover away.
