@@ -155,7 +155,7 @@ public sealed class GameSession
     public CommandResult BuyPowerup(string id)
     {
         var powerup = Powerups.Find(id);
-        if (powerup == null || !HelperDiscovered(id)) return CommandResult.Unavailable;
+        if (powerup == null || !HelperDiscovered(id) || Inventory.Count(id) == int.MaxValue) return CommandResult.Unavailable;
         if (!Wallet.Spend(powerup.Price)) return CommandResult.InsufficientCoins;
         Inventory.Add(id, 1);
         return CommandResult.Applied;
@@ -179,9 +179,9 @@ public sealed class GameSession
         if (chapterComplete) result = result with { Coins = checked(result.Coins + Economy.ChapterGift), ChapterBonus = Economy.ChapterGift, ChapterName = chapter.World + " · " + chapter.Name };
         Wallet.Credit(result.Coins);
         Hand.Paid = true;
-        Profile.Garden++;
+        Profile.Garden = (int)Math.Min(int.MaxValue, (long)Profile.Garden + 1);
         Picnic.Win();
-        if (Endless) Profile.EndlessWins++;
+        if (Endless) Profile.EndlessWins = (int)Math.Min(int.MaxValue, (long)Profile.EndlessWins + 1);
         else
         {
             Profile.Stars[Level] = Math.Max(Profile.Stars.GetValueOrDefault(Level), result.Stars);
@@ -203,7 +203,7 @@ public sealed class GameSession
     public int ClaimGarden()
     {
         int gifts = Math.Max(0, GardenGifts);
-        int coins = checked(gifts * Economy.GardenGift);
+        int coins = (int)Math.Min(int.MaxValue, (long)gifts * Economy.GardenGift);
         Wallet.Credit(coins);
         Profile.GardenClaimed += gifts;
         return coins;

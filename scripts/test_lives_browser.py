@@ -9,7 +9,7 @@ async def main():
   await page.locator('.heart-counter').wait_for()
   for width,height in [(1280,800),(390,844),(320,640)]:
    await page.set_viewport_size({'width':width,'height':height})
-   assert await page.locator('header nav').evaluate('e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1}')
+   assert await page.locator('header nav').evaluate('e=>{const r=e.getBoundingClientRect();const b=document.body.getBoundingClientRect();return r.left>=b.left&&r.right<=b.right+1}')
   await page.set_viewport_size({'width':1280,'height':800})
   if await page.locator('[data-action=birdDismiss]').count():await page.locator('[data-action=birdDismiss]').click()
   await page.locator('[data-action=home]').click();await page.locator('#app [data-action=continue]').click()

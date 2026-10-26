@@ -6,3 +6,12 @@ export class MenuJourney {
  back(){if(!this.canBack)return null;this.routes.pop();return this.routes.at(-1);}
  clear(){this.routes=[];}
 }
+
+// New menu surfaces have their own scroll areas inside the modal.
+export function captureMenuScroll(dialog){return {outer:dialog.scrollTop,page:dialog.querySelector('.dialog-content')?.scrollTop??0,shelf:dialog.querySelector('.shop')?.scrollTop??0};}
+export function restoreMenuScroll(dialog,saved){
+ if(typeof saved==='number'){dialog.scrollTop=saved;return;}
+ if(!saved)return;dialog.scrollTop=saved.outer??0;
+ const page=dialog.querySelector('.dialog-content'),shelf=dialog.querySelector('.shop');
+ if(page)page.scrollTop=saved.page??0;if(shelf)shelf.scrollTop=saved.shelf??0;
+}

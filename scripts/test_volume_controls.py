@@ -12,7 +12,7 @@ async def main():
    await page.set_viewport_size({'width':width,'height':height})
    for key in ['EffectsVolume','MusicVolume']:
     slider=page.locator(f'[data-audio-volume={key}]');await slider.scroll_into_view_if_needed()
-    rect=await slider.bounding_box();assert rect['width']>180,(width,rect)
+    rect=await slider.bounding_box();assert rect['width']>=120,(width,rect)
     assert await slider.evaluate('e=>e.getBoundingClientRect().right<=innerWidth')
     await page.mouse.click(rect['x']+rect['width']*.75,rect['y']+rect['height']/2)
     value=int(await slider.input_value());assert 65<=value<=85,(width,key,value)

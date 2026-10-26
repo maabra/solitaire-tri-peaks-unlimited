@@ -13,7 +13,7 @@ async def main():
    await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const s=new Session();s.p.Unlocked=5;s.start(5,false,106723,'MP21');s.save()}");await page.reload()
    for parent in ['shop','settings','ev:album']:
     await action(page,parent);await action(page,'preview:100')
-    assert await page.locator('#dialog').get_attribute('data-frame')=='notice'
+    await page.wait_for_function("document.querySelector('#dialog').dataset.frame==='notice'")
     assert await page.locator('#dialog').get_attribute('data-place') is None
     assert await page.locator('.life-warning').count()==0
     assert 'Complete level 99' in await page.locator('.unlock-requirement').inner_text()

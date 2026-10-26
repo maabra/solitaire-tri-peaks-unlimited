@@ -16,6 +16,7 @@ void Check(bool condition, string description)
 {
     assertions++; if (!condition) throw new Exception(description);
 }
+BoundaryTests.Run(Check);
 if (args.Contains("--effects-only"))
 {
     WheelTests.Run(Check);

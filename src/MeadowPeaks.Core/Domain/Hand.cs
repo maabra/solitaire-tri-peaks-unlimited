@@ -67,8 +67,8 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         var previous = Waste; removed[i] = true; Waste = Deal.Cards[i];
         int bonus = mechanics.Bonus(Waste, previous) + (state.LuckySeconds > 0 ? 1 : 0);
         for (int n = 0; n < bonus && stock.Count < 100; n++) stock.Add(new Card((Waste.Rank + n + 3) % 13 + 1, (Waste.Suit + n) % 4));
-        state = mechanics.Advance(state, Deal, removed, Waste); OnCardCleared(Waste); Streak++; BestStreak = Math.Max(BestStreak, Streak);
-        Score += 20 + Streak * 10; if (Deal.Layout[i].Row == 0) Score += 100;
+        state = mechanics.Advance(state, Deal, removed, Waste); OnCardCleared(Waste); Streak = (int)Math.Min(int.MaxValue, (long)Streak + 1); BestStreak = Math.Max(BestStreak, Streak);
+        Score = (int)Math.Min(int.MaxValue, (long)Score + 20 + (long)Streak * 10 + (Deal.Layout[i].Row == 0 ? 100 : 0));
         return true;
     }
     public bool Draw()
@@ -114,6 +114,6 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     public bool Remove(int i)
     {
         if (Failed || Won || i < 0 || i >= removed.Length || !IsExposed(i)) return false;
-        history.Clear(); removed[i] = true; Score += 20; state = mechanics.Advance(state, Deal, removed, Deal.Cards[i]); OnCardCleared(Deal.Cards[i]); return true;
+        history.Clear(); removed[i] = true; Score = (int)Math.Min(int.MaxValue, (long)Score + 20); state = mechanics.Advance(state, Deal, removed, Deal.Cards[i]); OnCardCleared(Deal.Cards[i]); return true;
     }
 }

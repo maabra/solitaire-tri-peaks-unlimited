@@ -30,7 +30,7 @@ public sealed class Wallet
     public void Credit(int amount)
     {
         if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
-        profile.Coins = checked(profile.Coins + amount);
+        profile.Coins = (int)Math.Min(int.MaxValue, (long)profile.Coins + amount);
     }
 }
 
@@ -51,8 +51,9 @@ public sealed class PowerupInventory
 
     public void Add(string id, int amount)
     {
-        int count = checked(Count(id) + amount);
-        if (count < 0) throw new InvalidOperationException("Cannot consume an unavailable helper.");
+        long next = (long)Count(id) + amount;
+        int count = (int)Math.Min(int.MaxValue, next);
+        if (next < 0) throw new InvalidOperationException("Cannot consume an unavailable helper.");
         switch (id)
         {
             case "wild": profile.Wilds = count; break;
