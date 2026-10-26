@@ -81,3 +81,13 @@ body.playing .play-actions button{display:flex;flex-direction:row!important;alig
 #app .map-picture-frame{position:fixed;left:156px;right:18px;top:76px;bottom:82px;z-index:3;border:6px solid #79583c;border-radius:15px;box-shadow:inset 0 0 0 2px #ffe6a8,inset 0 0 0 4px #bc925c,0 0 0 2px #d9bd87,0 0 0 2000px #554b39;pointer-events:none;background:url('assets/game-frame-rosette.svg') left top/28px 28px no-repeat,url('assets/game-frame-rosette.svg') right top/28px 28px no-repeat,url('assets/game-frame-rosette.svg') left bottom/28px 28px no-repeat,url('assets/game-frame-rosette.svg') right bottom/28px 28px no-repeat}
 #app .map-viewport>.chapter-ribbon{top:90px}
 #app .map-viewport>.map-companion{bottom:155px;right:40px}
+
+/* The same carved, softly bevelled rail on the cabinet, map and menu. */
+body::after{border:0;border-radius:0;box-shadow:none;background:url('assets/carved-frame.svg') center/100% 100% no-repeat}
+#app .map-picture-frame{border:6px solid transparent;border-image:url('assets/carved-frame.svg') 24 / 14px stretch;border-radius:16px}
+#app .map-viewport>.map-dock{border:2px solid transparent;border-image:url('assets/carved-frame.svg') 24 / 10px stretch;background:url('assets/cabinet-wood.svg') center/240px 160px;box-shadow:inset 0 0 18px #261b1640,0 4px 8px #211a1633}
+#app .map-dock-scroll{scrollbar-width:auto;scrollbar-color:#e6c487 #4b3b2b;cursor:auto}
+#app .map-dock-scroll::-webkit-scrollbar{width:12px}
+#app .map-dock-scroll::-webkit-scrollbar-track{background:#4b3b2b;border-radius:8px}
+#app .map-dock-scroll::-webkit-scrollbar-thumb{background:linear-gradient(#f8df9e,#bb8b53);border:2px solid #4b3b2b;border-radius:8px}
+#frame-ornaments .corner,#frame-ornaments .crest{filter:drop-shadow(0 2px 2px #35251a66)}

@@ -44,6 +44,8 @@ floral scrollwork caps above and below its scrolling icon list. A carved wood
 and gold frame with blossom corners surrounds the whole game.
 The menu caps join a matching wooden panel, and the map has its own inset frame
 using the same wood, cream rims and blossom corners.
+Map panning starts only inside the map picture; menu scrollbars and controls keep
+their native input. Shared carved rails and subtle grain connect all three frames.
 
 The village map has a dedicated 16:9 painting with space reserved for the road and
 controls. Its landscape stays fixed while the route scrolls. Cards use a side helper

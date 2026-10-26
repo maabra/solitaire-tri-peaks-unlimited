@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" fill="none">
+ <defs>
+  <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff1b7"/><stop offset=".35" stop-color="#edc884"/><stop offset=".7" stop-color="#b88246"/><stop offset="1" stop-color="#f4d69e"/></linearGradient>
+  <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#c09363"/><stop offset=".2" stop-color="#8c603d"/><stop offset=".7" stop-color="#785337"/><stop offset="1" stop-color="#b38351"/></linearGradient>
+  <pattern id="grain" width="160" height="24" patternUnits="userSpaceOnUse"><path d="M-20 5Q30-2 80 6T180 5M-20 15Q30 8 80 16T180 15M-20 22Q60 14 180 23" stroke="#4f331e" opacity=".23" stroke-width="1.4"/></pattern>
+ </defs>
+ <rect x="8" y="8" width="1264" height="704" rx="17" stroke="#4a3021" stroke-width="16"/>
+ <rect x="8" y="8" width="1264" height="704" rx="17" stroke="url(#wood)" stroke-width="12"/>
+ <rect x="8" y="8" width="1264" height="704" rx="17" stroke="url(#grain)" stroke-width="11"/>
+ <rect x="2" y="2" width="1276" height="716" rx="21" stroke="#efd4a2" stroke-width="2"/>
+ <rect x="15" y="15" width="1250" height="690" rx="10" stroke="url(#gold)" stroke-width="3"/>
+ <rect x="19" y="19" width="1242" height="682" rx="7" stroke="#fff0c3" stroke-opacity=".75"/>
+ <path d="M31 8H94M8 31V94M1186 8H1249M1272 31V94M31 712H94M8 626V689M1186 712H1249M1272 626V689" stroke="#ffe6aa" stroke-width="2" stroke-linecap="round"/>
+ <g fill="#edc782" stroke="#66452e"><path d="m23 9 7 7-7 7-7-7zM1257 9l7 7-7 7-7-7zM23 697l7 7-7 7-7-7zM1257 697l7 7-7 7-7-7z"/></g>
+</svg>

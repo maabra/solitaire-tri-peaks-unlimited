@@ -25,7 +25,7 @@
 .card-flight{will-change:transform,opacity,filter;box-shadow:0 0 0 2px #fff2b8,0 0 16px #ffd77888}
 .flight-spark{position:fixed;z-index:11001;color:#ffed9d;text-shadow:0 0 8px #ffeaae;font-size:20px;pointer-events:none;transform-origin:center}
 /* Floral pieces live outside the clipped game surface. */
-body::after{background:none}
+body::after{background:url('assets/carved-frame.svg') center/100% 100% no-repeat}
 #frame-ornaments{position:absolute;left:var(--game-left);top:var(--game-top);width:1280px;height:720px;z-index:12001;pointer-events:none}
 #frame-ornaments .corner{position:absolute;width:var(--frame-corner-size);height:var(--frame-corner-size);background:url('assets/frame-corner-bouquet.svg') center/contain no-repeat}
 #frame-ornaments .tl{left:calc(var(--frame-corner-size) * -.61);top:calc(var(--frame-corner-size) * -.61)}
