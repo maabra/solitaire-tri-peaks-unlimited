@@ -1,4 +1,4 @@
-﻿import asyncio,json,os
+import asyncio,json,os
 from pathlib import Path
 from playwright.async_api import async_playwright
 AUDIT=r'''()=>{
@@ -14,7 +14,7 @@ async def audit(unseen):
  out=Path('artifacts/overlap-regression');out.mkdir(parents=True,exist_ok=True)
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1440,'height':900},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
-  await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'));await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=50095;s.p.HighestPlayedLevel=480000;s.p.ChapterGifts100=[1];s.p.GuideSeen=[];s.start(351,false,106723,'MP21');s.save()}");
+  await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'));await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.ChapterGifts100=[1];s.p.GuideSeen=[];s.start(351,false,106723,'MP21');s.save()}");
   if not unseen: await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.GuideSeen=[...features.map(f=>f.id),'cards',...helpers.map(h=>'helper-'+h.Id),...Array.from({length:17},(_,i)=>'mechanic'+i)];s.save()}")
   await page.reload();results={}
   for action in ['map','home','gems','continue','lives','shop','settings','guide','journal','wheel','events','ev:trail','ev:memory','ev:album','ev:customize','ev:missions','ev:voyage','ev:tournament','ev:hunt','ev:bingo','ev:regatta','ev:balloon','ev:travel','ev:milestones','ev:chest','ev:postcard','ev:tickets']:

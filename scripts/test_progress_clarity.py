@@ -5,7 +5,7 @@ async def main():
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
   await page.goto('http://127.0.0.1:8765/')
-  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=50000;s.p.Hearts=999;s.p.GuideSeen=[...features.map(f=>f.id),'cards'];s.p.Stars=Object.fromEntries(Array.from({length:35},(_,i)=>[i+1,1]));s.p.Customization.Unlocked.push(2);s.events.a.Bingo.Drawn=Array.from({length:13},(_,i)=>i);s.events.a.Bingo.Lines=[0,1];s.save();}""")
+  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=10000;s.p.Hearts=999;s.p.GuideSeen=[...features.map(f=>f.id),'cards'];s.p.Stars=Object.fromEntries(Array.from({length:35},(_,i)=>[i+1,1]));s.p.Customization.Unlocked.push(2);s.events.a.Bingo.Drawn=Array.from({length:13},(_,i)=>i);s.events.a.Bingo.Lines=[0,1];s.save();}""")
   await page.reload()
   await page.locator('.map-dock [data-action="ev:bingo"]').click()
   assert '13 / 25' in await page.locator('[data-progress="Numbers marked"]').inner_text()

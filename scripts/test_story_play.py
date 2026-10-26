@@ -9,7 +9,7 @@ async def main():
   page=await browser.new_page(reduced_motion='reduce');errors=[]
   page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
-  for width,height,level in [(1280,800,351),(1366,768,3),(800,600,50000),(390,844,2),(320,640,351)]:
+  for width,height,level in [(1280,800,351),(1366,768,3),(800,600,9600),(390,844,2),(320,640,351)]:
    await page.set_viewport_size({'width':width,'height':height})
    await page.goto('http://127.0.0.1:8765/')
    path=await page.evaluate("""async level=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=level;s.p.Hearts=20;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.start(level,false,12345);s.save();return s.hand.Deal.Solution}""",level)

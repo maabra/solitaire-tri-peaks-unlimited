@@ -2,6 +2,8 @@ namespace MeadowPeaks;
 
 public sealed class Progress
 {
+    public int CampaignEdition { get; set; } = 2;
+    public LegacyCampaignProgress? LegacyCampaign { get; set; }
     public int Hearts { get; set; } = 3;
     public int GemHeartProgress { get; set; }
     public int WheelSpinsUsed { get; set; }
@@ -32,3 +34,5 @@ public sealed class Progress
     public Dictionary<string, int> Items { get; set; } = new();
     public HashSet<int> ChapterGifts { get; set; } = new();
 }
+
+public sealed record LegacyCampaignProgress(int Unlocked, Dictionary<int,int> Stars, Dictionary<int,int> Scores, HashSet<int> Favorites, HashSet<int> ChapterGifts);

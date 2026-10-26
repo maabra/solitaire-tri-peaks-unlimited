@@ -23,7 +23,7 @@ async def main():
   await page.locator('#app [data-action=gems]').click()
   assert await page.locator('#app').evaluate('e=>e.scrollHeight<=e.clientHeight+2'),'Garden extends below frame'
   assert await page.locator('.gem').count()==64
-  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=12000;s.p.GuideSeen=features.map(f=>f.id);s.save()}")
+  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=10000;s.p.GuideSeen=features.map(f=>f.id);s.save()}")
   await page.reload()
   for view in ['trail','memory']:
    await page.locator(f'.map-dock [data-action="ev:{view}"]').click()

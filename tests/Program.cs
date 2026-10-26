@@ -132,9 +132,9 @@ ProgressionTests.Run(Check);
 ExpansionTests.Run(Check);
 AdventureTests.Run(Check);
 var campaign = new MeadowCampaign();
-Check(campaign.Chapters.Count == 24000 && campaign.LevelCount == 480000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 20, "Expanded campaign has 24,000 chapters and 20 worlds");
+Check(campaign.Chapters.Count == 100 && campaign.LevelCount == 10000 && campaign.Chapters.Select(c => c.World).Distinct().Count() == 100, "Campaign has 100 distinct illustrated chapters and 10,000 levels");
 Check(campaign.Chapters.SelectMany(c => Enumerable.Range(c.FirstLevel, c.LastLevel - c.FirstLevel + 1)).SequenceEqual(Enumerable.Range(1, MeadowCampaign.TotalLevels)), "Chapters cover every level once without gaps");
-Check(campaign.ForLevel(4000).Number == 200 && campaign.ForLevel(2001).Theme == 10, "New worlds and final chapter can be reached");
+Check(campaign.ForLevel(4000).Number == 40 && campaign.ForLevel(10000).Number == 100, "New worlds and final chapter can be reached");
 Console.WriteLine($"PASS: {assertions:N0} assertions. Gameplay, persistence, economy and component replacements verified.");
 
 }

@@ -8,7 +8,7 @@ async def main():
   page=await b.new_page(viewport={'width':1280,'height':800},reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
   await page.goto('http://127.0.0.1:8765/')
-  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=50001;s.p.HighestPlayedLevel=50001;s.p.Coins=1840;s.p.Hearts=12;s.p.ChapterGifts100=[1];s.p.Customization.Unlocked=[0,1];s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.events.a.Album.Cards=Object.fromEntries(Array.from({length:42},(_,i)=>[i,1]));s.events.a.Album.Packs=[2,3,1];s.save();}""")
+  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.Coins=1840;s.p.Hearts=12;s.p.ChapterGifts100=[1];s.p.Customization.Unlocked=[0,1];s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.events.a.Album.Cards=Object.fromEntries(Array.from({length:42},(_,i)=>[i,1]));s.events.a.Album.Packs=[2,3,1];s.save();}""")
   await page.reload();await page.evaluate('document.fonts.ready')
   report=[]
   for width,height in [(1280,800),(390,844),(320,640)]:

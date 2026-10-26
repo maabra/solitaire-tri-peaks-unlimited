@@ -16,7 +16,7 @@ public sealed class JsonProfileStore : IProfileStore
             try
             {
                 var p = JsonSerializer.Deserialize<Progress>(File.ReadAllText(candidate));
-                if (!ProfileValidator.Valid(p)) throw new InvalidDataException();
+                p = CampaignMigration.Apply(p ?? throw new InvalidDataException());
                 if (candidate != path) warning = "Recovered progress from the backup save.";
                 return p!;
             }
@@ -33,7 +33,7 @@ public sealed class JsonProfileStore : IProfileStore
         // Only a valid previous save may replace the recovery backup.
         if (File.Exists(path))
         {
-            try { var old = JsonSerializer.Deserialize<Progress>(File.ReadAllText(path)); if (ProfileValidator.Valid(old)) File.Copy(path, path + ".bak", true); }
+            try { var old = JsonSerializer.Deserialize<Progress>(File.ReadAllText(path)); if (ProfileValidator.Valid(old, true)) File.Copy(path, path + ".bak", true); }
             catch (JsonException) { }
         }
         File.Move(temp, path, true);

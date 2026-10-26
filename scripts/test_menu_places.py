@@ -19,7 +19,7 @@ async def main():
   assert await page.locator('[data-owned=wild]').inner_text()=='3'
   await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const s=new Session();s.p.Coins=0;s.save()}");await page.reload();await action(page,'shop');assert await page.locator('.shop-buy:enabled').count()==0
   await page.locator('.shop-earn [data-action=gems]').click();assert await page.locator('.gems').count()==1
-  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=50095;s.p.HighestPlayedLevel=480000;s.p.Coins=10000;s.p.SeenMechanics=Array.from({length:17},(_,i)=>i);for(const h of helpers)s.p.Items[h.Id]=5;s.save()}");await page.reload();await action(page,'shop')
+  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.Coins=10000;s.p.SeenMechanics=Array.from({length:17},(_,i)=>i);for(const h of helpers)s.p.Items[h.Id]=5;s.save()}");await page.reload();await action(page,'shop')
   assert await page.locator('.shop article').count()>=13
   assert await page.locator('#dialog').evaluate('e=>e.scrollHeight<=e.clientHeight+2')
   await page.locator('.shop article').last.locator('.shop-buy').scroll_into_view_if_needed();await page.locator('.shop article').last.locator('.shop-buy').click()

@@ -6,7 +6,7 @@ const storage=new Map(),adapter={getItem:k=>storage.get(k)??null,setItem:(k,v)=>
 const s=new Session(new ProfileStore(adapter),()=> '2026-10-26');
 s.p.Coins=MAX;s.daily();assert.equal(s.p.Coins,MAX);s.spinWheel(0);assert.equal(s.p.Coins,MAX);
 s.p.Garden=MAX;s.gardenGift();assert.equal(s.p.Coins,MAX);validateProfile(s.p);
-s.p.Unlocked=50095;s.p.HighestPlayedLevel=50095;s.p.SeenMechanics=Array.from({length:17},(_,i)=>i);
+s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.SeenMechanics=Array.from({length:17},(_,i)=>i);
 for(const helper of helpers){s.add(helper.Id,MAX-s.inventory(helper.Id));const before=s.p.Coins;assert.throws(()=>s.buy(helper.Id),/full/);assert.equal(s.p.Coins,before);s.add(helper.Id,2);assert.equal(s.inventory(helper.Id),MAX);}
 s.save();assert.equal(new Session(new ProfileStore(adapter)).p.Wilds,MAX);
 const a=s.events.a;a.Album.Packs=Array(10000).fill(1);a.Album.Tokens=MAX;assert.equal(s.events.buyPack(1),false);assert.equal(a.Album.Tokens,MAX);

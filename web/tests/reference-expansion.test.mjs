@@ -16,7 +16,7 @@ for(let level=5;level<133;level++){
  for(const width of [278,700,1050]){const fit=fitTableau(slots,width,800,width<700);assert.ok(fit.cw>0&&fit.height>0);}
 }
 assert.equal(shapes.size,128);
-for(const level of [1,2,3,4,5,25,40,60,75,100,300,1200,2500,5000,8000,18000,28000,35000,48000,50000,480000,1095,12095,30095,50095,479995]){
+for(const level of [1,2,3,4,5,25,40,60,75,100,300,1200,2500,5000,8000,3650,5650,7000,8600,9600,10000,1095,2595,6095,9095,9995]){
  const deal=adventureDeal(104729+level,level,false,'MP26'),hand=new AdventureHand(deal);
  assert.equal(deal.Formation,storyNameV4(level));
  for(const step of deal.Solution){if(step.Index<0){hand.tick(2);assert.ok(hand.draw());}else assert.ok(hand.play(step.Index));}
@@ -37,4 +37,4 @@ const goalHand=new AdventureHand(adventureDeal(10000,40,false,'MP26'));
 assert.ok(goalProgress(goalHand).total<goalHand.Deal.Cards.length);
 console.log('PASS: 128 formations, short onboarding, MP26 witnesses/codes, shuffle identity preservation, cooldown, save recovery and objective-specific counts.');
 
-for(const [level,count]of [[1095,60],[12095,80],[30095,104],[50095,120]]){const session=new Session(new ProfileStore(null));session.p.Unlocked=level;session.start(level,false,12345);assert.equal(session.hand.Deal.Cards.length,count);assert.ok(validateProfile(session.p));}
+for(const [level,count]of [[1095,60],[2595,80],[6095,104],[9095,120]]){const session=new Session(new ProfileStore(null));session.p.Unlocked=level;session.start(level,false,12345);assert.equal(session.hand.Deal.Cards.length,count);assert.ok(validateProfile(session.p));}

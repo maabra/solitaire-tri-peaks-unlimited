@@ -12,7 +12,7 @@ async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
-  for width,height,level in [(1280,800,1),(1280,800,351),(800,600,351),(390,844,351),(800,600,50095)]:
+  for width,height,level in [(1280,800,1),(1280,800,351),(800,600,351),(390,844,351),(800,600,9995)]:
    await page.set_viewport_size({'width':width,'height':height});await page.goto('http://127.0.0.1:8765/')
    path=await page.evaluate("""async level=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=level;s.p.Hearts=20;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.start(level,false,12345);s.save();return s.hand.Deal.Solution;}""",level)
    await page.reload();await page.locator('[data-action=previewCurrent]').click();await page.locator(f'[data-action="level:{level}"]').click();await page.wait_for_timeout(300)

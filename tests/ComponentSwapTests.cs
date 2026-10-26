@@ -94,11 +94,11 @@ internal static class ComponentSwapTests
             check(migrated.Hand!.Deal.Cards.SequenceEqual(oldHand.Deal.Cards) && migrated.Hand.Removed.All(x => !x), "Legacy deal can still be replayed after a provider swap");
         }
         finally { Directory.Delete(directory, true); }
-        var completed = new Progress { Unlocked = 20 };
-        for (int n = 1; n < 20; n++) completed.Stars[n] = 1;
+        var completed = new Progress { Unlocked = 100 };
+        for (int n = 1; n < 100; n++) completed.Stars[n] = 1;
         var chapterStore = new MemoryProfileStore(completed);
         var chapterSession = Open(chapterStore, replacementHands);
-        chapterSession.StartHand(20, false); chapterSession.PlayCard(0);
+        chapterSession.StartHand(100, false); chapterSession.PlayCard(0);
         var chapterWin = chapterSession.CompleteHand();
         check(chapterWin?.ChapterBonus == 150 && chapterSession.Wallet.Balance == 467 && chapterSession.Inventory.Count("wild") == 3, "Completing a chapter awards coins and one Wild");
         chapterSession.Save();

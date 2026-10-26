@@ -3,6 +3,11 @@ static class BoundaryTests
 {
  public static void Run(Action<bool,string> check)
  {
+  var legacy = new Progress { Unlocked = 480000, Coins = 1873, HighestPlayedLevel = 480000 };
+  legacy.Stars[1] = 3; legacy.Stars[480000] = 2; legacy.Scores[480000] = 99;
+  var migrated = ProfileCodec.Decode(System.Text.Json.JsonSerializer.Serialize(legacy));
+  check(migrated.Unlocked == 10000 && migrated.Coins == 1873 && migrated.Stars.Count == 1 && migrated.LegacyCampaign!.Stars[480000] == 2, "Old campaign save preserves wallet and archives retired progress");
+  check(MeadowPeaks.Content.CampaignContent.ChapterTitles.Distinct().Count() == 100 && new MeadowCampaign().ForLevel(10000).LastLevel == 10000, "Every campaign chapter has original art and the final boundary is exact");
   var profile=new Progress{Coins=int.MaxValue,Wilds=int.MaxValue};
   var wallet=new Wallet(profile);wallet.Credit(75);check(wallet.Balance==int.MaxValue,"Full wallet rewards saturate");
   var bag=new PowerupInventory(profile);bag.Add("wild",1);check(bag.Count("wild")==int.MaxValue,"Full helper rewards saturate");

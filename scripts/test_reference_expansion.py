@@ -9,8 +9,8 @@ async def main():
   page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
   await page.goto('http://127.0.0.1:8765/')
-  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=50000;s.p.Hearts=999;s.p.Coins=1000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.filter(h=>h.Id!=='shuffle').map(h=>'helper-'+h.Id)];s.add('shuffle',2);s.start(50000,false,12345);s.save()}""")
-  await page.reload();await page.locator('[data-action=previewCurrent]').click();await page.locator('[data-action="level:50000"]').click();await page.wait_for_timeout(300)
+  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=9600;s.p.Hearts=999;s.p.Coins=1000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.filter(h=>h.Id!=='shuffle').map(h=>'helper-'+h.Id)];s.add('shuffle',2);s.start(9600,false,12345);s.save()}""")
+  await page.reload();await page.locator('[data-action=previewCurrent]').click();await page.locator('[data-action="level:9600"]').click();await page.wait_for_timeout(300)
   assert await page.evaluate("document.body.classList.contains('scenic-play')")
   assert await page.evaluate("document.querySelector('.play-actions').getBoundingClientRect().bottom<=innerHeight"),await page.locator('.play-actions').bounding_box()
   assert await page.locator('.board .covered[title="Covered card"]').count()>0
@@ -28,7 +28,7 @@ async def main():
   await page.locator('[data-action="surface:scene"]').click()
   assert await page.evaluate("document.body.classList.contains('scenic-play')")
   await page.locator('.shell-close').click()
-  await page.reload();await page.locator('[data-action=previewCurrent]').click();await page.locator('[data-action="level:50000"]').click()
+  await page.reload();await page.locator('[data-action=previewCurrent]').click();await page.locator('[data-action="level:9600"]').click()
   restored=await page.evaluate("JSON.parse(localStorage.getItem('meadow-peaks-profile'))")
   assert restored['Active']['Mechanics']['Faces']==state['Active']['Mechanics']['Faces']
   assert restored['Items']['shuffle']==1 and restored['Hearts']==state['Hearts']

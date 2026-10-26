@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {campaign} from '../generated-content.mjs';
+import {TOTAL} from '../core.mjs';
+import {Session,ProfileStore,defaults,readProfile,validateProfile} from '../session.mjs';
+import {features} from '../journey-guide.mjs';
+import {mechanicUnlocks} from '../progression.mjs';
+import {collectionIndex,CHAPTER_SET_COUNT} from '../chapter-collection.mjs';
+assert.equal(TOTAL,10000);assert.equal(CHAPTER_SET_COUNT,100);assert.equal(new Set(campaign.chapterTitles).size,100);
+assert.equal(new Set(Array.from({length:100},(_,i)=>collectionIndex(i+1))).size,100);
+assert.ok(features.every(f=>f.level<=TOTAL));assert.ok(Object.values(mechanicUnlocks).every(l=>l<=TOTAL));
+const seed=new Session(new ProfileStore(null));seed.p.Unlocked=10000;seed.start(10000,true,12345);
+const raw={...defaults(),Unlocked:480000,HighestPlayedLevel:480000,Coins:1873,Stars:{1:3,10000:2,10001:1,480000:3},Scores:{1:400,10001:500},Favorites:[1,480000],ChapterGifts:[1,24000],ChapterGifts100:[1,4800],Active:{...seed.p.Active,Level:50095,Endless:false},Customization:{Back:101,Table:4800,Unlocked:[0,1,101,4800],Migrated:true,Surface:'table'}};
+const original=structuredClone(raw),p=readProfile(raw);assert.deepEqual(raw,original,'Migration does not mutate imported data');assert.equal(p.Unlocked,10000);assert.equal(p.Coins,1873);assert.deepEqual(p.Stars,{1:3,10000:2});assert.equal(p.LegacyCampaign.Stars[480000],3);assert.equal(p.Active.Endless,true);assert.deepEqual(p.Active.DealtBoard,raw.Active.DealtBoard);assert.deepEqual(p.Customization.Unlocked,[0,1,100]);assert.equal(p.Customization.Back,1);assert.equal(p.Customization.Table,100);validateProfile(p);assert.deepEqual(readProfile(p),p,'Migration is idempotent');
+assert.throws(()=>readProfile({...raw,Coins:-1}));assert.throws(()=>readProfile({...raw,Unlocked:480001}));assert.throws(()=>validateProfile(raw));
+const memory=new Map([['meadow-peaks-profile',JSON.stringify(raw)]]),adapter={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)},restored=new Session(new ProfileStore(adapter));assert.equal(restored.endless,true);assert.ok(restored.hand);restored.save();assert.equal(memory.get('meadow-peaks-backup'),JSON.stringify(raw));assert.equal(new Session(new ProfileStore(adapter)).p.LegacyCampaign.Unlocked,480000);
+const s=new Session(new ProfileStore(null));s.p.Unlocked=TOTAL;s.p.Hearts=999;s.start(TOTAL,false,12345);for(const step of s.hand.Deal.Solution){if(s.hand.Won)break;if(step.Index<0){s.tick(2);assert.ok(s.draw());}else assert.ok(s.play(step.Index));}assert.ok(s.hand.Won);assert.equal(s.p.Unlocked,TOTAL);assert.ok(s.p.Stars[TOTAL]);const coins=s.p.Coins;assert.equal(s.complete(),null);assert.equal(s.p.Coins,coins);assert.throws(()=>s.start(TOTAL+1),/Unlock/);s.start(1,true,12345);assert.equal(s.endless,true);
+console.log('PASS: 100 unique chapter sets, 10,000-level bounds, all unlocks reachable, idempotent legacy migration, intact active hands/cosmetics, final win once and endless continuation.');

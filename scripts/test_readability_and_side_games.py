@@ -7,7 +7,7 @@ async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True);page=await browser.new_page(viewport={'width':1280,'height':850},reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");await page.goto('http://127.0.0.1:8765/')
-  await page.evaluate("""async()=>{const {Session,ProfileStore}=await import('./session.mjs'),{features}=await import('./journey-guide.mjs');const s=new Session(new ProfileStore(null));s.p.Unlocked=50000;s.p.HighestPlayedLevel=50000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:16},(_,i)=>'mechanic'+(i+1))];s.start(3);s.hand.Deal.Layout.forEach(c=>c.Angle+=180);s.side.a.Rolls=2;s.side.a.Seeds=6;s.save();localStorage.setItem('meadow-peaks-profile',JSON.stringify(s.p));}""")
+  await page.evaluate("""async()=>{const {Session,ProfileStore}=await import('./session.mjs'),{features}=await import('./journey-guide.mjs');const s=new Session(new ProfileStore(null));s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:16},(_,i)=>'mechanic'+(i+1))];s.start(3);s.hand.Deal.Layout.forEach(c=>c.Angle+=180);s.side.a.Rolls=2;s.side.a.Seeds=6;s.save();localStorage.setItem('meadow-peaks-profile',JSON.stringify(s.p));}""")
   await page.reload()
   async def action(name):await page.evaluate("name=>{const b=document.createElement('button');b.dataset.action=name;document.body.append(b);b.click();b.remove();}",name)
   await action('continue');await page.wait_for_selector('.painted-table')

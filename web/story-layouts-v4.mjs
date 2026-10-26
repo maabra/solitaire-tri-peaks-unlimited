@@ -48,7 +48,7 @@ export function storyNameV4(level){
 }
 export function storyLayoutV4(level){
  if(level>=1000&&level%100===95){
-  const count=longCardCount(level),columns=level<12000?6:8,depth=count/columns,points=[];
+  const count=longCardCount(level),columns=level<2500?6:8,depth=count/columns,points=[];
   for(let layer=0;layer<depth;layer++)for(let c=0;c<columns;c++)points.push({DrawX:100+c*800/(columns-1),DrawY:60+layer*13+(c%2)*35,Angle:c%2?-3:3});
   return compile(points);
  }
@@ -56,4 +56,4 @@ export function storyLayoutV4(level){
  const family=(level-5)%128;if(family>=64)return storyLayoutV3(level);
  return structured(family%16,Math.floor(family/16)+Math.floor((level-5)/128)%4);
 }
-export const longCardCount=level=>level<12000?60:level<30000?80:level<50000?104:120;
+export const longCardCount=level=>level<2500?60:level<6000?80:level<9000?104:120;

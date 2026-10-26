@@ -1,10 +1,8 @@
 import {collectionIndex,CHAPTER_SET_COUNT} from './chapter-collection.mjs';
 import {chapterTitles,tableGrids} from './art-catalog.mjs';
-// 4,800 deterministic named compositions; map and Travel Hub use the same image.
+// One original portrait mural per campaign chapter; map and Travel Hub share it.
 import {SeededRandom} from './core.mjs';
-const adjectives=['Willow','Moonlit','Amber','Snowdrop','Lavender','Coral','Golden','Cherry','Emerald','Festival','Whispering','Starlit','Misty','Sunflower','Crystal','Wisteria','Bamboo','Sapphire','Copper','Rosewood','Silver','Ivory','Jade','Crimson','Violet','Peach','Honey','Cedar','Juniper','Maple','Clover','Poppy','Daisy','Bluebell','Orchid','Lotus','Magnolia','Peony','Marigold','Iris','Fern','Moss','Birch','Oak','Pine','Palm','Coconut','Cinnamon','Ginger','Vanilla','Velvet','Silken','Pearl','Opal','Ruby','Topaz','Turquoise','Aquamarine','Amethyst','Diamond','Dawn','Dusk','Twilight','Midnight','Rainbow','Sunny','Cloudy','Breezy','Frosted','Dewy','Glowing','Dreaming','Singing','Dancing','Wandering','Hidden','Quiet','Secret','Happy','Lucky'];
-const places=['Village','Harbor','Gardens','Orchard','Valley','Islands','Oasis','Grove','Forest','Fairground','Meadow','Lake','Cove','Canyon','Castle','Cavern','Canals','Highlands','Falls','Bay','Terrace','Hollow','Landing','Haven','Springs','Cliffs','Crossing','Glade','Retreat','Hills','Fields','Marsh','Shore','Reef','Lagoon','Delta','Ridge','Summit','Pass','Trail','Court','Plaza','Bridge','Quarter','Sanctuary','Observatory','Lighthouse','Farmstead','Windmills','Vineyard','Woodland','Creek','Riverbend','Glen','Park','Basin','Peninsula','Plateau','Beach','Market'];
-export function chapterName(chapter){return chapterTitles[collectionIndex(chapter)]+(chapter>CHAPTER_SET_COUNT?' · Journey '+(1+Math.floor((chapter-1)/CHAPTER_SET_COUNT)):'');}
+export function chapterName(chapter){return chapterTitles[collectionIndex(chapter)];}
 
 const images=new Map(),cache=new Map();
 function load(src){if(src.startsWith('data:'))return new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>{images.delete(src);reject(Error('Artwork unavailable'));};i.src=src;}));return images.get(src);}

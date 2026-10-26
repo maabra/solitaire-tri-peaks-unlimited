@@ -9,8 +9,8 @@ public static class InterfaceCatalog
 {
     public static readonly FeatureDefinition[] Features =
     [
-        new("trail", 2500, "A treasure trail", "Each new campaign win earns a roll. Move around the trail for coins, packs and helpers. Replaying old levels does not earn rolls.", "ev:trail", ".treasure-trail", "dice"),
-        new("memory", 12000, "Pip’s matching garden", "Every two new campaign wins earn a seed. A seed lets you turn over two tiles. Match pairs for coins; finish the garden for a pack and Joker.", "ev:memory", ".memory-board", "pairs"),
+        new("trail", CampaignContent.TrailUnlock, "A treasure trail", "Each new campaign win earns a roll. Move around the trail for coins, packs and helpers. Replaying old levels does not earn rolls.", "ev:trail", ".treasure-trail", "dice"),
+        new("memory", CampaignContent.MemoryUnlock, "Pip’s matching garden", "Every two new campaign wins earn a seed. A seed lets you turn over two tiles. Match pairs for coins; finish the garden for a pack and Joker.", "ev:memory", ".memory-board", "pairs"),
         new("welcome", 1, "A little adventure together", "I’m Pip! Follow the glowing stop on the road. Pick it, then press Play. I’ll introduce new places as you reach them.", "previewCurrent", ".story-node.current", "play"),
         new("garden", 3, "Grow your helper coins", "Gem Garden turns matches into coins. Those coins buy one-use helpers for your cards. You can always return to your saved hand.", "gems", "[data-action=\"gems\"]", "gems"),
         new("missions", 5, "Your daily picnic", "Playing cards, winning hands and opening packs fill these tasks naturally. Collect a finished task to reveal another — up to six in 24 hours.", "ev:missions", "[data-action=\"ev:missions\"]", "missions"),

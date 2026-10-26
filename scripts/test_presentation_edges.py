@@ -16,7 +16,7 @@ async def main():
   c,bootstrap=await context()
   # Confirm each of the ten actual paintings decodes; these are not tint-only variants.
   assert await bootstrap.evaluate("""async()=>{let {environments}=await import('./chapter-scene.mjs');return environments.length===10&&(await Promise.all(environments.map(name=>new Promise(resolve=>{let i=new Image;i.onload=()=>resolve(i.naturalWidth>1000);i.onerror=()=>resolve(false);i.src='assets/'+name+'.png'})))).every(Boolean)}""")
-  profile=await bootstrap.evaluate("""async()=>{let {defaults}=await import('./session.mjs');let p=defaults();p.Unlocked=480000;return p}""")
+  profile=await bootstrap.evaluate("""async()=>{let {defaults}=await import('./session.mjs');let p=defaults();p.Unlocked=10000;return p}""")
   for width,height in [(2555,1274),(1058,1263),(1280,800),(800,600),(390,844),(320,640)]:
    ctx,page=await context(width,height,profile)
    assert await page.evaluate('document.documentElement.scrollWidth<=innerWidth')

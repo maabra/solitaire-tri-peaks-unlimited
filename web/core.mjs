@@ -1,8 +1,9 @@
+import {campaign} from './generated-content.mjs';
 import {storyLayoutV2,storyNameV2} from './story-layouts-v2.mjs';
 import {storyLayout,storyName} from './story-layouts.mjs';
 ﻿// Same seeded algorithm, geometry, progression and save schema as MeadowPeaks.Core.
 export const K={Normal:0,Ice:1,Key:2,Lock:3,Bomb:4,Gift:5,Up:6,Down:7,Stone:8,Vine:9,Lantern:10,Lucky:11,Shield:12,Gate:13,ColorSeal:14};
-export const TOTAL=480000;
+export const TOTAL=campaign.levelCount;
 export const clone=x=>structuredClone(x);
 export class SeededRandom {
  constructor(seed){const a=this.a=Array(56).fill(0);let mj=161803398-Math.abs(seed),mk=1;a[55]=mj;for(let i=1;i<55;i++){let j=21*i%55;a[j]=mk;mk=(mj-mk)|0;if(mk<0)mk+=2147483647;mj=a[j]}for(let k=1;k<5;k++)for(let i=1;i<56;i++){a[i]=(a[i]-a[1+(i+30)%55])|0;if(a[i]<0)a[i]+=2147483647}this.i=0;this.j=21}
@@ -12,10 +13,10 @@ export const intro=k=>[1,100,200,200,300,50,400,400,500,800,600,700,900,2000,230
 export function difficulty(level){let t=Math.floor(level/100),f=t<10?[K.Gift,K.Ice,K.Lock,K.Bomb,K.Up,K.Stone,K.Lantern,K.Lucky,K.Vine,K.Shield][t]:[K.Ice,K.Lock,K.Bomb,K.Stone,K.Vine,K.Normal][(t-10)%6];if(t===20)f=K.Gate;if(t===23)f=K.ColorSeal;if(t>=24)f=[K.Ice,K.Lock,K.Bomb,K.Stone,K.Vine,K.Gate,K.ColorSeal,K.Normal][(t-24)%8];let steps=n=>t<n?0:1+Math.floor((t-n)/6);return {Badge:(["\u2660","\u2744","\u2660","\u{1f512}","\u{1f4a3}","\u{1f381}","\u2191\u2193","\u2660","\u25c6","\u{1f33f}","\u{1f526}","\u{1f340}","\u{1f6e1}","\u25d0","\u2665\u2660"][f])+" "+t,Tier:t,Focus:f,HazardBudget:Math.min(10,Math.floor(t/2)+1),IceLead:Math.max(0,3-steps(10)),KeysRequired:Math.min(3,1+steps(11)),BombSlack:Math.max(2,6-steps(12)),ArmorHits:Math.min(4,2+steps(13)),VineRun:Math.min(3,2+steps(14)),ReserveTrim:Math.min(8,steps(15))}}
 export const depth=level=>level<300?4:4+(level-5)%(level<700?2:level<1300?3:level<2100?4:5);
 const names=['Butterfly','Crown','Moon bridge','Diamond','Ribbon','Twin gardens','Three towers','Waterfall','Sunrise','Crescent','Wings','Valley','Castle','Lanterns','Wave','Stepping stones','Lotus','Mountain pass','Windmill','Star trail','Honeycomb','River bend','Orchard','Cloud bank','Archway','Firefly trail','Coral reef','Snowflake','Flower basket','Rolling hills','Kite','Festival'];
-export const formationName=l=>l<5?'Classic peaks':`${names[(l-5)%TOTAL%32]} ${Math.floor((l-5)%TOTAL/32)+1}`;
+export const formationName=l=>l<5?'Classic peaks':`${names[(l-5)%480000%32]} ${Math.floor((l-5)%480000/32)+1}`;
 function choose(n,k){if(k<0||k>n)return 0;let v=1;for(let j=1;j<=k;j++)v=v*(n-j+1)/j;return Math.round(v)}
 export function layout(level){let slots=[];if(level<5){let variant=level<4?1:Math.floor(level/7)%3;if(variant===1)for(let r=0;r<4;r++)for(let p=0;p<2;p++)for(let j=0;j<=r;j++)slots.push({X:2+p*4-r*.5+j,Row:r});else if(variant===2)for(let r=0;r<4;r++)for(let j=0;j<5+r;j++)slots.push({X:2.5-r*.5+j,Row:r});else {for(let r=0;r<3;r++)for(let p=0;p<3;p++)for(let j=0;j<=r;j++)slots.push({X:2+p*3-r*.5+j,Row:r});for(let j=0;j<10;j++)slots.push({X:.5+j,Row:3})}return slots}
- let d=depth(level),cells=new Set();for(let r=0;r<d;r++){cells.add(r*10+4);cells.add(r*10+5)}[0,1,10,(d-1)*10,(d-1)*10+9].forEach(c=>cells.add(c));let opt=Array.from({length:d*10},(_,i)=>i).filter(c=>!cells.has(c)&&c!==9).sort((a,b)=>(Math.abs(a%10-4.5)+(a*37%11)*.35)-(Math.abs(b%10-4.5)+(b*37%11)*.35)||a-b).slice(0,22).sort((a,b)=>a-b);let rank=((level-5)%TOTAL*48271+12345)%choose(22,11),remaining=11;for(let n=0;n<opt.length&&remaining;n++){let ways=choose(opt.length-n-1,remaining-1);if(rank<ways){cells.add(opt[n]);remaining--}else rank-=ways}return [...cells].sort((a,b)=>a-b).map(c=>({X:.5+c%10+(Math.floor(c/10)%2)*.5,Row:Math.floor(c/10)}))}
+ let d=depth(level),cells=new Set();for(let r=0;r<d;r++){cells.add(r*10+4);cells.add(r*10+5)}[0,1,10,(d-1)*10,(d-1)*10+9].forEach(c=>cells.add(c));let opt=Array.from({length:d*10},(_,i)=>i).filter(c=>!cells.has(c)&&c!==9).sort((a,b)=>(Math.abs(a%10-4.5)+(a*37%11)*.35)-(Math.abs(b%10-4.5)+(b*37%11)*.35)||a-b).slice(0,22).sort((a,b)=>a-b);let rank=((level-5)%480000*48271+12345)%choose(22,11),remaining=11;for(let n=0;n<opt.length&&remaining;n++){let ways=choose(opt.length-n-1,remaining-1);if(rank<ways){cells.add(opt[n]);remaining--}else rank-=ways}return [...cells].sort((a,b)=>a-b).map(c=>({X:.5+c%10+(Math.floor(c/10)%2)*.5,Row:Math.floor(c/10)}))}
 export const adjacent=(a,b)=>a===0||b===0||Math.abs(a-b)===1||Math.abs(a-b)===12;
 export const exposed=(slots,removed,i)=>!removed[i]&&(slots[i].BlockedBy!=null?slots[i].BlockedBy.every(j=>removed[j]):!slots.some((s,j)=>!removed[j]&&s.Row===slots[i].Row+1&&Math.abs(s.X-slots[i].X)<.6));
 const card=(Rank,Suit)=>({TemporaryStock:false,Kind:0,Strength:0,Rank,Suit});

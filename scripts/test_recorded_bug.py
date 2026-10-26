@@ -43,8 +43,8 @@ async def main():
   await page.emulate_media(reduced_motion='reduce')
   await page.locator('[data-action=draw]').click()
   assert await page.locator('.card-flight,.flight-spark').count()==0
-  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=50095;s.p.HighestPlayedLevel=480000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];for(const h of helpers)s.p.Items[h.Id]=5;s.start(50095,false,12345);s.save()}""")
-  await page.reload();await page.locator('.map-controls [data-action=previewCurrent]').click();await page.locator('[data-action="level:50095"]').click()
+  await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=9995;s.p.HighestPlayedLevel=10000;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];for(const h of helpers)s.p.Items[h.Id]=5;s.start(9995,false,12345);s.save()}""")
+  await page.reload();await page.locator('.map-controls [data-action=previewCurrent]').click();await page.locator('[data-action="level:9995"]').click()
   assert await page.locator('#app').evaluate('e=>e.scrollHeight<=e.clientHeight+2')
   assert await page.locator('.tools').evaluate('e=>e.scrollHeight<=e.clientHeight+2'),'Full helper inventory is clipped'
   assert await page.locator('.tools button,.play-actions button,.subhead').evaluate_all('es=>es.every(e=>{const a=e.getBoundingClientRect(),b=document.body.getBoundingClientRect();return a.top>=b.top+6&&a.bottom<=b.bottom-6&&a.left>=b.left&&a.right<=b.right})')

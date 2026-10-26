@@ -1,3 +1,4 @@
+import {CHAPTER_SET_COUNT} from './chapter-collection.mjs';
 import {chestReward} from './chest-tiers.mjs';
 // Persistent offline events. Each system owns its state; rewards use one ledger.
 import {SeededRandom,clone} from './core.mjs';
@@ -7,7 +8,7 @@ const integer=(n,max=2147483647)=>Number.isInteger(n)&&n>=0&&n<=max;
 const period=(now,ms)=>Math.floor(now/ms), month=now=>new Date(now).toISOString().slice(0,7);
 export const rarity=id=>Math.floor((id%10)/2)+1;
 const fresh=now=>({Schema:1,Stats:{clears:0,draws:0,spent:0,wins:0,stars:0,arrows:0,packs:0},Claimed:[],Album:{Index:0,Cards:{},Packs:[1],Tokens:0,Categories:[],Complete:false,Last:[]},Daily:{At:now,Values:{},Claimed:[]},Pass:{Month:month(now),Wins:0,Claimed:[]},Tournament:{Period:period(now,7*86400000),Score:0,Claimed:[],League:0},Hunt:{Round:0,Arrows:0,Used:0,Open:[],Claimed:[]},Bingo:{Round:0,Tokens:0,Drawn:[],Lines:[]},Regatta:{Period:period(now,7*86400000),Distance:0,Streak:0,Claimed:[]},Balloon:{Week:-1,Stage:0,Active:false,Arrows:0},Tickets:{Week:-1,Stage:0,Active:false},Chest:[],Postcards:[],WheelAt:0,Notice:[]});
-export function validateAdventure(a){
+export function validateAdventure(a,maxChapters=CHAPTER_SET_COUNT){
  if(!a||a.Schema!==1)throw Error('Unsupported adventure collection.');
  const check=(v,max)=>{if(!integer(v,max))throw Error('Invalid adventure counter.');};
  if(!a.Stats||Object.keys(a.Stats).some(k=>!['clears','draws','spent','wins','stars','arrows','packs'].includes(k)))throw Error('Invalid lifetime counters.');
@@ -16,7 +17,7 @@ export function validateAdventure(a){
  for(const [id,n]of Object.entries(a.Album.Cards)){if(!/^\d+$/.test(id))throw Error('Invalid sticker.');check(+id,99);check(n,1000000);if(!n)throw Error('Invalid sticker count.');}
  check(a.Album.Index);check(a.Album.Tokens);if(!Array.isArray(a.Album.Packs)||a.Album.Packs.length>10000||a.Album.Packs.some(n=>!integer(n,5)||n<1))throw Error('Invalid pack collection.');
  const list=(v,max)=>{if(!Array.isArray(v)||v.length>100000||new Set(v).size!==v.length||v.some(n=>!integer(n,max)))throw Error('Invalid adventure progress.');};
- list(a.Album.Categories,9);list(a.Hunt.Open,80);list(a.Bingo.Drawn,24);list(a.Bingo.Lines,11);list(a.Hunt.Claimed);list(a.Pass.Claimed,99);list(a.Tournament.Claimed);list(a.Regatta.Claimed);list(a.Chest,24000);list(a.Postcards,24000);list(a.Daily.Claimed,5);
+ list(a.Album.Categories,9);list(a.Hunt.Open,80);list(a.Bingo.Drawn,24);list(a.Bingo.Lines,11);list(a.Hunt.Claimed);list(a.Pass.Claimed,99);list(a.Tournament.Claimed);list(a.Regatta.Claimed);list(a.Chest,maxChapters);list(a.Postcards,maxChapters);list(a.Daily.Claimed,5);
  if(!Array.isArray(a.Claimed)||a.Claimed.length>10000||a.Claimed.some(x=>typeof x!=='string'||x.length>80))throw Error('Invalid reward ledger.');
  for(const obj of [a.Hunt,a.Bingo,a.Tournament,a.Regatta,a.Balloon,a.Tickets])for(const [key,v]of Object.entries(obj))if(typeof v==='number'){if(key==='Week'&&v===-1)continue;check(v);}
  check(a.Pass.Wins);for(const v of Object.values(a.Daily.Values))check(v);if(!Number.isFinite(a.Daily.At)||a.Daily.At<0||!Number.isFinite(a.WheelAt)||a.WheelAt<0||!/^\d{4}-\d{2}$/.test(a.Pass.Month))throw Error('Invalid event time.');
@@ -52,7 +53,7 @@ export class AdventureSystems {
  shoot(index){const h=this.a.Hunt;if(!integer(index,80)||!h.Arrows||h.Open.includes(index))return null;h.Arrows--;h.Open.push(index);h.Used=Math.min(2147483647,h.Used+1);this.record('arrows');const reward=this.huntReward(index);this.reward(reward);if(h.Used%10===0)this.reward({arrows:2,coins:50,hearts:1});if(h.Open.length===81){this.reward({coins:300,pack:5});h.Round=Math.min(2147483647,h.Round+1);h.Open=[];}this.s.save();return reward;}
  bingoDraw(){const b=this.a.Bingo;if(!b.Tokens)return null;b.Tokens--;const remaining=Array.from({length:25},(_,i)=>i).filter(i=>!b.Drawn.includes(i)),rng=new SeededRandom(b.Round*901+this.a.Stats.wins*37+b.Drawn.length*17+11),cell=remaining[rng.next(remaining.length)];b.Drawn.push(cell);const lines=[...Array.from({length:5},(_,r)=>Array.from({length:5},(_,c)=>r*5+c)),...Array.from({length:5},(_,c)=>Array.from({length:5},(_,r)=>r*5+c)),[0,6,12,18,24],[4,8,12,16,20]];let won=0;for(let i=0;i<12;i++)if(!b.Lines.includes(i)&&lines[i].every(n=>b.Drawn.includes(n))){b.Lines.push(i);won++;this.reward({hearts:1,coins:50+Math.min(200,b.Round*10),pack:i>=10?3:1});}if(b.Drawn.length===25){this.reward({coins:200,pack:4});b.Round=Math.min(2147483647,b.Round+1);b.Drawn=[];b.Lines=[];}this.s.save();return {cell,won};}
  chapterStars(chapter){return Array.from({length:100},(_,i)=>this.s.p.Stars[(chapter-1)*100+i+1]??0).reduce((a,b)=>a+b,0);}
- claimChest(chapter){if(!integer(chapter,24000)||chapter<1||this.a.Chest.includes(chapter))return false;const stars=this.chapterStars(chapter);if(stars<10)return false;this.a.Chest.push(chapter);this.reward(chestReward(stars));this.s.save();return true;}
- claimPostcard(chapter){if(!integer(chapter,24000)||chapter<1||this.chapterStars(chapter)<6||this.a.Postcards.includes(chapter))return false;this.a.Postcards.push(chapter);this.reward({coins:30});this.s.save();return true;}
+ claimChest(chapter){if(!integer(chapter,CHAPTER_SET_COUNT)||chapter<1||this.a.Chest.includes(chapter))return false;const stars=this.chapterStars(chapter);if(stars<10)return false;this.a.Chest.push(chapter);this.reward(chestReward(stars));this.s.save();return true;}
+ claimPostcard(chapter){if(!integer(chapter,CHAPTER_SET_COUNT)||chapter<1||this.chapterStars(chapter)<6||this.a.Postcards.includes(chapter))return false;this.a.Postcards.push(chapter);this.reward({coins:30});this.s.save();return true;}
  timedSpin(){if(this.s.now()<this.a.WheelAt)return null;this.a.WheelAt=this.s.now()+86400000;const index=crypto.getRandomValues(new Uint32Array(1))[0]%8,prizes=[{coins:25},{item:'wild'},{coins:50},{item:'extra'},{coins:100},{item:'remove',hearts:1},{coins:75},{coins:40}];this.reward(prizes[index]);this.s.save();return {index,...prizes[index],label:prizes[index].coins?prizes[index].coins+' coins':'1 '+prizes[index].item+(prizes[index].hearts?' + 1 heart':'')};}
 }

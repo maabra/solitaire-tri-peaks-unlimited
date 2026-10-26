@@ -1,5 +1,6 @@
+import {campaign} from './generated-content.mjs';
 import {SeededRandom} from './core.mjs';
-export const SIDE_UNLOCKS=Object.freeze({trail:2500,memory:12000});
+export const SIDE_UNLOCKS=Object.freeze({trail:campaign.trailUnlock,memory:campaign.memoryUnlock});
 export function validateSideActivities(a){if(!a||a.Schema!==1)throw Error('Invalid side adventures');const integer=n=>Number.isSafeInteger(n)&&n>=0&&n<=1000000;for(const n of [a.Rolls,a.Seeds,a.Wins,a.Trail.Position,a.Trail.Lap,a.Memory.Round,a.Memory.Turns])if(!integer(n))throw Error('Invalid side adventure counters');if(a.Trail.Position>=24||!Number.isFinite(a.Memory.MissAt)||a.Memory.MissAt<0)throw Error('Invalid side adventure state');for(const list of [a.Memory.Revealed,a.Memory.Matched])if(!Array.isArray(list)||new Set(list).size!==list.length||list.some(i=>!Number.isInteger(i)||i<0||i>11))throw Error('Invalid memory tiles');if(a.Memory.Revealed.length>2||a.Memory.Matched.length%2||a.Memory.Revealed.some(i=>a.Memory.Matched.includes(i)))throw Error('Invalid memory selection');return a;}
 export class SideActivities{
  constructor(session){this.s=session;this.a=session.p.SideAdventures??={Schema:1,Rolls:0,Seeds:0,Wins:0,Trail:{Position:0,Lap:0},Memory:{Round:0,Revealed:[],Matched:[],Turns:0,MissAt:0}};validateSideActivities(this.a);}

@@ -41,8 +41,8 @@ public sealed class GameSession
         Economy = economy;
         Powerups = powerups;
         Campaign = campaign ?? new MeadowCampaign();
-        Profile = store.Load(out var warning);
-        // A profile that finished the old campaign can continue into new chapters.
+        Profile = CampaignMigration.Apply(store.Load(out var warning));
+        // Advance through already completed stops without exceeding the illustrated campaign.
         while (Profile.Unlocked < Campaign.LevelCount && Profile.Stars.ContainsKey(Profile.Unlocked)) Profile.Unlocked++;
         LoadWarning = warning;
         Wallet = new(Profile);

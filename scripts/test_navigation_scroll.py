@@ -6,7 +6,7 @@ async def action(page,name):
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1440,'height':900},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'))
-  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=50001;s.p.HighestPlayedLevel=50001;s.p.ChapterGifts100=[1];s.p.Customization.Unlocked=[0,1];s.p.GuideSeen=features.map(f=>f.id);s.save()}");await page.reload()
+  await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.ChapterGifts100=[1];s.p.Customization.Unlocked=[0,1];s.p.GuideSeen=features.map(f=>f.id);s.save()}");await page.reload()
   for parent,child in [('settings','ev:customize'),('journal','events')]:
    if await page.locator('#dialog').evaluate('e=>e.open'):await page.locator('.shell-close').click()
    await action(page,parent);content=page.locator('.dialog-content');await content.evaluate('e=>e.scrollTop=e.scrollHeight')

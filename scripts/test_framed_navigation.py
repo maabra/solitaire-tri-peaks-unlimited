@@ -20,7 +20,7 @@ async def main():
    assert await page.locator('.map-camera').evaluate("e=>getComputedStyle(e).paddingBottom==='0px'"),'Blank space below scenery'
    assert await page.locator('.map-scenery').evaluate('e=>e.getBoundingClientRect().bottom>=document.body.getBoundingClientRect().bottom-2')
    await page.screenshot(path=str(out/f'fresh-{width}x{height}.png'))
-   await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=12000;s.p.GuideSeen=features.map(f=>f.id);s.save()}""")
+   await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=10000;s.p.GuideSeen=features.map(f=>f.id);s.save()}""")
    await page.reload()
    await page.locator('header [data-action=home]').click()
    await page.locator('#app [data-action=map]').click()
