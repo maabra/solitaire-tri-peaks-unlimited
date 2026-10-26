@@ -20,9 +20,9 @@ Both CI workflows verify it with `--check .`; JavaScript retains browser renderi
 and interaction. Only the generated projection is excluded from GitHub language
 statistics through `.gitattributes`.
 
-[Play online](https://maabra.github.io/solitare-tri-peaks-unlimited/) ·
-[Download Windows EXE](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe) ·
-[Releases](https://github.com/maabra/solitare-tri-peaks-unlimited/releases)
+[Play online](https://maabra.github.io/solitaire-tri-peaks-unlimited/) ·
+[Download Windows EXE](https://github.com/maabra/solitaire-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe) ·
+[Releases](https://github.com/maabra/solitaire-tri-peaks-unlimited/releases)
 
 **Release status:** those links point to the published game. The screenshots and
 features below show the newer development source, including lives, music, revised

@@ -9,7 +9,7 @@ import subprocess
 import urllib.error
 import urllib.request
 
-REPOSITORY = 'maabra/solitare-tri-peaks-unlimited'
+REPOSITORY = 'maabra/solitaire-tri-peaks-unlimited'
 env = {**os.environ, 'GIT_TERMINAL_PROMPT': '0', 'GCM_INTERACTIVE': 'never'}
 result = subprocess.run(['git','credential','fill'], input='protocol=https\nhost=github.com\n\n', text=True, capture_output=True, env=env)
 credential = dict(line.split('=',1) for line in result.stdout.splitlines() if '=' in line)

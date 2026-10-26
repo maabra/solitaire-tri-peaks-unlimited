@@ -7,11 +7,19 @@ async def main():
  out=Path('artifacts/framed-navigation');out.mkdir(parents=True,exist_ok=True)
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)
-  for width,height in [(1280,800),(390,844),(320,640)]:
+  for width,height in [(1075,1757),(1280,800),(390,844),(320,640)]:
    page=await browser.new_page(viewport={'width':width,'height':height},reduced_motion='reduce')
    errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
    await page.goto('http://127.0.0.1:8765/')
+   await page.locator('.story-node.current').wait_for()
+   # New players have locked features and open the bottom of the chapter.
+   # Test that state before unlocking everything for navigation checks.
+   assert await page.locator('.feature-lock .game-icon').evaluate_all('es=>es.length>0&&es.every(e=>{const r=e.getBoundingClientRect();return r.width<=18&&r.height<=18})')
+   assert await page.locator('.map-viewport').evaluate("e=>['::before','::after'].every(p=>getComputedStyle(e,p).position==='fixed')"),'Map borders scroll away'
+   assert await page.locator('.map-camera').evaluate("e=>getComputedStyle(e).paddingBottom==='0px'"),'Blank space below scenery'
+   assert await page.locator('.map-scenery').evaluate('e=>e.getBoundingClientRect().bottom>=innerHeight-2')
+   await page.screenshot(path=str(out/f'fresh-{width}x{height}.png'))
    await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const s=new Session();s.p.Unlocked=12000;s.p.GuideSeen=features.map(f=>f.id);s.save()}""")
    await page.reload()
    await page.locator('header [data-action=home]').click()
