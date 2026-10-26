@@ -55,3 +55,36 @@ and shadow. No stand, legs, scene, perspective tilt, writing, numbers, buttons,
 cards, character or watermark. Intended for a roughly 520×500 popup inside 720p.
 The generated alpha is preserved. Exterior game bouquets extend the existing
 native vector blossom system in `web/assets/frame-corner-bouquet.svg`.
+
+
+## Painted interface refresh, 2.4.12
+
+Generated with the built-in imagegen tool, preserving its original transparent
+alpha. Project assets:
+
+- `web/assets/painted-ui-controls.png`: 18 painted controls and difficulty icons.
+- `web/assets/painted-ui-adventures.png`: 18 painted activity and status icons,
+  including Treasure Trail dice/chest and Matching Garden flower tiles.
+- `web/assets/painted-garden-jewels.png`: six painted, shape-distinct match pieces.
+
+Prompt set: production sprite sheets on a truly transparent background, chunky
+premium storybook village art with dimensional hand-painted polished surfaces,
+cream highlights, honey gold details, soft plum shadows, turquoise/coral/lilac
+palette. Full objects, generous padding, no labels, text, grids or surrounding
+buttons. Controls and adventures: 1536x1024, six columns by three rows. Controls,
+row-major: card fan, closed gift, open gift, purple mountains, crown, speaker;
+muted speaker, motion comet, settings cog, clock, check, close; undo, restart,
+left, right, fullscreen, export. Adventures, row-major: import, unlocked padlock,
+star, musical notes, swapping arrows, heart; ascending streak bars, open rule
+book, bookmark, code card, dice with blossom-decorated treasure chest, sprout;
+paired purple/turquoise flower tiles, palette and brush, folded trail map,
+completed card stack, star medal, target. Jewel sheet: three columns by two rows,
+pink heart, blue diamond, yellow star; green square, purple round, cyan hexagon.
+Each jewel has a polished crystal bevel and clearly distinct silhouette at 48px.
+
+`web/painted-icons.mjs` measures each UI object's individual region rather than
+assuming evenly spaced image content. Isolated clipped SVG image viewports keep
+neighboring assets from appearing on icon edges, while square viewboxes preserve
+proportions. These replace the former code-drawn semantic symbols everywhere.
+Existing painted event/helper/chest/Pip art remains in use. Rarity, map and
+preview stars now share the painted star; unearned stars are desaturated.
