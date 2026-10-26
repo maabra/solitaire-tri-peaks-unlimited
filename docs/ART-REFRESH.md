@@ -88,3 +88,21 @@ neighboring assets from appearing on icon edges, while square viewboxes preserve
 proportions. These replace the former code-drawn semantic symbols everywhere.
 Existing painted event/helper/chest/Pip art remains in use. Rarity, map and
 preview stars now share the painted star; unearned stars are desaturated.
+
+
+## Shared menu boards, 2.4.14
+
+Small completion, level-start, short confirmation and earned-prize menus reuse
+`web/assets/level-notice-board.png`. Larger menus and contextual explanations
+reuse the new `web/assets/menu-parchment-frame.png`, generated with the built-in
+imagegen tool. `web/menu-boards.css` renders it as a nine-slice image border,
+keeping corner blossoms and the wood rails intact at different dialog sizes.
+
+Generation prompt: production UI frame, landscape 1536x1024, front-facing cozy
+storybook village notice board; honey-brown polished carved wood, rounded
+corners, narrow cream/gold inner bevel, pink blossoms and sage leaves confined
+to four 110x110 outer corners. Rails within outer 90px. All central space blank
+pale warm ivory parchment with subtle low-contrast paper grain. Straight rails,
+orthographic view, frame touching image perimeter. Warm dimensional hand-painted
+light from upper left and plum-brown shadows. No raised crest, stand, legs,
+writing, text, numbers, icons, characters, buttons, screws, scenery or watermark.

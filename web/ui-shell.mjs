@@ -16,6 +16,9 @@ export function installHelp(){
 }
 export function frameModal(modal){
  modal.closest('dialog').querySelector(':scope > .close')?.remove();
+ // Compact notices share the level board; roomy menus share a nine-slice board.
+ const compact=modal.querySelector('.level-preview,.victory,.locked-feature-preview')||modal.querySelector('.win-gifts')&&modal.querySelectorAll('.earned-gift').length<=4||!modal.querySelector('.event-panel,.shop,.wheel-panel,.lives-panel,.guide-grid,.favorite-list,[data-setting]')&&modal.textContent.length<500&&modal.querySelectorAll('input,button').length<=4;
+ modal.closest('dialog').dataset.frame=compact?'notice':'menu';
  const event=modal.querySelector('.event-panel'),classes=event?.className??'';
  const topic=modal.querySelector('[data-help-topic]')?.dataset.helpTopic??(event?classes.split(' ').find(c=>c.startsWith('event-')&&c!=='event-panel')?.slice(6)??'hub':modal.querySelector('.shop')?'shop':modal.querySelector('.wheel-panel')?'wheel':modal.querySelector('[data-setting]')?'settings':modal.querySelector('.favorite-list')?'journal':modal.querySelector('.guide-grid')?'guide':modal.querySelector('.level-preview')?'cards':'default');
  const heading=modal.querySelector('h2');if(heading){heading.classList.remove('panel-ribbon');const wrap=document.createElement('div');wrap.className='panel-heading';heading.before(wrap);wrap.innerHTML=`<span class="heading-art">${gameIcon(modal.querySelector('.lives-panel')?'heart':modal.querySelector('.victory')?'ratingStar':helpData(topic)[3],48)}</span>`;wrap.append(heading);if(!modal.querySelector('.locked-feature-preview')&&['hunt','bingo','regatta','balloon','tournament','tickets','pack','tokenShop'].includes(topic))wrap.insertAdjacentHTML('beforeend',infoButton(topic));}
