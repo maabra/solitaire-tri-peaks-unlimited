@@ -3,6 +3,27 @@ export function frameSize(){return {width:1280,height:720};}
 export const gameWidth=()=>document.body.clientWidth;
 export const gameHeight=()=>document.body.clientHeight;
 if(typeof document!=='undefined'){
+ // Fixed HUD children do not reliably inherit their map's native wheel target.
+ // Route wheel input to the nearest scroll area and keep it there at its ends.
+ document.addEventListener('wheel',event=>{
+  if(event.ctrlKey||event.defaultPrevented)return;
+  const target=event.target instanceof Element?event.target:null;
+  if(!target)return;
+  const menu=target.closest('.map-dock');
+  let area=menu?.querySelector('.map-dock-scroll');
+  if(!area)for(let node=target;node&&node!==document.body;node=node.parentElement){
+   const style=getComputedStyle(node);
+   if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+1||/auto|scroll/.test(style.overflowX)&&node.scrollWidth>node.clientWidth+1){area=node;break;}
+  }
+  area??=target.closest('.map-viewport');
+  if(!area)return;
+  const unit=event.deltaMode===1?32:event.deltaMode===2?area.clientHeight:1;
+  let x=event.deltaX*unit,y=event.deltaY*unit;
+  if(event.shiftKey&&!x){x=y;y=0;}
+  if(area.scrollHeight<=area.clientHeight+1&&area.scrollWidth>area.clientWidth+1){x+=y;y=0;}
+  area.scrollLeft+=x;area.scrollTop+=y;
+  event.preventDefault();
+ },{passive:false});
  const offsets=()=>{const r=document.body.getBoundingClientRect(),style=document.documentElement.style;style.setProperty('--game-offset-x',r.left+'px');style.setProperty('--game-offset-y',r.top+'px');};
  const fit=()=>{
   const size=frameSize(innerWidth,innerHeight),style=document.documentElement.style;
