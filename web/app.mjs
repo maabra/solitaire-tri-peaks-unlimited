@@ -1,3 +1,4 @@
+import {installAmbientAttention} from './ambient-attention.mjs';
 import {installMapDrag} from './map-drag.mjs';
 import {gameWidth,gameHeight} from './game-frame.mjs';
 import {wheelView} from './wheel-view.mjs';
@@ -127,7 +128,7 @@ document.addEventListener('visibilitychange',()=>{last=performance.now();if(docu
 function finishMotion(){for(const animation of document.getAnimations())try{if(Number.isFinite(animation.effect?.getComputedTiming().endTime))animation.finish();else animation.cancel()}catch{}}
 matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e=>{if(e.matches)finishMotion()});
 const iconObserver=new MutationObserver(()=>decorateIcons());iconObserver.observe(document.body,{childList:true,subtree:true});
-render();decorateIcons();if(session.store.warning)toast(session.store.warning);
+render();decorateIcons();installAmbientAttention();if(session.store.warning)toast(session.store.warning);
 
 watchResourceViews([app,modal,document.querySelector('#toast')]);
 

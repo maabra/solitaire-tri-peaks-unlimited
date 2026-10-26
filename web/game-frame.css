@@ -175,3 +175,10 @@ body>header nav .heart-counter{padding:6px 12px!important;gap:6px}
 body>header nav .heart-counter>.game-icon{position:static!important;inset:auto!important;width:28px!important;height:28px!important;flex:none}
 body>header nav .wallet{display:inline-flex;align-items:center;gap:8px;min-width:144px;padding:6px 14px!important}
 body>header nav .wallet>.game-icon{position:static!important;inset:auto!important;width:32px!important;height:32px!important;flex:none}
+
+/* Pip has a side berth outside the picture, inside the full game cabinet. */
+#app .map-picture-frame{right:156px}
+#app .map-viewport>.map-companion{right:28px}
+/* Ambient nudges are scheduled independently, rather than synchronized loops. */
+.new-feature-badge,.map-icon:has(.new-feature-badge)>.game-icon{animation:none!important}
+.ambient-glint{position:absolute;z-index:7;pointer-events:none;width:15px;height:15px;filter:drop-shadow(0 0 4px #fff1ab);transform-origin:center}
