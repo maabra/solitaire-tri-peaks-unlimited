@@ -9,13 +9,13 @@ static class TemporaryTests
         Deal Board(params Card[] cards) => new() { TemporaryRules = true, Cards = cards, Layout = cards.Select((_,i) => new Slot(i*2,0)).ToArray(), Waste = new(5,0), Stock = new[] { new Card(8,1), new Card(9,1) } };
         var plain = Board(new(6,0),new(7,0),new(8,0));
         var drawTimer=new Hand(plain,rules);
-        check(drawTimer.Draw() && !drawTimer.Draw(),"Every stock draw begins a two second cooldown");
-        check(drawTimer.Undo() && !drawTimer.Draw(),"Undo cannot bypass the stock draw cooldown");
+        check(drawTimer.Draw() && drawTimer.Effects.DrawCooldown == 0,"Stock draws remain immediate");
+        check(drawTimer.Undo() && drawTimer.Draw(),"Drawing after undo stays immediate");
         var timerSave=JsonSerializer.Deserialize<SavedRun>(JsonSerializer.Serialize(drawTimer.Capture(1,1,false)))!;
         var timerFactory=new SolitaireFactory(new StaticDeals(plain),rules,new StaticDeals(plain));
         var timerRestore=(Hand)timerFactory.Restore(timerSave)!;
-        check(!timerRestore.Draw(),"Stock cooldown persists through save restore");
-        timerRestore.AdvanceTime(2);check(timerRestore.Draw(),"Stock is ready after two seconds of active play");
+        check(timerRestore.Draw(),"Drawing stays immediate after save restore");
+        timerRestore.AdvanceTime(2);check(!timerRestore.Draw(),"Empty stock cannot be drawn after advancing time");
         var h = new Hand(plain,rules);
         check(h.RequestHint(), "Hint starts briefly"); h.AdvanceTime(4);
         check(h.Effects.HintSeconds == 0 && !h.RequestHint(), "Hint expires and cannot bypass cooldown");

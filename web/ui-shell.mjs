@@ -1,3 +1,4 @@
+import {activityGroup} from './activity-groups.mjs';
 import {decorateMenuScene} from './menu-scenes.mjs';
 import {visualizeMenu} from './visual-cues.mjs';
 import {gameIcon,kindIcon} from './game-art.mjs';
@@ -36,6 +37,8 @@ export function frameModal(modal){
  const tabs=event?.querySelector(':scope > .activity-tabs'),title=event?.querySelector(':scope > .panel-heading');if(tabs&&title)title.after(tabs);
  const content=document.createElement('div');content.className='dialog-content';while(modal.firstChild)content.append(modal.firstChild);modal.append(content);
  const nav=document.createElement('nav');nav.className='menu-navigation';nav.setAttribute('aria-label','Game places');nav.innerHTML=modal.querySelector('[data-action="backMap"],.victory,.win-gifts')?'':'<button data-action="backMap" class="menu-map-back">Back to map</button>';nav.insertAdjacentHTML('beforeend','<button class="close shell-close" data-action="close" aria-label="Close menu">×</button>');modal.prepend(nav);
+ const group=activityGroup(topic);if(group){const parent=document.createElement('button');parent.dataset.action='events';parent.className='menu-parent';parent.textContent='Adventures';nav.prepend(parent);const location=document.createElement('span');location.className='menu-location';location.textContent='Adventures / '+group[0];nav.append(location);}
+
  // Explanations belong beside the item they describe, without nesting buttons.
 
  modal.querySelectorAll('.event-hub .event-tile,.album-category,.reward-track>article,.skin-card').forEach((el,i)=>{el.style.setProperty('--item-delay',Math.min(i,10)*25+'ms');el.classList.add('menu-arrival');});

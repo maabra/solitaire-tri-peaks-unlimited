@@ -9,6 +9,9 @@ solitaire thoughts on the home screen; tap him for another.
 
 ## Play
 
+Development builds require the **.NET 10 LTS SDK**. The Windows app, core, tests
+and CI target .NET 10; portable releases continue to bundle their runtime.
+
 [Play online](https://maabra.github.io/solitare-tri-peaks-unlimited/) ·
 [Download Windows EXE](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe) ·
 [Releases](https://github.com/maabra/solitare-tri-peaks-unlimited/releases)

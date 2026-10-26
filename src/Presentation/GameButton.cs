@@ -1,26 +1,45 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
 namespace MeadowPeaks;
 
 internal sealed class GameButton : Control
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public double RevealAt { get; set; } = -1;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool MapNode { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool CurrentNode { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string MenuIcon { get; set; } = "";
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Subtitle { get; set; } = "";
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color Fill { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Color Fore { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Card? CardValue { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float CardAngle { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SizeF CardSize { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CardBadge { get; set; } = "";
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool Face { get; set; } = true;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool Hint { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int Gem { get; set; } = -1;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public PointF VisualOffset { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float MatchGlow { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool HideGem { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Bitmap? Backdrop { get; set; }
     double entryTime = -10, now;
     float entry = 1, hoverAmount;

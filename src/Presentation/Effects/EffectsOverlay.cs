@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -11,7 +12,9 @@ internal sealed class EffectsOverlay : Form
     readonly EffectScene scene;
     readonly IGameArtwork artwork;
     Bitmap? surface;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float ViewScale { get; set; } = 1;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public PointF ViewOffset { get; set; }
     public EffectsOverlay(EffectScene scene, IGameArtwork artwork)
     {

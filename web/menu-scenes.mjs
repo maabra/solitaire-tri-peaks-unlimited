@@ -1,8 +1,13 @@
 // Presentation only: menu scenes never own progress, rewards or navigation.
-const scenes={shop:'spring-village',settings:'moonlit-garden',journal:'autumn-orchard',guide:'enchanted-forest',hub:'spring-village',overview:'spring-village',album:'cherry-garden',customize:'lavender-valley',postcard:'tropical-cove',travel:'tropical-cove',missions:'autumn-orchard',regatta:'tropical-cove',voyage:'tropical-cove',tournament:'festival-garden',chest:'desert-oasis',milestones:'festival-garden',hunt:'enchanted-forest',bingo:'lavender-valley',balloon:'spring-village',tickets:'autumn-orchard',trail:'enchanted-forest',memory:'cherry-garden'};
+const scenes={shop:'spring-village',settings:'moonlit-garden',journal:'autumn-orchard',guide:'enchanted-forest',hub:'spring-village',overview:'spring-village',album:'cherry-garden',customize:'lavender-valley',postcard:'tropical-cove',travel:'tropical-cove',missions:'autumn-orchard',regatta:'tropical-cove',voyage:'tropical-cove',tournament:'festival-garden',chest:'desert-oasis',milestones:'festival-garden',hunt:'enchanted-forest',bingo:'lavender-valley',balloon:'spring-village',tickets:'autumn-orchard',trail:'treasure-trail-scene',memory:'matching-garden-scene'};
 export function decorateMenuScene(root,topic){
  root.dataset.menuScene=topic;
  root.style.setProperty('--menu-scene',`url("assets/${scenes[topic]??'spring-village'}.png")`);
+ if(['trail','memory'].includes(topic)){
+  const picture=document.createElement('img');picture.className='activity-scene';picture.alt='';
+  picture.src=`assets/${topic==='trail'?'treasure-trail':'matching-garden'}-scene.png`;
+  root.querySelector('.panel-heading')?.after(picture);
+ }
  const shop=root.querySelector('.shop');
  if(shop)for(const article of shop.children){
   const description=article.querySelector('p'),title=article.querySelector('h3');

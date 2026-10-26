@@ -1,0 +1,40 @@
+/* A single inset frame keeps decorative edges inside their own surface. */
+#app .map-viewport{isolation:isolate;border:3px solid #c49a64;border-radius:20px;box-shadow:inset 0 0 0 2px #fff0bf,0 5px 18px #234b4533;overflow:hidden}
+#app .map-viewport::after{content:'';position:absolute;inset:3px;z-index:25;border:1px solid #fff0bcaa;border-radius:15px;pointer-events:none}
+#app .map-viewport>.map-dock{left:8px;width:88px;padding:10px 5px 14px;gap:12px;border:2px solid #d1af78;border-radius:20px;background:linear-gradient(#fff7dfed,#dce9cde8);box-shadow:inset 0 0 0 2px #fff5d5,0 4px 12px #234b4533;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#a6ad84 transparent}
+#app .map-viewport>.map-dock .map-icon{width:70px;margin-inline:auto;border-radius:15px!important;padding:7px 4px!important;height:auto;min-height:75px}
+#app .map-viewport>.map-dock .map-icon>.game-icon{margin:0 auto 4px;width:37px;height:37px}
+#app .map-dock .map-icon small{font-size:10px!important;line-height:1.25!important;white-space:normal}
+/* Continuous carved rails frame the menu strip and opposite map edge. */
+#app .map-viewport{border:0;border-radius:0;box-shadow:none}
+#app .map-viewport::before{content:'';position:absolute;inset:0 auto 0 0;width:116px;z-index:4;pointer-events:none;background:url('assets/map-edge.svg') right center/30px 100% no-repeat,linear-gradient(90deg,#504738f5,#655b46e8 75%,#594a3422);box-shadow:3px 0 12px #24382b44}
+#app .map-viewport::after{content:'';position:absolute;inset:0 0 0 auto;width:30px;height:100%;z-index:25;border:0;border-radius:0;background:url('assets/map-edge.svg') center/100% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
+#app .map-viewport>.map-dock{border:0;border-radius:0;background:none;box-shadow:none;padding-top:8px;padding-bottom:12px}
+#app .map-viewport>.map-dock .map-icon{border-radius:5px 16px 16px 5px!important;background:linear-gradient(120deg,#ff9d8c,#e75b66 65%,#c23d60)!important;border:3px solid #ffcc9d!important;box-shadow:inset 0 2px #fff7,0 4px #873f55!important;gap:4px;overflow:visible}
+#app .map-dock .map-icon small{position:static!important;display:block;max-width:100%;margin:0;color:#fff8df!important;text-shadow:0 1px #71394d!important;font-weight:900}
+#dialog{border:3px solid #be9868;border-radius:24px;box-shadow:inset 0 0 0 2px #fff0bc,0 20px 60px #153c4c66}
+#modal{border-radius:20px;isolation:isolate;overflow:hidden}
+#modal .menu-navigation{flex-wrap:wrap;padding-right:54px;position:relative}
+#modal .menu-navigation .shell-close{right:12px;top:12px}
+#modal .panel-heading h2{line-height:1.4!important}
+.menu-location{flex:1 0 100%;font-size:11px;color:#fff2ca;letter-spacing:.04em;line-height:1.4}
+#modal .activity-tabs{padding:6px 4px 14px!important;gap:8px}
+#modal .activity-tabs .current-tab{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:2px solid #d6ba83;border-radius:15px;color:#5c593d;background:#fff3d3;font-size:12px;font-weight:800;white-space:nowrap}
+#modal .activity-tabs button:disabled{opacity:.65}
+.activity-scene{display:block;width:100%;height:auto;object-fit:contain;object-position:center;border:3px solid #d1af78;border-radius:19px;margin:0 0 20px;box-shadow:0 3px #e6d5aa}
+#app .gems{grid-template-columns:repeat(8,minmax(0,1fr));width:100%;max-width:470px}
+#app .gems .gem{min-width:0;min-height:0;width:100%;padding:0}
+#modal .event-panel img,.skin-card img,.travel-list img{object-position:center}
+#modal .event-panel .postcard-art{background-repeat:no-repeat;background-position:center;overflow:hidden;border-radius:18px}
+@media(max-width:700px){
+ #app .map-viewport::before{width:87px;background-size:18px 100%,auto}
+ #app .map-viewport::after{width:20px}
+ #app .map-viewport>.map-dock{left:5px;width:69px;padding:9px 3px 12px;gap:10px;border-radius:16px}
+ #app .map-viewport>.map-dock .map-icon{width:57px;min-height:67px}
+ #app .map-viewport>.map-dock .map-icon>.game-icon{width:31px;height:31px}
+ #app .map-dock .map-icon small{font-size:9px!important}
+ .activity-scene{border-radius:15px}
+ #modal .menu-navigation{gap:6px}
+}
+
+.game-icon.atlas-icon{background:none!important;overflow:hidden;object-fit:contain;vertical-align:middle}
