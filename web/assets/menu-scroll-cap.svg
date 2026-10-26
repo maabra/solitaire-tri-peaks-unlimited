@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 48" fill="none">
+ <defs><linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff0b5"/><stop offset=".45" stop-color="#e5bd73"/><stop offset="1" stop-color="#a97443"/></linearGradient><linearGradient id="wood" x2="0" y2="1"><stop stop-color="#806449"/><stop offset="1" stop-color="#493e31"/></linearGradient></defs>
+ <path d="M5 35Q5 16 20 22L34 30Q47 36 57 24L72 12L87 24Q97 36 110 30L124 22Q139 16 139 35L133 43H11Z" fill="url(#wood)" stroke="#62442f" stroke-width="4"/>
+ <path d="M7 35C0 16 26 10 26 24C26 34 12 33 16 25M137 35C144 16 118 10 118 24C118 34 132 33 128 25M20 35C40 39 44 14 58 18M124 35C104 39 100 14 86 18" stroke="url(#gold)" stroke-width="4" stroke-linecap="round"/>
+ <path d="M9 40Q35 34 52 36Q72 42 92 36Q109 34 135 40" stroke="#ffedb0" stroke-width="3" stroke-linecap="round"/>
+ <path d="M53 26Q36 25 39 13Q53 13 57 27M91 26Q108 25 105 13Q91 13 87 27" fill="#7aab82" stroke="#edce8b" stroke-width="2"/>
+ <path d="M72 9C62 0 57 10 64 17C52 18 58 30 67 25C67 37 78 37 78 25C88 30 94 18 81 17C88 8 80 0 72 9Z" fill="#e98d92" stroke="#ffdf9b" stroke-width="2"/>
+ <circle cx="72" cy="19" r="5" fill="#ffdf79" stroke="#a97546"/>
+</svg>

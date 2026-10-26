@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+ <defs><radialGradient id="g"><stop stop-color="#fff3bc"/><stop offset=".7" stop-color="#dfb574"/><stop offset="1" stop-color="#97643d"/></radialGradient></defs>
+ <path d="M32 7C20 1 14 10 20 20C6 14 1 24 9 32C1 40 6 50 20 44C14 56 24 62 32 55C40 62 50 56 44 44C58 50 63 40 55 32C63 24 58 14 44 20C50 8 40 1 32 7Z" fill="url(#g)" stroke="#62452f" stroke-width="2"/>
+ <path d="M32 16C23 12 18 21 25 27C13 25 13 39 25 37C18 45 27 52 32 44C39 52 47 44 39 37C51 39 51 25 39 27C46 20 39 12 32 16Z" fill="#df9393" stroke="#fff1bc" stroke-width="2"/>
+ <circle cx="32" cy="32" r="7" fill="#ffe09b" stroke="#a67a4e" stroke-width="2"/>
+</svg>

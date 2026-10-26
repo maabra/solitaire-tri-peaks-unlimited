@@ -17,9 +17,10 @@ async def main():
    assert await page.locator('.map-dock .map-icon').first.evaluate('e=>e.getBoundingClientRect().width===88')
    assert await page.locator('.map-dock-scroll').evaluate('e=>e.scrollHeight>e.clientHeight')
    assert await page.locator('.map-dock').evaluate("e=>getComputedStyle(e).borderTopWidth==='0px'"),'Floating box returned around icons'
-   assert await page.locator('.map-viewport').evaluate("e=>{const s=getComputedStyle(e,'::before');return s.display==='block'&&s.position==='fixed'&&s.top==='0px'&&s.bottom==='0px'&&s.backgroundImage.includes('map-scroll-edge.svg')}")
+   assert await page.locator('.map-viewport').evaluate("e=>{const s=getComputedStyle(e,'::before');return s.display==='block'&&s.position==='fixed'&&s.top==='0px'&&s.bottom==='0px'}")
    if width<1280:assert await page.evaluate('document.scrollingElement.scrollWidth>document.documentElement.clientWidth')
    if height<720:assert await page.evaluate('document.scrollingElement.scrollHeight>document.documentElement.clientHeight')
+   assert await page.locator('.map-dock').evaluate("e=>['::before','::after'].every(p=>getComputedStyle(e,p).backgroundImage.includes('menu-scroll-cap.svg'))")
    await page.screenshot(path=str(out/f'map-{width}.png'))
    await page.locator('.story-node.current').click()
    assert await page.locator('#modal .bird-guide').count()==0

@@ -40,8 +40,8 @@ The game uses a fixed **1280?720** canvas with full-size controls. Large windows
 center it over blurred scenery; small windows provide horizontal and vertical
 scrollbars instead of shrinking the game or switching to a compact layout.
 The full-height left menu strip has
-a continuous curling border at the map boundary; its icon list scrolls inside
-the strip. A matching ornamental edge runs down the far right of the map.
+floral scrollwork caps above and below its scrolling icon list. A carved wood
+and gold frame with blossom corners surrounds the whole game.
 
 Remove an uncovered card one rank above or below the waste. Ace connects to King
 and Two. Build streaks for extra stock, watch special-card badges, and use earned
