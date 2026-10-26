@@ -24,7 +24,7 @@ async def main():
    await page.reload()
    await page.locator('header [data-action=home]').click()
    await page.locator('#app [data-action=map]').click()
-   assert await page.locator('.map-viewport').evaluate("e=>getComputedStyle(e,'::before').backgroundImage.includes('map-edge.svg')")
+   assert await page.locator('.map-viewport').evaluate("e=>getComputedStyle(e,'::before').backgroundImage.includes('map-scroll-edge.svg')")
    assert await page.locator('.map-dock .map-icon').evaluate_all("es=>es.every(e=>{const a=e.getBoundingClientRect(),b=e.closest('.map-dock').getBoundingClientRect();return a.left>=b.left&&a.right<=b.right})")
    await page.screenshot(path=str(out/f'map-{width}.png'))
    await page.locator('.map-dock [data-action=events]').click()

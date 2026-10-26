@@ -29,7 +29,7 @@
 #app .gems .gem{min-width:0;min-height:0;width:100%;padding:0}
 #modal .event-panel img,.skin-card img,.travel-list img{object-position:center}
 #modal .event-panel .postcard-art{background-repeat:no-repeat;background-position:center;overflow:hidden;border-radius:18px}
-@media(max-width:700px){
+@container game (max-width:700px){
  #app .map-viewport::before{width:87px;background-size:18px 100%,auto}
  #app .map-viewport::after{width:20px}
  #app .map-viewport>.map-dock{left:5px;width:69px;padding:9px 3px 12px;gap:10px;border-radius:16px}

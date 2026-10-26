@@ -24,4 +24,4 @@
 .resource-goal .resource-badge{margin:0}.resource-arrow{font-weight:900;color:#a47657}
 .garden-resources{font-size:16px}.lives-panel .resource-goal{margin-bottom:8px}
 #toast .resource-badge{color:inherit}#toast .resource-badge>.game-icon{width:22px;height:22px}
-@media(max-width:500px){.garden-resources{font-size:14px;gap:6px}.resource-strip>.resource-badge,.resource-goal{padding:5px 7px}.resource-badge>.game-icon{width:22px;height:22px;min-width:22px}}
+@container game (max-width:500px){.garden-resources{font-size:14px;gap:6px}.resource-strip>.resource-badge,.resource-goal{padding:5px 7px}.resource-badge>.game-icon{width:22px;height:22px;min-width:22px}}

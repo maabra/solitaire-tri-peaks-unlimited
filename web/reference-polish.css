@@ -11,9 +11,9 @@ body.scenic-play .landscape{filter:none!important;transform:none!important;backg
 .scenic-play .card{filter:drop-shadow(0 3px 2px #173f4055)}
 .surface-choices{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:14px 0}.surface-choices button{display:flex;align-items:center;gap:7px;min-height:45px}
 .surface-choices button[aria-pressed=true]{background:linear-gradient(#b9ed7d,#6bb644);border-color:#d7f5a2;color:#24522d}
-@media(max-width:700px){.playing .helper-slot{flex-basis:59px}.table-status{font-size:10px;gap:4px;height:30px}.table-status .game-icon{width:19px;height:19px}}
-@media(max-width:700px){.playing .subhead [data-action=favorite]{font-size:0!important}}
-@media(min-width:700px) and (max-height:720px){.playing .helper-slot{flex-basis:46px}.table-status{font-size:11px;height:27px}}
+@container game (max-width:700px){.playing .helper-slot{flex-basis:59px}.table-status{font-size:10px;gap:4px;height:30px}.table-status .game-icon{width:19px;height:19px}}
+@container game (max-width:700px){.playing .subhead [data-action=favorite]{font-size:0!important}}
+@container game (min-width:700px) and (max-height:720px){.playing .helper-slot{flex-basis:46px}.table-status{font-size:11px;height:27px}}
 #dialog:has(.wheel-panel){max-width:850px}
 .wheel-panel{display:grid;grid-template-columns:1.15fr 1fr;align-items:center;gap:14px 24px;padding:8px 4px 20px}
 .wheel-panel>.panel-heading{grid-column:2;grid-row:1;align-self:end;margin:0;padding:10px 12px}
@@ -25,7 +25,7 @@ body.scenic-play .landscape{filter:none!important;transform:none!important;backg
 .wheel-controls #wheel-result{font-size:15px;line-height:1.4;margin:0;min-height:42px}
 .wheel-controls .meta{font-size:12px;margin:4px 0 0;line-height:1.7}.wheel-pip{height:67px}.wheel-pip>.pip-sprite{width:75px;height:75px;rotate:-8deg}
 .wheel-lamp{position:absolute;left:calc(50% - 6px);top:calc(50% - 6px);width:12px;height:12px;border-radius:50%;background:#fff3a2;border:2px solid #e6af41;box-shadow:0 0 9px #ffdf6c;transform:rotate(calc(var(--bulb)*45deg + 22.5deg)) translateY(calc(var(--wheel-size)/-2 + 1px));pointer-events:none}
-@media(max-width:700px){.wheel-panel{display:flex;flex-direction:column;gap:7px;padding:0 0 12px}.wheel-panel>.panel-heading{align-self:stretch}.wheel-panel>.prize-wheel{--wheel-size:260px;margin:14px auto 17px}.wheel-controls{width:100%;max-width:330px;gap:9px}.wheel-pip{display:none}.wheel-controls #wheel-result{min-height:0}.wheel-controls .story-play{min-height:48px;font-size:21px}}
-@media(max-width:360px){.wheel-panel>.prize-wheel{--wheel-size:230px}.wheel-panel .prize-wheel>span>.game-icon{width:32px;height:32px}.wheel-panel .prize-wheel>span>small{font-size:15px}}
+@container game (max-width:700px){.wheel-panel{display:flex;flex-direction:column;gap:7px;padding:0 0 12px}.wheel-panel>.panel-heading{align-self:stretch}.wheel-panel>.prize-wheel{--wheel-size:260px;margin:14px auto 17px}.wheel-controls{width:100%;max-width:330px;gap:9px}.wheel-pip{display:none}.wheel-controls #wheel-result{min-height:0}.wheel-controls .story-play{min-height:48px;font-size:21px}}
+@container game (max-width:360px){.wheel-panel>.prize-wheel{--wheel-size:230px}.wheel-panel .prize-wheel>span>.game-icon{width:32px;height:32px}.wheel-panel .prize-wheel>span>small{font-size:15px}}
 
 #app .story-node.level-long{background:radial-gradient(ellipse at 40% 20%,#b9f0de,#5cadb1 65%,#357e8b);border-color:#e7f9cf;box-shadow:0 8px #376e80,0 10px 4px #34523d66,inset 0 2px #fff8}.level-type.level-long{background:#d8f2e9;border-color:#81bdbe;color:#397e80}

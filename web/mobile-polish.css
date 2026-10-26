@@ -20,8 +20,8 @@
 #app .story-node.level-bonus,#app .story-node.level-gold{background:radial-gradient(ellipse at 40% 20%,#fff9ac,#ffc85e 65%,#d18a36);border-color:#fff1b2;box-shadow:0 8px #ae763d,0 10px 4px #34523d66,inset 0 2px #fff8}
 #app .story-node.level-diamonds{background:radial-gradient(ellipse at 40% 20%,#c3f7ff,#63bfe3 65%,#447cae);border-color:#d8ffff}#app .story-node.level-spades{background:radial-gradient(ellipse at 40% 20%,#c5b9eb,#7874b7 65%,#494570);border-color:#e2d8ff}
 .level-type{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:5px 14px;border:2px solid #e5bcdd;border-radius:18px;background:#f3e3fa;color:#745081;font-weight:900;margin:0 0 12px}.level-type.level-bonus,.level-type.level-gold{background:#fff0bd;border-color:#edc679;color:#94622e}
-@media(min-width:900px) and (max-height:850px){.dialog-content{padding:16px 24px 10px}.panel-heading{margin-bottom:14px;min-height:70px}.chest-hero>.chest-art{width:125px;height:125px}.chest-hero>strong{font-size:21px}.chest-tier-track{margin:8px 0}.chest-tier>.chest-art{height:53px}.chest-tier-track:before{top:40px}.chest-hero{margin-bottom:8px}}
-@media(max-width:600px){.bird-guide>.pip-sprite,.bird-guide.in-panel>.pip-sprite{width:60px;height:60px}.bird-guide{gap:8px}.chest-rule{font-size:12px}.chest-tier-track{gap:2px;padding:10px 3px 12px}.chest-tier>.chest-art{height:44px}.chest-tier>strong{font-size:8px}.chest-tier>span:last-child{font-size:10px}.chest-tier-track:before{top:34px}.chest-tier .game-icon{width:13px!important;height:13px!important}.chest-hero>.chest-art{width:130px;height:130px}.chest-hero>strong{font-size:22px}.chapter-chest .story-play{font-size:19px}.level-kind-badge{width:25px;height:25px;left:-7px;top:-8px}.level-kind-badge>.game-icon{width:20px;height:20px}}
+@container game (min-width:900px) and (max-height:850px){.dialog-content{padding:16px 24px 10px}.panel-heading{margin-bottom:14px;min-height:70px}.chest-hero>.chest-art{width:125px;height:125px}.chest-hero>strong{font-size:21px}.chest-tier-track{margin:8px 0}.chest-tier>.chest-art{height:53px}.chest-tier-track:before{top:40px}.chest-hero{margin-bottom:8px}}
+@container game (max-width:600px){.bird-guide>.pip-sprite,.bird-guide.in-panel>.pip-sprite{width:60px;height:60px}.bird-guide{gap:8px}.chest-rule{font-size:12px}.chest-tier-track{gap:2px;padding:10px 3px 12px}.chest-tier>.chest-art{height:44px}.chest-tier>strong{font-size:8px}.chest-tier>span:last-child{font-size:10px}.chest-tier-track:before{top:34px}.chest-tier .game-icon{width:13px!important;height:13px!important}.chest-hero>.chest-art{width:130px;height:130px}.chest-hero>strong{font-size:22px}.chapter-chest .story-play{font-size:19px}.level-kind-badge{width:25px;height:25px;left:-7px;top:-8px}.level-kind-badge>.game-icon{width:20px;height:20px}}
 
 .hearts-hero{display:flex;align-items:center;justify-content:center;gap:8px}.hearts-hero .lives-total{margin:18px 0}.hearts-hero>.pip-sprite{rotate:-5deg}
 
@@ -29,7 +29,7 @@
 
 .game-icon.chest-painted{display:inline-block;background-image:url('assets/chest-states.png');background-size:300% 400%;background-repeat:no-repeat;width:var(--chest-size);height:var(--chest-size);filter:drop-shadow(0 3px 2px #79513522)}
 #app .map-controls .map-travel small{color:#fff5d6!important}
-@media(min-width:900px) and (max-height:850px){
+@container game (min-width:900px) and (max-height:850px){
  .event-chest>.activity-tabs{padding:4px 5px 8px!important;margin-bottom:8px!important}
  .event-chest>.panel-heading{padding:8px 14px;min-height:64px;margin-bottom:10px}
  .event-chest .panel-heading .heading-art{width:44px;height:44px;flex-basis:44px}.event-chest .panel-heading .heading-art>.game-icon{width:34px;height:34px}

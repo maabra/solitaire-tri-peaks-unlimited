@@ -36,9 +36,10 @@ archive before opening `MeadowPeaks.exe`.
 
 ## A card adventure
 
-The game uses a centered desktop frame up to 1280×720 (16:9), with blurred
-scenery around it. Controls retain their readable sizes; phones use a responsive
-portrait layout instead of shrinking the interface. The full-height left menu strip has
+The game uses a fixed **1280?720** canvas with full-size controls. Large windows
+center it over blurred scenery; small windows provide horizontal and vertical
+scrollbars instead of shrinking the game or switching to a compact layout.
+The full-height left menu strip has
 a continuous curling border at the map boundary; its icon list scrolls inside
 the strip. A matching ornamental edge runs down the far right of the map.
 

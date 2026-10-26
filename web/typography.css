@@ -14,7 +14,7 @@ button{overflow-wrap:normal;word-break:normal}
 .story-node,.resource-badge,.goal-progress strong,.volume-control output{font-variant-numeric:tabular-nums}
 .brand>span{font-size:28px}.brand small{font-family:var(--font-ui);letter-spacing:1.5px;font-size:9px}
 .tool-name{font-size:11px;font-weight:900;line-height:1.25}
-@media(max-width:700px){.brand>span{font-size:22px}.brand small{font-size:8px}.meta{font-size:12px}}
+@container game (max-width:700px){.brand>span{font-size:22px}.brand small{font-size:8px}.meta{font-size:12px}}
 
 /* Baloo has generous ascenders/descenders; leave their full line box visible. */
 h1,h2,h3,.panel-heading h2,#context-help h2,#app .chapter-ribbon h1{line-height:1.4!important}

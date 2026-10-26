@@ -8,4 +8,4 @@
 .volume-control input[type=range]::-moz-range-track{height:10px;border:1px solid #ba9fbd;border-radius:10px;background:#dfd0d9}
 .volume-control input[type=range]::-moz-range-progress{height:10px;border-radius:10px;background:#a673c0}
 .volume-control input[type=range]::-moz-range-thumb{width:22px;height:22px;background:#f1d28d;border:3px solid #fff6d9;border-radius:50%;box-shadow:0 3px #9c728a}
-@media(max-width:420px){.volume-control{padding:12px;gap:8px}.volume-label{font-size:13px}}
+@container game (max-width:420px){.volume-control{padding:12px;gap:8px}.volume-label{font-size:13px}}

@@ -7,4 +7,4 @@ pip-home{display:block;position:relative;z-index:1;margin-top:-8px}
 .pip-home-bubble small{font:900 10px/1.3 var(--font-ui);letter-spacing:1px;text-transform:uppercase;color:#a16f57}
 .pip-home-thought{font:800 16px/1.4 var(--font-ui);color:#71516f;overflow-wrap:break-word}
 .pip-home-chat:hover .pip-home-bubble{border-color:#d59a53}.pip-home-chat:focus-visible{outline:3px solid #c28ed0;outline-offset:5px;border-radius:24px}
-@media(max-width:700px){.home-companion .hero-art{height:210px}.pip-home-bird{width:78px}.pip-home-bird>.pip-sprite{width:78px;height:78px}.pip-home-bubble{padding:11px 13px;min-height:112px}.pip-home-thought{font-size:14px}}
+@container game (max-width:700px){.home-companion .hero-art{height:210px}.pip-home-bird{width:78px}.pip-home-bird>.pip-sprite{width:78px;height:78px}.pip-home-bubble{padding:11px 13px;min-height:112px}.pip-home-thought{font-size:14px}}
