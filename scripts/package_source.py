@@ -5,8 +5,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 root = Path(__file__).resolve().parents[1]
 output = root / "artifacts" / "MeadowPeaks-source.zip"
 output.parent.mkdir(exist_ok=True)
-allowed = ["src", "tests", "scripts", "docs", ".github", "web", "shared"]
-files = [root / name for name in ("README.md", "LICENSE", ".gitignore", "global.json", "TODO.txt")]
+allowed = ["src", "tests", "tools", "scripts", "docs", ".github", "web", "shared"]
+files = [root / name for name in ("README.md", "LICENSE", ".gitignore", ".gitattributes", "global.json", "TODO.txt")]
 for directory in allowed:
     files.extend(p for p in (root / directory).rglob("*") if p.is_file() and not {"bin", "obj", "__pycache__"}.intersection(p.relative_to(root).parts))
 with ZipFile(output, "w", ZIP_DEFLATED) as archive:

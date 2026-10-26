@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
+    dotnet run --project tools/MeadowPeaks.ContentExporter -- --check .
+    if ($LASTEXITCODE -ne 0) { throw 'Regenerate browser content from the C# interface catalog before building.' }
     if (-not $SkipEngineTests) {
         dotnet run --project tests/MeadowPeaks.Tests.csproj -c Release
         if ($LASTEXITCODE -ne 0) { throw 'Engine tests failed.' }

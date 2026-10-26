@@ -12,6 +12,14 @@ solitaire thoughts on the home screen; tap him for another.
 Development builds require the **.NET 10 LTS SDK**. The Windows app, core, tests
 and CI target .NET 10; portable releases continue to bundle their runtime.
 
+The typed C# [interface catalog](src/MeadowPeaks.Core/Content/InterfaceCatalog.cs)
+owns feature definitions, unlock levels, activity groups, tutorials, help text and
+vector symbol paths. After changing it, regenerate the browser projection with
+`dotnet run --project tools/MeadowPeaks.ContentExporter -- .`.
+Both CI workflows verify it with `--check .`; JavaScript retains browser rendering
+and interaction. Only the generated projection is excluded from GitHub language
+statistics through `.gitattributes`.
+
 [Play online](https://maabra.github.io/solitare-tri-peaks-unlimited/) ·
 [Download Windows EXE](https://github.com/maabra/solitare-tri-peaks-unlimited/releases/download/v2.4.1/MeadowPeaks-2.4.1.exe) ·
 [Releases](https://github.com/maabra/solitare-tri-peaks-unlimited/releases)

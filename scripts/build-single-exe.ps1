@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
+    dotnet run --project tools/MeadowPeaks.ContentExporter -- --check .
+    if ($LASTEXITCODE -ne 0) { throw 'Regenerate browser content from the C# interface catalog before publishing.' }
     dotnet publish src/MeadowPeaks.csproj -c Release -r win-x64 --self-contained true `
         -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
         -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true `
