@@ -7,20 +7,28 @@ async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True)
   for width,height in [(1440,900),(1280,720),(572,720)]:
-   page=await b.new_page(viewport={'width':width,'height':height},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'))
+   page=await b.new_page(viewport={'width':width,'height':height},reduced_motion='no-preference' if width==1440 else 'reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'))
    for action in ['map','home','gems','continue']:
     if action=='continue':
      await page.evaluate("()=>{const e=document.createElement('button');e.dataset.action='level:1';document.body.append(e);e.click();e.remove()}")
     else:await page.evaluate("a=>{const e=document.createElement('button');e.dataset.action=a;document.body.append(e);e.click();e.remove()}",action)
     result=await page.evaluate('''()=>{
      const body=document.body.getBoundingClientRect(),header=document.querySelector('header'),nodes=[...header.querySelectorAll('nav>button,nav>button>.game-icon')].filter(e=>e.getClientRects().length);
-     const clear=nodes.every(e=>{const r=e.getBoundingClientRect();return r.top>=body.top+18&&r.bottom+4<=body.top+74&&r.left>=body.left+18&&r.right<=body.right-18});
+     const clear=nodes.every(e=>{const r=e.getBoundingClientRect();return r.top>=body.top+24&&r.bottom+4<=body.top+74&&r.left>=body.left+18&&r.right<=body.right-18});
      const contained=[...header.querySelectorAll('.wallet>.game-icon,.heart-counter>.game-icon')].every(e=>{const a=e.getBoundingClientRect(),b=e.parentElement.getBoundingClientRect();return a.left>=b.left&&a.right<=b.right&&a.top>=b.top&&a.bottom<=b.bottom});
      return {clear,contained};
     }''')
     assert result['clear'] and result['contained'],(width,action,result)
+    if width==1440:
+     for button in await page.locator('body>header nav>button:visible').all():
+      before=await button.bounding_box();await button.hover()
+      await button.evaluate("async e=>{const {bounce}=await import('./celebration-effects.mjs');bounce(e);for(const a of e.getAnimations()){a.pause();const d=a.effect.getTiming().duration;if(typeof d==='number')a.currentTime=d*.4}}")
+      after=await button.bounding_box();assert all(abs(before[k]-after[k])<.5 for k in ['x','y','width','height']),(action,before,after)
+      assert await button.evaluate("e=>{const r=e.getBoundingClientRect(),b=document.body.getBoundingClientRect();return r.top>=b.top+24&&r.bottom+4<=b.top+74}")
+      await button.evaluate('e=>e.getAnimations().forEach(a=>a.cancel())')
+     await page.mouse.move(0,0)
     if width==1440 and action=='map':await page.screenshot(path=str(out/'safe-header.png'))
    await page.close()
   await b.close()
- print('PASS: header controls, shadows and icon art clear the frame across map/home/garden/play and desktop/small windows.')
+ print('PASS: header controls, hover/click feedback, shadows and icon art clear the frame across map/home/garden/play and desktop/small windows.')
 asyncio.run(main())

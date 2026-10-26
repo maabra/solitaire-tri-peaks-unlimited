@@ -168,7 +168,7 @@ body.at-home header .brand small{display:none}
 .card .face-rank[data-rank="10"],body.playing .card .face-rank[data-rank="10"]{font-size:calc(var(--cw,76px)*.72);letter-spacing:-.025em}
 
 /* Header controls stay inside the carved rail, including their artwork. */
-body>header,body.adventure>header,body.playing>header,body.at-home>header{height:78px;min-height:78px;padding:20px 40px 8px 52px;align-items:center;box-sizing:border-box}
+body>header,body.adventure>header,body.playing>header,body.at-home>header{height:78px;min-height:78px;padding:22px 40px 6px 52px;align-items:center;box-sizing:border-box}
 body>header nav{height:46px;align-items:center;gap:12px}
 body>header nav>button{height:44px;min-height:44px;padding-top:6px;padding-bottom:6px;flex:none}
 body>header nav .heart-counter{padding:6px 12px!important;gap:6px}
@@ -182,3 +182,7 @@ body>header nav .wallet>.game-icon{position:static!important;inset:auto!importan
 /* Ambient nudges are scheduled independently, rather than synchronized loops. */
 .new-feature-badge,.map-icon:has(.new-feature-badge)>.game-icon{animation:none!important}
 .ambient-glint{position:absolute;z-index:7;pointer-events:none;width:15px;height:15px;filter:drop-shadow(0 0 4px #fff1ab);transform-origin:center}
+
+/* Header feedback must never lift or scale controls into the carved rails. */
+body>header nav>button:hover:enabled,body>header nav>button:active:enabled{transform:none;translate:none;scale:1}
+body>header nav>button:focus-visible{outline-offset:1px}
