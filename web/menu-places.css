@@ -3,7 +3,7 @@
 #dialog[data-frame=menu] .dialog-content{background:none}
 #dialog[data-frame=menu] .menu-navigation{border-bottom:1px solid #b78e5655;background:#fff1d6ee!important;border-radius:10px 10px 0 0}
 #dialog[data-frame=menu] .panel-heading h2{font-size:25px}
-#dialog[data-place=study] .dialog-content,#dialog[data-place=collections] .dialog-content,#dialog[data-place=adventures] .dialog-content{background:#fff6e4b8;border-radius:0 0 10px 10px}
+#dialog[data-frame=menu][data-place=study] .dialog-content,#dialog[data-frame=menu][data-place=collections] .dialog-content,#dialog[data-frame=menu][data-place=adventures] .dialog-content{background:#fff6e4b8;border-radius:0 0 10px 10px}
 #context-help.context-help{background:#fff4dc var(--place-art) center/100% 100%;border-image:url('assets/menu-parchment-frame.png') 150 / 24px stretch}
 /* The shop always has a counter, wallet, shelves and a visible way to earn coins. */
 #dialog[data-frame=menu]:has(.shop-screen){width:1120px;max-width:calc(100vw - 24px);height:640px;max-height:min(696px,calc(100dvh - 24px));overflow:hidden}
@@ -94,3 +94,5 @@
  #dialog[data-place=shop] #modal .shop article>.shop-buy,#dialog[data-place=shop] #modal .shop.small-stock article>.shop-buy{grid-column:1/-1;grid-row:4;min-height:38px}
  .shop-footnote{font-size:10px}
 }
+
+#dialog[data-frame=notice] .dialog-content{background:transparent!important;box-shadow:none}
