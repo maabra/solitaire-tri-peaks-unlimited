@@ -1,0 +1,96 @@
+/* Place-specific paintings give menus a purpose inside the village. */
+#dialog[data-frame=menu]{background-image:var(--place-art);background-size:100% 100%;background-position:center;background-repeat:no-repeat;border-image:url('assets/menu-parchment-frame.png') 150 / 22px stretch}
+#dialog[data-frame=menu] .dialog-content{background:none}
+#dialog[data-frame=menu] .menu-navigation{border-bottom:1px solid #b78e5655;background:#fff1d6ee!important;border-radius:10px 10px 0 0}
+#dialog[data-frame=menu] .panel-heading h2{font-size:25px}
+#dialog[data-place=study] .dialog-content,#dialog[data-place=collections] .dialog-content,#dialog[data-place=adventures] .dialog-content{background:#fff6e4b8;border-radius:0 0 10px 10px}
+#context-help.context-help{background:#fff4dc var(--place-art) center/100% 100%;border-image:url('assets/menu-parchment-frame.png') 150 / 24px stretch}
+/* The shop always has a counter, wallet, shelves and a visible way to earn coins. */
+#dialog[data-frame=menu]:has(.shop-screen){width:1120px;max-width:calc(100vw - 24px);height:640px;max-height:min(696px,calc(100dvh - 24px));overflow:hidden}
+#dialog[data-place=shop] #modal{height:100%;display:flex;flex-direction:column}
+#dialog[data-place=shop] .menu-navigation{flex:none;min-height:56px;padding:6px 50px 6px 10px}
+#dialog[data-place=shop] .dialog-content{display:block!important;flex:1;min-height:0;padding:12px 18px 16px!important}
+#dialog[data-place=shop] .shop-screen{height:100%;display:grid;grid-template-columns:238px minmax(0,1fr);grid-template-rows:46px minmax(0,1fr);gap:8px 22px}
+#dialog[data-place=shop] .shop-screen>.panel-heading{grid-column:2;grid-row:1;min-height:46px;padding:0 6px;margin:0;background:#fff1d6e8!important;border-radius:10px}
+#dialog[data-place=shop] .heading-art{width:40px;height:40px;flex-basis:40px}
+#dialog[data-place=shop] .heading-art>.game-icon{width:32px;height:32px}
+.shop-sidebar{grid-column:1;grid-row:1/3;display:flex;flex-direction:column;align-items:center;gap:14px;padding:14px 12px;background:none;border:0;border-radius:14px;min-height:0;text-align:center}
+.shop-wallet{width:100%;padding:8px;background:#ffe3a6;border:1px solid #d5ad65;border-radius:12px}
+.shop-wallet>small{display:block;font-size:12px;color:#79543a;font-weight:800;margin-bottom:4px}
+.shop-wallet .resource-badge{font-size:23px}
+.shop-welcome{display:flex;flex-direction:column;align-items:center;gap:8px;min-height:0}
+.shop-welcome strong{font-size:15px;line-height:1.3;color:#79543a}
+.shop-welcome p,.shop-earn p{font-size:12px;line-height:1.4;margin:0;color:#79543a}
+.shop-earn{margin-top:auto;width:100%;display:grid;gap:7px}
+.shop-earn button{width:100%;min-height:40px;font-size:13px;padding:6px}
+.shop-stock{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:10px;min-height:0}
+.shop-instructions,.shop-footnote{margin:0;font-size:12px;line-height:1.4;color:#79543a}
+#dialog[data-place=shop] #modal .shop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0;padding:0;min-height:0;overflow:auto;align-content:start}
+#dialog[data-place=shop] #modal .shop.small-stock{grid-template-columns:repeat(3,minmax(0,1fr))}
+#dialog[data-place=shop] #modal .shop article{display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:22px 18px minmax(36px,1fr) 38px;gap:4px 7px;padding:10px;margin:0;background:#fff5df;border:2px solid #cba675;border-radius:12px;box-shadow:0 3px #b78d53;min-width:0;min-height:164px;text-align:left}
+#dialog[data-place=shop] #modal .shop article>.icon{grid-column:1;grid-row:1/3;width:42px;height:42px;margin:0}
+#dialog[data-place=shop] #modal .shop article>.icon>.game-icon{width:40px;height:40px}
+#dialog[data-place=shop] #modal .shop article>h3{grid-column:2;grid-row:1;font-size:13px;line-height:1.15!important;margin:0;color:#79543a;align-self:center}
+#dialog[data-place=shop] #modal .shop article>.basket-count{grid-column:2;grid-row:2;font-size:11px;line-height:18px;height:18px;min-height:0;margin:0;padding:0!important;background:none!important;color:#79543a;display:block}
+#dialog[data-place=shop] #modal .shop article>p{grid-column:1/-1;grid-row:3;font-size:11px;line-height:1.3;margin:2px 0;min-height:0;color:#79543a;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#dialog[data-place=shop] #modal .shop article>button{grid-column:1/-1;grid-row:4;min-height:38px;margin:0;padding:4px 6px;font-size:12px;display:flex;align-items:center;justify-content:center;gap:4px}
+#dialog[data-place=shop] #modal .shop article>button .game-icon{width:21px;height:21px}
+.shop-footnote{margin-top:auto;display:flex;align-items:center;gap:5px}
+#dialog[data-place=shop] #modal .shop article>button:disabled{opacity:1;filter:grayscale(.7);background:#e1d9c5!important;color:#786f60;box-shadow:0 3px #9b917e}
+
+.shop-welcome{background:#fff1d6ee;border:1px solid #d8b47e;border-radius:12px;padding:10px}
+.shop-earn{background:#fff1d6ee;border:1px solid #d8b47e;border-radius:12px;padding:10px}
+#dialog[data-place=shop] .menu-navigation{background:#65432bbf!important;border:0}
+
+#dialog[data-place=shop] #modal .shop{flex:1;padding-bottom:4px}
+#dialog[data-place=shop] #modal .shop.small-stock{grid-template-columns:1fr;gap:12px;align-content:start}
+#dialog[data-place=shop] #modal .shop.small-stock article{grid-template-columns:62px minmax(0,1fr) 128px;grid-template-rows:26px 18px minmax(28px,1fr);min-height:114px;gap:4px 12px;padding:12px}
+#dialog[data-place=shop] #modal .shop.small-stock article>.icon{grid-column:1;grid-row:1/4;width:60px;height:60px;align-self:center}
+#dialog[data-place=shop] #modal .shop.small-stock article>.icon>.game-icon{width:56px;height:56px}
+#dialog[data-place=shop] #modal .shop.small-stock article>h3{grid-column:2;grid-row:1;font-size:17px}
+#dialog[data-place=shop] #modal .shop.small-stock article>.basket-count{grid-column:2;grid-row:2;font-size:12px}
+#dialog[data-place=shop] #modal .shop.small-stock article>p{grid-column:2;grid-row:3;font-size:12px;-webkit-line-clamp:2}
+#dialog[data-place=shop] #modal .shop.small-stock article>button{grid-column:3;grid-row:1/4;align-self:center;min-height:46px;font-size:14px}
+
+#dialog:has(.settings-sheet){width:920px}
+.settings-groups{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.settings-group{padding:12px 16px;background:#fff7e7e8;border:1px solid #d6b783;border-radius:12px;min-width:0}
+.settings-group h3{display:flex;align-items:center;gap:8px;font-size:18px;color:#79543a;margin:0 0 10px}
+#modal .settings-group .switch{padding:7px 0;min-height:40px;margin:0;font-size:13px}
+.settings-group .switch>span{gap:8px}
+.settings-group .audio-sliders{margin:8px 0 0;gap:10px}
+.settings-group .volume-control{padding:8px;font-size:12px;min-height:66px}
+.settings-group>.meta{margin:10px 0 6px;font-size:12px}
+.settings-group .surface-choices{margin:0 0 12px}
+.settings-group .actions{gap:8px;flex-wrap:wrap}
+.settings-group button{font-size:12px;min-height:38px;padding:6px 10px}
+.settings-backups{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:center}
+.settings-backups h3{grid-column:1;grid-row:1;margin:0}
+.settings-backups p{grid-column:1;grid-row:2;font-size:12px;line-height:1.4;margin:0}
+.settings-backups .actions{grid-column:2;grid-row:1/3}
+.settings-sheet>.build-version{font-size:11px;margin:10px 0 0;text-align:right}
+
+#dialog[data-place=shop] #modal .shop article>h3{display:flex;align-items:center;gap:5px;justify-content:space-between;text-align:left!important;width:100%;font-size:12px}
+#dialog[data-place=shop] #modal .shop article>h3 .info-button{flex:none;width:22px;height:22px;min-width:22px;min-height:22px;margin:0;padding:0;font-size:12px}
+#dialog[data-place=shop] #modal .shop article>p{text-align:left!important}
+#dialog[data-place=shop] #modal .shop.small-stock article>h3{font-size:17px}
+.shop-footnote{background:#fff2d5;padding:4px 8px;border-radius:8px}
+
+@container dialog (max-width:800px){
+ #dialog[data-place=shop] .shop-screen{grid-template-columns:minmax(0,1fr);grid-template-rows:40px 80px minmax(0,1fr);gap:8px}
+ #dialog[data-place=shop] .shop-screen>.panel-heading{grid-column:1;grid-row:1}
+ #dialog[data-place=shop] .shop-sidebar{grid-column:1;grid-row:2;flex-direction:row;gap:8px;padding:0}
+ #dialog[data-place=shop] .shop-welcome{display:none}
+ #dialog[data-place=shop] .shop-wallet{width:130px;flex:none;padding:5px}
+ #dialog[data-place=shop] .shop-earn{margin:0;padding:5px;gap:4px}
+ #dialog[data-place=shop] .shop-stock{grid-column:1;grid-row:3;gap:5px}
+ #dialog[data-place=shop] #modal .shop,#dialog[data-place=shop] #modal .shop.small-stock{grid-template-columns:1fr}
+ #dialog[data-place=shop] #modal .shop article,#dialog[data-place=shop] #modal .shop.small-stock article{grid-template-columns:42px minmax(0,1fr);grid-template-rows:24px 18px minmax(28px,1fr) 38px;min-height:140px;padding:8px;gap:4px 8px}
+ #dialog[data-place=shop] #modal .shop article>.icon,#dialog[data-place=shop] #modal .shop.small-stock article>.icon{grid-column:1;grid-row:1/3;width:40px;height:40px}
+ #dialog[data-place=shop] #modal .shop article>.icon>.game-icon,#dialog[data-place=shop] #modal .shop.small-stock article>.icon>.game-icon{width:40px;height:40px}
+ #dialog[data-place=shop] #modal .shop article>h3,#dialog[data-place=shop] #modal .shop.small-stock article>h3{grid-column:2;grid-row:1;font-size:14px}
+ #dialog[data-place=shop] #modal .shop article>.basket-count,#dialog[data-place=shop] #modal .shop.small-stock article>.basket-count{grid-column:2;grid-row:2}
+ #dialog[data-place=shop] #modal .shop article>p,#dialog[data-place=shop] #modal .shop.small-stock article>p{grid-column:1/-1;grid-row:3}
+ #dialog[data-place=shop] #modal .shop article>.shop-buy,#dialog[data-place=shop] #modal .shop.small-stock article>.shop-buy{grid-column:1/-1;grid-row:4;min-height:38px}
+ .shop-footnote{font-size:10px}
+}

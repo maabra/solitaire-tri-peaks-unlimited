@@ -20,6 +20,6 @@ export function visualizeMenu(root){
   if(type==='ev'&&destinations[id]){const [icon,label]=destinations[id];visualButton(button,icon,label);}
   else if(controls[action]&&!button.closest('.menu-navigation')){const [icon,label]=controls[action];visualButton(button,icon,label);}
  });
- root.querySelectorAll('.shop article').forEach(article=>{const description=article.querySelector('p');if(description)description.classList.add('helper-description');const buy=article.querySelector('[data-action^="buy:"]');if(buy){buy.setAttribute('aria-label',`Buy ${article.querySelector('h3').textContent} for ${buy.textContent.trim()} coins`);buy.title=buy.getAttribute('aria-label');}});
+ root.querySelectorAll('.shop article').forEach(article=>{const description=article.querySelector('p');if(description)description.classList.add('helper-description');const buy=article.querySelector('[data-action^="buy:"]');if(buy){const title=article.querySelector('h3').cloneNode(true);title.querySelectorAll('button').forEach(e=>e.remove());buy.setAttribute('aria-label',`Buy ${title.textContent.trim()} for ${buy.textContent.trim().replace(/^Buy\s*/, '')} coins`);buy.title=buy.getAttribute('aria-label');}});
 }
 export function visualFlow(){return `<div class="picture-flow" aria-label="Play cards, earn rewards, grow your album">${[['play','Play'],['gift','Earn'],['album','Collect']].map(([icon,label],i)=>`${i?'<span class="flow-arrow" aria-hidden="true">›</span>':''}<span class="flow-step">${gameIcon(icon,48)}<small>${label}</small></span>`).join('')}</div>`;}

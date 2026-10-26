@@ -162,3 +162,7 @@ body.at-home header .brand small{display:none}
 .home-garden small{font-size:12px;margin-top:4px;color:#856747}
 .home-garden .actions{gap:10px}
 .home-garden button{font-size:13px;min-height:40px;padding:6px 12px}
+
+/* Strokes outline overlapping font contours and create seams inside A/5/10/J. */
+.card .face-rank,body.playing .card .face-rank{-webkit-text-stroke:0!important;text-shadow:none!important;font-family:var(--font-display);font-weight:800;font-synthesis:none;letter-spacing:0;padding-right:0;line-height:1}
+.card .face-rank[data-rank="10"],body.playing .card .face-rank[data-rank="10"]{font-size:calc(var(--cw,76px)*.72);letter-spacing:-.025em}

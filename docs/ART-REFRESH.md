@@ -119,3 +119,36 @@ road canvas. Meadow maps reuse the previously generated tall, vertically
 repeatable `map-meadow-v2.png`; the chapter's landscape painting remains available
 for the home/game scene. Other chapter murals also scroll with their route.
 The map's decorative frame, activity menu and navigation remain fixed furniture.
+
+
+## Village menu places, 2.4.18
+
+Built-in imagegen produced four original 1536x1024 backgrounds. Exact production
+prompts are recorded in `docs/menu-place-prompts.json`.
+
+- `web/assets/menu-place-shop.png`: village general-store counter and shelves on
+  the left, a large empty merchandising parchment on the right.
+- `web/assets/menu-place-study.png`: a blank open journal on a lamplit writing desk,
+  shared by settings, the progress journal, rules and helper explanations.
+- `web/assets/menu-place-collections.png`: an empty scrapbook on a craft table,
+  shared by albums, packs, postcards and card customization.
+- `web/assets/menu-place-adventures.png`: an empty village bulletin board with
+  rolled map and compass, shared by adventure directory, travel and activities.
+
+All artwork was inspected before integration. HTML owns all labels, buttons,
+quantities and purchases. `menu-scenes.mjs` assigns each menu its place. Small
+confirmation, level and reward notices retain the existing generated notice
+board. Existing dedicated garden/trail/memory paintings are retained.
+
+The shop uses rows for the three introductory helpers and scrollable shelves for
+larger inventories. Wallet and Gem Garden remain visible in the left counter;
+prices, Owned quantities, helper explanations and Buy buttons are explicit.
+Purchases retain shelf scroll and update owned quantities. Settings separates
+Audio, Playing cards and Saved adventure. Nested menus have one back route.
+
+
+The same release fixes internal seams in card lettering: the former 0.6px text
+stroke traced overlapping glyph contours, and the display weight exceeded the
+bundled Baloo font's range. Card faces now use weight 800 without strokes or text
+shadows, with dedicated spacing for two-digit ranks. All 52 rank/suit combinations
+are visually exercised by `scripts/test_card_lettering.py`.
