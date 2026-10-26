@@ -38,8 +38,9 @@ archive before opening `MeadowPeaks.exe`.
 
 The game uses a centered desktop frame up to 1280×720 (16:9), with blurred
 scenery around it. Controls retain their readable sizes; phones use a responsive
-portrait layout instead of shrinking the interface. The left activity group has
-one decorative frame around its independently scrolling list.
+portrait layout instead of shrinking the interface. The full-height left menu strip has
+a continuous curling border at the map boundary; its icon list scrolls inside
+the strip. A matching ornamental edge runs down the far right of the map.
 
 Remove an uncovered card one rank above or below the waste. Ace connects to King
 and Two. Build streaks for extra stock, watch special-card badges, and use earned

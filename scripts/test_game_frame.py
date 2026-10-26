@@ -16,6 +16,8 @@ async def main():
    assert await page.locator('body').evaluate('e=>getComputedStyle(e).transform===\'matrix(1, 0, 0, 1, 0, 0)\''),'Game is scaled'
    assert await page.locator('.map-dock .map-icon').first.evaluate('e=>e.getBoundingClientRect().width>=66')
    assert await page.locator('.map-dock-scroll').evaluate('e=>e.scrollHeight>e.clientHeight')
+   assert await page.locator('.map-dock').evaluate("e=>getComputedStyle(e).borderTopWidth==='0px'"),'Floating box returned around icons'
+   assert await page.locator('.map-viewport').evaluate("e=>{const s=getComputedStyle(e,'::before');return s.display==='block'&&s.position==='fixed'&&s.top==='0px'&&s.bottom==='0px'&&s.backgroundImage.includes('map-scroll-edge.svg')}")
    await page.screenshot(path=str(out/f'map-{width}.png'))
    await page.locator('.story-node.current').click()
    assert await page.locator('#modal .bird-guide').count()==0
