@@ -10,6 +10,7 @@ async def main():
   await page.goto('http://127.0.0.1:8765/')
   await page.locator('.story-node.current').wait_for()
   await page.evaluate("document.querySelector('[data-action=\"preview:2\"]').click()")
+  assert await page.locator('#modal .bird-guide').count()==0,'Pip repeats onboarding inside a level preview'
   assert await page.locator('[data-action="level:2"]').is_disabled()
   assert await page.locator('[data-action="level:2"] .game-icon').count()==1
   await page.locator('[data-action=backMap]').click()
