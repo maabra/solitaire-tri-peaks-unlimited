@@ -1,18 +1,18 @@
 /* A small in-world notice, rather than a full-screen form. */
 #dialog:has(.level-preview){width:min(520px,calc(100vw - 24px));max-width:520px;max-height:min(610px,calc(100dvh - 16px));border:0;border-radius:0;padding:0;background:none;box-shadow:none;overflow:visible}
 #dialog:has(.level-preview) #modal{padding:0;background:url('assets/level-notice-board.png') center/100% 100% no-repeat!important;border-radius:0;overflow:visible}
-#dialog:has(.level-preview) .dialog-content{padding:100px 74px 80px!important;max-height:inherit}
+#dialog:has(.level-preview) .dialog-content{padding:128px 88px 92px!important;max-height:inherit}
 #dialog:has(.level-preview) .menu-navigation{height:0;min-height:0;padding:0!important;border:0;background:none!important;overflow:visible}
 #dialog:has(.level-preview) .menu-navigation button:not(.shell-close),#dialog:has(.level-preview) .menu-location{display:none}
 #dialog:has(.level-preview) .shell-close{top:18px!important;right:18px!important;width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;z-index:5}
-#modal .level-preview{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;text-align:center}
+#modal .level-preview{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;align-items:center;text-align:center}
 #modal .level-preview>.panel-heading{grid-column:1/-1;display:block;min-height:34px;margin:0;padding:0;border:0;box-shadow:none;background:none;color:#69472e}
 #modal .level-preview>.panel-heading h2{width:100%;font-size:27px;line-height:1.25!important;color:#69472e!important;-webkit-text-stroke:0!important;text-shadow:0 1px #fff4cd!important;text-align:center;padding:0;margin:0}
 #modal .level-preview .heading-art{display:none}
 #modal .level-preview>.level-type{grid-column:1;grid-row:2;margin:0;font-size:13px;justify-self:center;padding:4px 9px}
-#modal .level-preview>.preview-stars{grid-column:2;grid-row:2;margin:0;font-size:29px;line-height:1;white-space:nowrap}
+#modal .level-preview>.preview-stars{grid-column:2;grid-row:2;margin:0;font-size:29px;line-height:1;white-space:nowrap;justify-self:center}
 #modal .level-preview .preview-stars span:nth-child(2){font-size:36px}
-#modal .level-preview>.level-goal{grid-column:1/-1;grid-row:auto;margin:0;padding:7px 0;background:none;border-radius:0;border-bottom:1px dashed #c9ab76;font-size:18px}
+#modal .level-preview>.level-goal{grid-column:1/-1;grid-row:auto;margin:0;padding:7px 0;background:none!important;box-shadow:none;border-radius:0;border:0;font-size:18px}
 #modal .level-preview>.meta{grid-column:1/-1;margin:0;min-height:16px;line-height:1.3;font-size:12px}
 #modal .level-preview>.preview-bag{grid-column:1/-1;margin:2px 0;justify-content:center;gap:13px}
 #modal .level-preview .preview-bag>div{width:54px;height:54px;min-width:54px;min-height:54px;padding:5px}
@@ -69,3 +69,6 @@ body.playing .subhead .mode-cue{grid-column:3;grid-row:1/3;margin:0;max-width:19
  #modal:has(.shop) .meta{display:none}
  #modal:has(.shop) .dialog-content>button{grid-column:2;grid-row:2;min-height:42px;padding:4px 10px;font-size:13px}
 }
+
+#modal .level-preview>.life-warning{font-size:11px}
+#modal .level-preview>.life-warning .game-icon{width:18px;height:18px}
