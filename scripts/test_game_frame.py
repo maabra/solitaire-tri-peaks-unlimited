@@ -18,11 +18,12 @@ async def main():
    assert await page.locator('body').evaluate('e=>getComputedStyle(e).transform===\'matrix(1, 0, 0, 1, 0, 0)\''),'Game is scaled'
    assert await page.locator('.map-dock .map-icon').first.evaluate('e=>e.getBoundingClientRect().width===88')
    assert await page.locator('.map-dock-scroll').evaluate('e=>e.scrollHeight>e.clientHeight')
-   assert await page.locator('.map-dock').evaluate("e=>getComputedStyle(e).borderTopWidth==='0px'"),'Floating box returned around icons'
+   assert await page.locator('.map-dock').evaluate("e=>getComputedStyle(e).borderTopWidth==='2px'"),'Menu ornaments are disconnected from their panel'
    assert await page.locator('.map-viewport').evaluate("e=>{const s=getComputedStyle(e,'::before');return s.display==='block'&&s.position==='fixed'&&s.top==='0px'&&s.bottom==='0px'}")
    if width<1280:assert await page.evaluate('document.scrollingElement.scrollWidth>document.documentElement.clientWidth')
    if height<720:assert await page.evaluate('document.scrollingElement.scrollHeight>document.documentElement.clientHeight')
    assert await page.locator('.map-dock').evaluate("e=>['::before','::after'].every(p=>getComputedStyle(e,p).backgroundImage.includes('menu-scroll-cap.svg'))")
+   assert await page.locator('.map-picture-frame').evaluate("e=>{const r=e.getBoundingClientRect(),b=document.body.getBoundingClientRect();return r.left>b.left&&r.right<b.right&&r.top>b.top&&r.bottom<b.bottom&&getComputedStyle(e).pointerEvents==='none'}")
    await page.screenshot(path=str(out/f'map-{width}.png'))
    await page.locator('.story-node.current').click()
    assert await page.locator('#modal .bird-guide').count()==0

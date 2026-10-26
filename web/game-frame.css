@@ -69,3 +69,13 @@ body[data-game-mode=gems] #app>.paper.tile>.actions{grid-column:1;grid-row:3;ali
 body[data-game-mode=gems] .bird-guide.in-play{position:fixed;left:30px;top:140px;bottom:auto;width:310px;z-index:100}
 
 body.playing .play-actions button{display:flex;flex-direction:row!important;align-items:center;justify-content:center;gap:6px;height:42px;min-height:42px;padding:6px 10px}
+
+/* Menu and map are fitted into the same carved wooden cabinet. */
+#app .map-viewport>.map-dock{left:14px;width:128px;top:155px;bottom:98px;border:2px solid #c7a16b;border-radius:12px;background:linear-gradient(90deg,#4e4434,#746047 48%,#514634);box-shadow:inset 0 0 0 2px #efd5a0,inset 0 0 16px #302b2340,0 3px 0 #302b23}
+#app .map-dock::before,#app .map-dock::after{left:-10px;width:144px;height:48px}
+#app .map-dock::before{top:-28px}
+#app .map-dock::after{bottom:-28px}
+#app .map-dock-scroll{padding-left:16px;padding-right:14px}
+#app .map-picture-frame{position:fixed;left:156px;right:18px;top:76px;bottom:82px;z-index:3;border:6px solid #79583c;border-radius:15px;box-shadow:inset 0 0 0 2px #ffe6a8,inset 0 0 0 4px #bc925c,0 0 0 2px #d9bd87,0 0 0 2000px #554b39;pointer-events:none;background:url('assets/game-frame-rosette.svg') left top/28px 28px no-repeat,url('assets/game-frame-rosette.svg') right top/28px 28px no-repeat,url('assets/game-frame-rosette.svg') left bottom/28px 28px no-repeat,url('assets/game-frame-rosette.svg') right bottom/28px 28px no-repeat}
+#app .map-viewport>.chapter-ribbon{top:90px}
+#app .map-viewport>.map-companion{bottom:155px;right:40px}

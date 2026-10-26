@@ -42,6 +42,8 @@ scrollbars instead of shrinking the game or switching to a compact layout.
 The full-height left menu strip has
 floral scrollwork caps above and below its scrolling icon list. A carved wood
 and gold frame with blossom corners surrounds the whole game.
+The menu caps join a matching wooden panel, and the map has its own inset frame
+using the same wood, cream rims and blossom corners.
 
 The village map has a dedicated 16:9 painting with space reserved for the road and
 controls. Its landscape stays fixed while the route scrolls. Cards use a side helper
