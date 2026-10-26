@@ -1,7 +1,7 @@
 import {gameIcon} from './game-art.mjs';
 
 const destinations={trail:['dice','Trail'],memory:['pairs','Pairs'],album:['album','Album'],missions:['missions','Picnic'],voyage:['boat','Voyage'],tournament:['trophy','Trophies'],hunt:['arrow','Hunt'],bingo:['bingo','Bingo'],regatta:['helm','Regatta'],balloon:['balloon','Flight'],travel:['travel','Travel'],milestones:['medal','Milestones'],chest:['chest','Chest'],postcard:['postcard','Postcards'],tickets:['ticket','Trail'],customize:['studio','Card studio'],hub:['compass','Activities'],eventPlay:['play','Play']};
-const controls={shop:['bag','Shop'],gems:['gems','Garden'],continue:['play','Play'],map:['mapRoute','Map'],events:['compass','Activities'],guide:['ruleBook','Cards'],birdHelp:['pipGuide','Pip'],favorite:['bookmark','Save'],share:['dealCode','Code'],replay:['restart','Replay'],undo:['undo','Undo'],remix:['shuffle','Deal'],gemHint:['hint','Match'],starHunt:['stars','Stars'],openDeal:['dealCode','Deal code'],export:['export','Export'],import:['import','Import'],fullscreen:['fullscreen','Full screen']};
+const controls={shop:['bag','Shop'],gems:['gems','Garden'],continue:['play','Play'],map:['mapRoute','Map'],events:['compass','Activities'],guide:['ruleBook','Cards'],birdHelp:['pipGuide','Pip'],replay:['restart','Replay'],undo:['undo','Undo'],gemHint:['hint','Match'],starHunt:['stars','Stars'],export:['export','Export'],import:['import','Import'],fullscreen:['fullscreen','Full screen']};
 export function visualButton(button,icon,label){
  const original=button.getAttribute('aria-label')||button.textContent.trim();
  if(!button.getAttribute('aria-label'))button.setAttribute('aria-label',original);

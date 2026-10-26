@@ -116,3 +116,18 @@ body[data-game-mode=gems] .bird-guide.in-play .guide-actions{margin:0;flex-wrap:
 body[data-game-mode=gems] .bird-guide.in-play .guide-copy>strong{grid-area:1/1;font-size:14px;line-height:1.3}
 body[data-game-mode=gems] .bird-guide.in-play .guide-copy>p{grid-area:1/2}
 body[data-game-mode=gems] .bird-guide.in-play .guide-copy>.guide-actions{grid-area:1/3}
+
+/* Solid parchment keeps progress readable against detailed scenery. */
+body.playing #app>.subhead{background:#fff2d5!important;border:2px solid #dbb77a;box-shadow:inset 0 1px #fff9,0 3px 6px #49352133;color:#694b36}
+body.playing #app>.subhead::before,body.playing #app>.subhead::after{display:none}
+body.playing .subhead .meta{color:#694b36;gap:6px}
+body.playing .star-meter{position:static;width:180px;height:54px;display:grid;grid-template-rows:28px 7px 15px;gap:2px;align-items:center;background:none;border:0;box-shadow:none}
+body.playing .star-meter .star-icons{position:static;display:flex;align-items:center;justify-content:space-between;width:100%;height:28px}
+body.playing .star-icons>b{position:static;width:28px;height:28px;display:block;background:none;box-shadow:none;transform:none}
+body.playing .star-icons .game-icon{width:28px;height:28px;opacity:1}
+body.playing .star-icons>b:not(.earned) .game-icon{filter:grayscale(1) brightness(.9);opacity:1}
+body.playing .star-meter .star-track{position:static;width:100%;height:7px;border:1px solid #b89660;border-radius:8px;background:#d8c39b;overflow:hidden}
+body.playing .star-track>span{display:block;height:100%;border-radius:6px;background:#eebc48}
+body.playing .star-meter>small{position:static;display:block;line-height:15px;height:15px;font-size:11px;color:#6a503b;text-shadow:none;text-align:center}
+body.playing .board-shell>.play-actions{width:max-content;max-width:100%;justify-self:center;background:#fff2d5;border:1px solid #d7b47c;border-radius:16px;box-shadow:0 2px 5px #49352133;padding:2px 8px}
+body.playing header [data-action=settings]{display:none}

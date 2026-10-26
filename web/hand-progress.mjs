@@ -4,7 +4,7 @@ export function goalProgress(hand){
  const total=goals.filter(Boolean).length,cleared=goals.filter((goal,i)=>goal&&hand.Removed[i]).length;
  return {cleared,total,icon:hand.Deal.Objective?.gold?'coins':hand.Deal.Objective?.suit===2?'ruby':hand.Deal.Objective?.suit===0?'seal':'cardProgress'};
 }
-export function handProgress(hand){const p=goalProgress(hand);return `${gameIcon(p.icon,22)} <b>${p.cleared}/${p.total}</b>`;}
+export function handProgress(hand){const p=goalProgress(hand);return `${gameIcon(p.icon,22)} <span>Cleared</span> <b>${p.cleared} / ${p.total}</b>`;}
 export function handStatus(hand){
  if(hand.Won)return `${gameIcon('check',22)} All goals complete!`;
  if(hand.Failed)return `${gameIcon('bomb',22)} Try Undo or Replay`;
