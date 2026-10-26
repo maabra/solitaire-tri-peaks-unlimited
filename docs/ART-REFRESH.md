@@ -106,3 +106,16 @@ pale warm ivory parchment with subtle low-contrast paper grain. Straight rails,
 orthographic view, frame touching image perimeter. Warm dimensional hand-painted
 light from upper left and plum-brown shadows. No raised crest, stand, legs,
 writing, text, numbers, icons, characters, buttons, screws, scenery or watermark.
+
+
+## Home and scrolling map, 2.4.17
+
+Home now reuses the generated nine-slice menu parchment for its welcome,
+activities and garden panels, all composed inside the fixed 1280x720 game.
+It replaces the tall marketing-style hero and offscreen activity buttons.
+
+At the user's request, the overworld scenery again lives inside the scrolling
+road canvas. Meadow maps reuse the previously generated tall, vertically
+repeatable `map-meadow-v2.png`; the chapter's landscape painting remains available
+for the home/game scene. Other chapter murals also scroll with their route.
+The map's decorative frame, activity menu and navigation remain fixed furniture.

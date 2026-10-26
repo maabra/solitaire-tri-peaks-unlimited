@@ -35,9 +35,9 @@ body::after{content:'';position:fixed;inset:0;z-index:12000;pointer-events:none;
 #app .map-trail .trail-edge-shadow{fill:none;stroke:#3d633e55;stroke-width:84;stroke-linecap:round}
 #app .map-trail .trail-shadow{stroke-width:76;opacity:1}
 
-/* Dedicated 16:9 composition: landmarks stay fixed, the route scrolls above it. */
-#app .map-viewport>.map-scenery{position:fixed;inset:0;width:1280px;height:720px;background-size:100% 100%;background-position:center;background-repeat:no-repeat;z-index:0;pointer-events:none}
-#app .map-viewport:has(>.map-scenery)>.map-camera{z-index:1;background:none;box-shadow:none}
+/* Painted scenery stays on the scrolling road canvas. HUD furniture stays fixed. */
+#app .map-camera{z-index:1;background:none;box-shadow:none}
+#app .adventure-map>.map-scenery{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 /* 720p card table: board and stock left, helpers right, navigation below. */
 body.playing #app{padding:8px 12px;overflow:hidden}
 body.playing #app>.subhead{height:72px;min-height:72px;padding:8px 14px;margin:0 0 8px}
@@ -131,3 +131,34 @@ body.playing .star-track>span{display:block;height:100%;border-radius:6px;backgr
 body.playing .star-meter>small{position:static;display:block;line-height:15px;height:15px;font-size:11px;color:#6a503b;text-shadow:none;text-align:center}
 body.playing .board-shell>.play-actions{width:max-content;max-width:100%;justify-self:center;background:#fff2d5;border:1px solid #d7b47c;border-radius:16px;box-shadow:0 2px 5px #49352133;padding:2px 8px}
 body.playing header [data-action=settings]{display:none}
+
+/* A complete home menu using the same painted parchment as in-game menus. */
+body.at-home #app{height:642px;min-height:0;padding:16px 46px 20px;display:grid;grid-template-rows:294px 180px 90px;gap:14px;overflow:hidden}
+body.at-home header .brand small{display:none}
+.home-board{border:0 solid transparent;border-image:url('assets/menu-parchment-frame.png') 150 fill / 25px stretch;background:#fff3d8;color:#71503b;box-shadow:0 4px 10px #24352d33}
+.home-welcome{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;gap:30px;padding:28px 32px}
+.home-intro h1{font-size:34px;line-height:1.2;letter-spacing:0;color:#71503b;margin:10px 0 12px}
+.home-intro p{font-size:14px;margin:0 0 16px;line-height:1.5}
+.home-intro .eyebrow{font-size:11px;letter-spacing:1px;color:#9c6d46}
+.home-intro .actions{gap:12px;flex-wrap:nowrap}
+.home-intro .actions button{white-space:nowrap;min-height:48px;font-size:14px;padding:8px 14px}
+.home-intro .actions .story-play{font-size:20px;min-height:54px}
+.home-intro .meta{margin:14px 0 0;font-size:12px;color:#856747}
+.home-welcome pip-home{margin:0}
+.home-welcome .pip-home-bubble{min-height:116px;background:#fff1cb;border-width:2px;box-shadow:none}
+.home-welcome .pip-home-bird{width:112px}
+.home-welcome .pip-home-bird>.pip-sprite{width:112px;height:112px}
+.home-welcome .pip-home-thought{font-size:15px;color:#71503b}
+.home-places{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;min-height:0}
+.home-place{padding:18px 22px;display:grid;grid-template-rows:48px 1fr 40px;gap:6px;min-width:0}
+.home-place-title{display:flex;align-items:center;gap:12px}
+.home-place-title h2{font-size:20px;margin:0;color:#71503b;line-height:1.2}
+.home-place p{font-size:13px;line-height:1.35;margin:0;align-self:center;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.home-place>button{justify-self:start;min-height:38px;padding:6px 14px;font-size:13px}
+.home-garden{padding:15px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.home-garden>div:first-child{display:flex;align-items:center;gap:12px}
+.home-garden strong,.home-garden small{display:block}
+.home-garden strong{font-size:17px}
+.home-garden small{font-size:12px;margin-top:4px;color:#856747}
+.home-garden .actions{gap:10px}
+.home-garden button{font-size:13px;min-height:40px;padding:6px 12px}

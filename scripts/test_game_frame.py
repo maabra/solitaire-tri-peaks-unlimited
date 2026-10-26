@@ -12,7 +12,7 @@ async def main():
    errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
    await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
    await page.goto('http://127.0.0.1:8765/');await page.locator('.story-node.current').wait_for()
-   await page.wait_for_function("document.querySelector('.map-scenery').style.backgroundImage.includes('map-meadow-720p.png')")
+   await page.wait_for_function("document.querySelector('.map-scenery').style.backgroundImage.includes('map-meadow-v2.png')")
    assert await page.locator('.map-trail pattern image').get_attribute('href')=='assets/road-stone-border.png'
    assert await page.locator('body').evaluate('e=>{const r=e.getBoundingClientRect();return r.width===1280&&r.height===720&&r.x>=0&&r.y>=0}')
    if width>=1280 and height>=720:assert await page.locator('body').evaluate('e=>{const r=e.getBoundingClientRect();return Math.abs(r.x+r.width/2-innerWidth/2)<.6&&Math.abs(r.y+r.height/2-innerHeight/2)<.6}'),'Game is off-center'

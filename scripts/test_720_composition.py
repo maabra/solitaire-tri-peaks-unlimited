@@ -8,11 +8,11 @@ async def main():
   page=await browser.new_page(viewport={'width':1440,'height':900},reduced_motion='reduce')
   await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
   await page.goto('http://127.0.0.1:8765/')
-  await page.wait_for_function("document.querySelector('.map-viewport>.map-scenery')?.style.backgroundImage.includes('map-meadow-720p.png')")
+  await page.wait_for_function("document.querySelector('.adventure-map>.map-scenery')?.style.backgroundImage.includes('map-meadow-v2.png')")
   assert await page.evaluate("async()=>{const i=new Image();i.src='assets/map-meadow-720p.png';await i.decode();return Math.abs(i.naturalWidth/i.naturalHeight-16/9)<.01}")
   before=await page.locator('.map-scenery').bounding_box()
   await page.locator('.map-viewport').evaluate('e=>e.scrollTop-=400')
-  assert before==await page.locator('.map-scenery').bounding_box(),'Painting moves with the route'
+  assert (await page.locator('.map-scenery').bounding_box())['y']!=before['y'],'Painting did not scroll with the route'
   await page.locator('.map-locate').click()
   await page.locator('.story-node.current').click()
   assert await page.locator('#dialog').evaluate('e=>e.scrollHeight<=e.clientHeight+2')
@@ -30,6 +30,6 @@ async def main():
    assert await page.locator('#dialog').evaluate('e=>e.scrollHeight<=e.clientHeight+2'),view
    await page.locator('.shell-close').click()
   await browser.close()
- print('PASS: native 16:9 art, fixed landscape, card tools, garden, previews and side boards fit 720p.')
+ print('PASS: native 16:9 art, scrolling map scenery, card tools, garden, previews and side boards fit 720p.')
 
 asyncio.run(main())
