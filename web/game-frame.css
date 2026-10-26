@@ -91,3 +91,15 @@ body::after{border:0;border-radius:0;box-shadow:none;background:url('assets/carv
 #app .map-dock-scroll::-webkit-scrollbar-track{background:#4b3b2b;border-radius:8px}
 #app .map-dock-scroll::-webkit-scrollbar-thumb{background:linear-gradient(#f8df9e,#bb8b53);border:2px solid #4b3b2b;border-radius:8px}
 #frame-ornaments .corner,#frame-ornaments .crest{filter:drop-shadow(0 2px 2px #35251a66)}
+
+/* Tutorials occupy reserved space instead of covering playable controls. */
+body.playing.coaching .board-shell>.tools,body.playing.coaching .board-shell>.tools:has(.helper-slot:nth-child(9)){margin-top:var(--guide-bay-height,0px);height:calc(467px - var(--guide-bay-height,0px));max-height:calc(467px - var(--guide-bay-height,0px));overflow-y:auto;overflow-x:hidden}
+body[data-game-mode=gems].coaching #app>.paper.tile{padding-top:96px;gap:8px 28px}
+body[data-game-mode=gems] .bird-guide.in-play{left:114px;right:114px;top:104px;width:auto;max-height:72px;padding:8px 12px;display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;overflow:auto}
+body[data-game-mode=gems] .bird-guide.in-play>.pip-sprite{width:48px;height:48px}
+body[data-game-mode=gems] .bird-guide.in-play .guide-copy{display:grid;grid-template-columns:180px minmax(0,1fr) auto;align-items:center;gap:12px}
+body[data-game-mode=gems] .bird-guide.in-play .guide-copy>small{display:none}
+body[data-game-mode=gems] .bird-guide.in-play .guide-copy p{margin:0;font-size:12px;line-height:1.35}
+body[data-game-mode=gems] .bird-guide.in-play .guide-actions{margin:0;flex-wrap:nowrap}
+/* A single sticky navigation bar; activity tabs scroll with their content. */
+#modal .activity-tabs{position:relative;top:auto;z-index:1}
