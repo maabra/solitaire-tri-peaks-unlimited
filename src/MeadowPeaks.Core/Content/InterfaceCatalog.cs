@@ -152,7 +152,7 @@ public static class InterfaceCatalog
     public static readonly IReadOnlyDictionary<string, string[][]> FeatureTutorials = new Dictionary<string, string[][]>
     {
         ["garden"] = [["Pick a gem, then a neighbor. Connect three or more.", ".gems"], ["Matches earn coins. Every ten successful swaps earns a heart.", ".subhead"], ["Use your coins in the helper shop, then resume your cards.", "[data-action=\"shop\"]"]],
-        ["wheel"] = [["Your available spins are shown on the Spin button.", "[data-action=\"spinWheel\"]"], ["The pointer lands on your prize. Claim appears when it settles.", ".prize-wheel"]],
+        ["wheel"] = [["Your available spins are shown on the Spin button.", "[data-action=\"spinWheel\"]"], ["The wheel stops beneath the pointer. Claim appears when it settles.", ".prize-wheel"]],
         ["missions"] = [["Each task shows your progress and the reward you can earn.", ".picnic-progress progress"], ["When a task is full, choose Collect reward to reveal the next one.", ".picnic-claim"]],
         ["album"] = [["Each collection shows its sticker count. Pick one to look inside.", ".album-categories"], ["Open your earned packs here. Duplicate stickers become tokens.", "[data-action=\"ev:pack\"]"], ["Trade duplicate tokens for more packs.", "[data-action=\"ev:tokenShop\"]"]],
         ["tournament"] = [["Collect trophy cards and win the hand to keep them.", ".event-tournament"], ["Fill a target, then collect its reward.", ".event-row button"]],

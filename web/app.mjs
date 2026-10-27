@@ -1,9 +1,10 @@
+import {spinWheelDisc,landWheel} from './wheel-motion.mjs';
 import {showPurchaseFeedback,refreshShopStock} from './shop-feedback.mjs';
 import {mechanicUnlocks} from './progression.mjs';
 import {installAmbientAttention} from './ambient-attention.mjs';
 import {installMapDrag} from './map-drag.mjs';
 import {gameWidth,gameHeight} from './game-frame.mjs';
-import {wheelView} from './wheel-view.mjs';
+import {wheelView,wheelCooldownText} from './wheel-view.mjs';
 import {applyPlaySurface,surfaceChoices} from './play-surface.mjs';
 import {handProgress,handStatus} from './hand-progress.mjs';
 import './pip-home.mjs';
@@ -90,11 +91,33 @@ function focusCurrentMap(){const viewport=app.querySelector('.map-viewport'),cam
 // Render the selected chapter, then apply its asynchronously loaded painting only if still relevant.
 function map(){if(mapFocusLevel&&Math.ceil(mapFocusLevel/100)!==chapter)mapFocusLevel=null;document.body.classList.add('adventure');chapter=Math.max(1,Math.min(TOTAL/100,chapter));const scene=applyChapterScene(chapter);app.innerHTML=overworldMarkup(session,chapter,scene.background);prepareMapCamera();const requested=chapter;chapterPicture(chapter).then(url=>{const bg=app.querySelector('.map-scenery');if(bg&&chapter===requested){const picture=bg.parentElement.dataset.mapArt==='meadow'?'assets/map-meadow-v2.png':url;bg.style.backgroundImage=`url('${picture}')`;const ambient=app.querySelector('.map-ambient');if(ambient)ambient.style.backgroundImage=`url('${url}')`;}}).catch(()=>{});birdGuide.check('map');}
 
-let wheelBusy=false,lastWheelPrize=null;
+let wheelBusy=false,lastWheelPrize=null,lastWheelIndex=null;
 // Open the wheel from its current busy and last-prize state.
-function showWheel(){openModal(wheelView(session,wheelBusy,lastWheelPrize))}
+function showWheel(){openModal(wheelView(session,wheelBusy,lastWheelPrize,lastWheelIndex))}
 // Prevent concurrent spins and animate the prize already selected and recorded by the session.
-async function spinWheel(daily=false){if(wheelBusy)return;const prize=daily?session.events.timedSpin():session.spinWheel();if(!prize)return;lastWheelPrize=prize.label;wheelBusy=true;gameAudio.play('wheel');modal.querySelector('[data-action=claimWheel]')?.remove();const panel=modal.querySelector('.wheel-panel'),wheel=modal.querySelector('.wheel-needle'),spin=modal.querySelector('[data-action="spinWheel"]'),result=modal.querySelector('#wheel-result');spin.disabled=true;modal.querySelector('[data-action=timedWheel]').disabled=true;sync();const reduced=session.p.ReducedMotion||matchMedia('(prefers-reduced-motion: reduce)').matches;try{await wheel.animate([{transform:'rotate(0deg)'},{transform:`rotate(${1800+prize.index*45}deg)`}],{duration:reduced?1:2200,easing:'cubic-bezier(.12,.7,.15,1)',fill:'forwards'}).finished;if(!panel.isConnected||!dialog.open)return;const shownResult=panel.querySelector('#wheel-result');if(shownResult)shownResult.textContent='You found '+prize.label+'!';if(shownResult){const claim=document.createElement('button');claim.className='story-play';claim.dataset.action='claimWheel';claim.textContent='Claim';shownResult.after(claim);}sound(true);celebrate();spin.textContent='Spin ? '+session.wheelSpins;spin.disabled=!session.wheelSpins}catch(error){if(error.name!=='AbortError')throw error;}finally{wheelBusy=false;const current=modal.querySelector('[data-action="spinWheel"]');const dailyButton=modal.querySelector('[data-action=timedWheel]');if(dailyButton)dailyButton.disabled=session.now()<session.events.a.WheelAt;if(current){current.disabled=!session.wheelSpins;current.textContent='Spin \u00b7 '+session.wheelSpins}}}
+async function spinWheel(daily=false){
+ if(wheelBusy)return;
+ const prize=daily?session.events.timedSpin():session.spinWheel();if(!prize)return;
+ lastWheelPrize=prize.label;lastWheelIndex=prize.index;wheelBusy=true;gameAudio.play('wheel');
+ modal.querySelector('[data-action=claimWheel]')?.remove();
+ const panel=modal.querySelector('.wheel-panel'),wheel=panel.querySelector('.prize-wheel');
+ panel.querySelector('[data-action=spinWheel]').disabled=true;panel.querySelector('[data-action=timedWheel]').disabled=true;
+ panel.querySelector('#wheel-result').textContent='Spinning...';sync();
+ try{
+  await spinWheelDisc(wheel,prize.index,session.p.ReducedMotion||matchMedia('(prefers-reduced-motion: reduce)').matches);
+  // A reopened wheel can finish this same saved spin, but another menu must remain untouched.
+  const active=modal.querySelector('.wheel-panel');if(!active||!dialog.open)return;
+  if(active!==panel)landWheel(active.querySelector('.prize-wheel'),prize.index);
+  const result=active.querySelector('#wheel-result');result.textContent='You found '+prize.label+'!';
+  const claim=document.createElement('button');claim.className='story-play';claim.dataset.action='claimWheel';claim.textContent='Claim';result.after(claim);
+  sound(true);celebrate();
+ }catch(error){if(error.name!=='AbortError')throw error;}
+ finally{
+  wheelBusy=false;const current=modal.querySelector('[data-action=spinWheel]'),dailyButton=modal.querySelector('[data-action=timedWheel]');
+  if(dailyButton){const remaining=Math.max(0,session.events.a.WheelAt-session.now());dailyButton.disabled=remaining>0;dailyButton.innerHTML=gameIcon('clock',25)+' Daily spin &middot; '+wheelCooldownText(remaining);}
+  if(current){current.disabled=!session.wheelSpins;current.innerHTML=gameIcon('wheel',28)+' Spin &middot; '+session.wheelSpins;}
+ }
+}
 const levelPreview=new LevelPreview(()=>session,openModal),livesPanel=new LivesPanel(()=>session,openModal);
 // Open the shared level preview instead of starting or charging an attempt immediately.
 function previewLevel(level,options){levelPreview.show(level,options);}

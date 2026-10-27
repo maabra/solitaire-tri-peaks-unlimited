@@ -1,0 +1,66 @@
+/* The decorative furniture is stationary; only the inner disc owns the sector painting. */
+.wheel-panel>.prize-wheel {background:#fff0a1;isolation:isolate}
+.wheel-rotor {
+ position:absolute;inset:0;border-radius:50%;transform-origin:50% 50%;
+ background:conic-gradient(from -22.5deg,#e560aa 0deg 45deg,#7770d4 45deg 90deg,#4bc9db 90deg 135deg,#8cd357 135deg 180deg,#eb8871 180deg 225deg,#b45ed4 225deg 270deg,#5dcab8 270deg 315deg,#d9944d 315deg 360deg);
+ box-shadow:inset 0 0 0 5px #fff1b8;will-change:transform;
+}
+.wheel-rotor>span {
+ position:absolute;left:50%;top:50%;width:84px;height:76px;
+ transform:translate(-50%,-50%) rotate(calc(var(--segment)*45deg)) translateY(calc(var(--wheel-size,350px)*-.31)) rotate(calc(var(--segment)*-45deg));
+ font:900 17px var(--font-ui);color:white;text-shadow:0 2px #793b66;
+}
+.wheel-label {display:flex;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:1px;rotate:calc(var(--landed-angle,0deg)*-1)}
+.wheel-label>small {font-size:17px;color:white;font-weight:900;line-height:1.2}
+.wheel-label>.wheel-heart {position:static;rotate:none;font-size:11px;line-height:16px}
+.wheel-label>.wheel-heart .game-icon {width:16px;height:16px}
+.prize-wheel>.wheel-needle {
+ top:-18px;bottom:auto;left:calc(50% - 15px);width:30px;height:42px;
+ transform:none;transform-origin:center;clip-path:polygon(0 0,100% 0,50% 100%);
+ background:linear-gradient(90deg,#d28b17,#fff4a5 48%,#e0a82d);
+ filter:drop-shadow(0 3px 1px #783d45);z-index:5;pointer-events:none;
+}
+.prize-wheel>.wheel-lamp {
+ z-index:4;animation:wheel-rim-chase 2.4s linear infinite;
+ animation-delay:calc(var(--bulb)*-.3s);
+}
+.prize-wheel.is-spinning>.wheel-lamp {animation-duration:1.2s;animation-delay:calc(var(--bulb)*-.15s)}
+.prize-wheel.wheel-won>.wheel-lamp {animation-duration:1.8s;animation-delay:calc(var(--bulb)*-.225s)}
+.wheel-rotor>.is-winning .wheel-label>.game-icon {filter:drop-shadow(0 0 8px #fff6b3);scale:1.14}
+/* Keep the result, Claim and both spin buttons beside the complete disc, clear of the painted rim. */
+#dialog .wheel-panel{gap:10px 20px;padding-bottom:8px}
+#dialog .wheel-panel>.panel-heading{min-height:38px;padding:0}
+#dialog .wheel-controls{gap:8px}
+#dialog .wheel-controls .wheel-pip{height:54px}
+#dialog .wheel-controls .wheel-pip>.pip-sprite{width:60px;height:60px}
+#dialog .wheel-controls #wheel-result{min-height:34px;font-size:14px}
+#dialog .wheel-controls .story-play{min-height:46px;font-size:20px;padding:8px 14px}
+#dialog .wheel-controls [data-action=timedWheel]{min-height:40px;font-size:13px;padding:7px 12px}
+#dialog .wheel-controls .meta{margin:0;font-size:11px;line-height:1.4}
+@container dialog (min-width:651px){
+ #dialog .dialog-content:has(>.bird-guide[data-guide-panel=lesson]) .wheel-panel>.prize-wheel{--wheel-size:260px;margin-block:16px}
+}
+/* Pip already appears in the tutorial; a second mascot would consume the wheel's safe area. */
+#dialog .dialog-content:has(>.bird-guide[data-guide-panel=lesson]) .wheel-controls .wheel-pip{display:none}
+/* If the menu is reopened mid-spin, keep its replacement disc lively until the saved spin finishes. */
+.prize-wheel.is-spinning>.wheel-rotor:not([data-animating]) {animation:wheel-waiting 1.1s linear infinite}
+@keyframes wheel-rim-chase {
+ 0%,55%,100%{background:#dfad3b;box-shadow:0 0 2px #e7ad47;border-color:#c38a2c}
+ 12%,32%{background:#fffde0;box-shadow:0 0 10px 3px #ffdc75;border-color:#fff1a0}
+}
+@keyframes wheel-waiting {to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.prize-wheel>.wheel-lamp,.prize-wheel>.wheel-rotor{animation:none!important}}
+.reduced .prize-wheel>.wheel-lamp,.reduced .prize-wheel>.wheel-rotor{animation:none!important}
+
+/* Narrow dialogs stack controls beneath a disc that fits entirely on the painted paper. */
+@container dialog (max-width:650px){
+ .wheel-panel{display:flex;flex-direction:column;gap:12px}
+ .wheel-panel>.panel-heading{align-self:stretch}
+ .wheel-panel>.prize-wheel{--wheel-size:min(300px,calc(100cqw - 96px));width:var(--wheel-size);height:var(--wheel-size);margin:24px auto}
+ .wheel-rotor>span{width:64px;height:58px}
+ .wheel-label>.game-icon{--icon-size:28px!important;width:28px;height:28px}
+ .wheel-label>small{font-size:13px}
+ .wheel-label>.wheel-heart{font-size:9px;line-height:13px}
+ .wheel-label>.wheel-heart .game-icon{width:13px;height:13px}
+ .wheel-controls{width:100%;gap:10px}
+}

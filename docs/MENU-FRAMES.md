@@ -17,3 +17,9 @@ Adventure and collection menus now use the same fixed-surface model as Settings:
 ## Shop receipts (2.5.5)
 
 A saved helper purchase updates the existing shelf nodes instead of rebuilding the menu. The selected card briefly shows Bought!, a floating +1 and an item bounce; its owned count is highlighted. A local receipt message remains readable above the shelf. Reduced motion keeps the text confirmation without animated movement. Receipt timers are independent per item and restart for repeat purchases; they never grant items or debit coins. `test_shop_feedback.py` checks real transactions, stable cards, repeated purchases, affordability and receipt cleanup.
+
+## Spinning wheel (2.5.6)
+
+The sector painting and prize labels now live on one rotating disc. The pointer, hub and eight rim lamps stay stationary. Each spin makes at least five full turns, eases to the saved prize beneath the pointer, and highlights the winning segment. The lamps chase around the rim, speed up during a spin and celebrate its landing; reduced motion keeps the lights steady and lands immediately. The label group is counter-rotated after landing for readability. Reopening the menu retains the last result, and a pending saved spin can finish in its replacement panel without changing another open menu.
+
+`wheel-motion.test.mjs` checks all sector angles over repeated spins. `test_wheel_disc.py` checks the moving disc/fixed pointer, rim animations, saved rewards, repeat/reopened/daily spins, the daily cooldown label, reduced motion and the tutorial’s available space. Presentation feedback never grants an additional prize.
