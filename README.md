@@ -10,6 +10,10 @@ A cozy solitaire journey with Pip, illustrated villages, spinning cards and litt
 
 The campaign has **10,000 levels across 100 chapters of 100 levels**. Every chapter has its own original illustrated map, name, collectible card back and table. The campaign stops at the last original art set; there are no numbered repeats of the same worlds. Endless hands remain available after the final level.
 
+A flower-covered gate waits after each chapter’s hundredth level. Clear that level to enter the next village; the final gate opens Endless Meadow. The scrolling road uses chapter-specific terrain routes, with full-size level buttons centered on the path.
+
+![The open chapter gateway after clearing level 100](docs/screenshots/chapter-gate.png)
+
 The opening chapter introduces the basics at a gentle pace. Later mechanics, helper discoveries and activities fit the shorter campaign. Every generated hand constructs and replays a winning path under its actual rules.
 
 ![The card formation, stock, waste, progress and helpers](docs/screenshots/cards.png)

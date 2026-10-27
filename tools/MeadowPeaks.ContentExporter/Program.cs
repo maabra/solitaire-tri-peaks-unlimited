@@ -35,6 +35,9 @@ Export("campaign", new { levelCount=CampaignContent.TotalLevels, chapterCount=Ca
     mechanicUnlocks=CampaignContent.MechanicUnlocks, anchors=CampaignContent.PacingAnchors,
     trailUnlock=CampaignContent.TrailUnlock, memoryUnlock=CampaignContent.MemoryUnlock, shuffleUnlock=CampaignContent.ShuffleUnlock,
     chapterTitles=CampaignContent.ChapterTitles });
+if (ChapterRoutes.Corridors.Length != CampaignContent.ChapterCount || ChapterRoutes.Corridors.Any(r => r.Length != 17 || r.Any(x => x < 12 || x > 88)))
+    throw new InvalidOperationException("Every illustrated chapter needs a complete terrain corridor.");
+Export("chapterCorridors", ChapterRoutes.Corridors);
 Export("features", InterfaceCatalog.Features);
 Export("mechanicLessons", InterfaceCatalog.MechanicLessons);
 Export("briefGuides", InterfaceCatalog.BriefGuides);

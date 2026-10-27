@@ -186,3 +186,16 @@ body>header nav .wallet>.game-icon{position:static!important;inset:auto!importan
 /* Header feedback must never lift or scale controls into the carved rails. */
 body>header nav>button:hover:enabled,body>header nav>button:active:enabled{transform:none;translate:none;scale:1}
 body>header nav>button:focus-visible{outline-offset:1px}
+
+/* Terrain routes reveal the painting while retaining full-size level buttons. */
+#app .map-trail .trail-edge-shadow{stroke-width:64}
+#app .map-trail .trail-shadow{stroke-width:60}
+#app .map-trail .trail-sand{stroke-width:48}
+.chapter-gate{position:absolute;z-index:3;width:184px;height:180px;transform:translate(-50%,-50%);padding:0;background:none;border:0;box-shadow:none;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;overflow:visible}
+.chapter-gate>img{position:absolute;inset:0;margin:auto;width:130px;height:150px;object-fit:contain;filter:drop-shadow(0 4px 3px #263a3070);pointer-events:none}
+.chapter-gate .gate-sign{position:relative;display:grid;grid-template-columns:24px 1fr;column-gap:4px;align-items:center;width:184px;padding:7px 9px;border:2px solid #e8c580;border-radius:12px;background:#fff2d6;color:#664224;box-shadow:0 3px 0 #75512a;font-size:14px;line-height:1.2;text-shadow:none}
+.gate-sign small{grid-column:1/-1;font-size:11px;margin-top:4px}
+.chapter-gate.is-locked>img{filter:saturate(.55) drop-shadow(0 4px 3px #263a3070)}
+.chapter-gate.is-open .gate-sign{background:#edf6ce}
+#app .chapter-gate:hover,#app .chapter-gate:active{transform:translate(-50%,-50%);background:none;box-shadow:none}
+.chapter-gate:focus-visible{outline:3px solid #fff1a9;outline-offset:5px;border-radius:20px}
