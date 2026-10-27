@@ -19,6 +19,8 @@ for(let level=1;level<=256;level++){
  }
 }
 assert.ok(motion.play<200&&motion.flip<200);
-assert.ok(motion.completeStock+motion.completeWin<=600);
+// The You win phase now runs twice as long; stock accounting keeps its original timing.
+assert.equal(motion.completeWin,840);
+assert.ok(motion.completeStock+motion.completeWin<=1200);
 assert.deepEqual(extraWinRewards({hearts:3,packs:[1,2],arrows:7}).map(p=>p.amount),[3,2,7]);
 console.log('PASS: 256 complete formations fit four stage sizes; fast motion and exact extra-prize quantities.');
