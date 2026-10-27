@@ -1,22 +1,22 @@
 /* The picnic is a compact task tray, with a fixed rim and one scrollable content area.
    Rewards remain session commands; this layout only makes progress and claiming explicit. */
 #dialog[data-frame=menu][data-place=picnic] {
- width:min(960px,calc(100vw - 24px));max-width:960px;height:560px;
+ width:min(960px,calc(100vw - 24px));max-width:960px;height:600px;
  max-height:min(664px,calc(100dvh - 24px));border:0;border-image:none;border-radius:18px;
  background:transparent url('assets/menu-place-picnic.png') center/100% 100% no-repeat;
  box-shadow:0 14px 40px #20372e66;overflow:hidden;
 }
 #dialog[data-frame=menu][data-place=picnic] #modal {
- height:100%;min-height:0;display:flex;flex-direction:column;padding:28px 64px!important;
+ height:100%;min-height:0;display:flex;flex-direction:column;padding:64px 84px 76px!important;overflow:hidden;
 }
 #dialog[data-place=picnic] .menu-navigation {
- flex:none;min-height:48px;padding:0 80px 10px 120px!important;
+ flex:none;position:relative;top:auto;min-height:46px;padding:0 64px 10px 64px!important;
  border:0;background:none!important;box-shadow:none;
 }
 #dialog[data-place=picnic] .menu-navigation .menu-location {display:none}
-#dialog[data-place=picnic] .menu-navigation .shell-close {top:0!important;right:90px!important}
+#dialog[data-place=picnic] .menu-navigation .shell-close {top:0!important;right:64px!important;width:34px;height:34px;min-width:34px;min-height:34px}
 #dialog[data-frame=menu][data-place=picnic] .dialog-content {
- flex:1;min-height:0;padding:8px 2px 10px!important;background:none;
+ flex:1;min-height:0;padding:12px 8px 10px 0!important;background:transparent!important;
  overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;
 }
 #dialog[data-place=picnic] .event-missions>.panel-heading {
@@ -65,7 +65,7 @@
  #modal .picnic-claim {grid-area:3/2;width:150px}
 }
 @container dialog (max-width:450px) {
- #dialog[data-frame=menu][data-place=picnic] #modal {padding:24px!important}
+ #dialog[data-frame=menu][data-place=picnic] #modal {padding:58px 36px 64px!important}
  .picnic-task {grid-template-columns:1fr}
  .picnic-task-heading,.picnic-task-status,.picnic-progress,.picnic-reward,#modal .picnic-claim {grid-area:auto}
  .picnic-reward {flex-direction:row}
@@ -79,6 +79,5 @@
 .picnic-footer .picnic-footnote{margin:0;text-align:left}
 .picnic-footer>button{min-height:36px;font-size:12px;padding:7px 14px;flex:none}
 
-#dialog[data-frame=menu][data-place=picnic]:has(.bird-guide[data-guide-panel=lesson]){height:640px}
-@container dialog (max-width:740px){#dialog[data-place=picnic] .menu-navigation{padding-left:60px!important}}
-@container dialog (max-width:450px){#dialog[data-place=picnic] .menu-navigation{padding-right:48px!important}#dialog[data-place=picnic] .menu-parent{display:none}.picnic-footer{flex-wrap:wrap}}
+@container dialog (max-width:740px){#dialog[data-frame=menu][data-place=picnic] #modal{padding:60px 54px 68px!important}}
+@container dialog (max-width:450px){#dialog[data-place=picnic] .menu-navigation{padding-left:0!important;padding-right:40px!important}#dialog[data-place=picnic] .menu-navigation .shell-close{right:0!important}#dialog[data-place=picnic] .menu-parent{display:none}.picnic-footer{flex-wrap:wrap}}

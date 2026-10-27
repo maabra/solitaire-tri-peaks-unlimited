@@ -97,6 +97,49 @@
 
 #dialog[data-frame=notice] .dialog-content{background:transparent!important;box-shadow:none}
 
+/* Painted boards behave like the settings book: one complete background, with
+   navigation and content confined to its paper. The frame never joins the scroll area. */
+#dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]){
+ width:min(960px,calc(100vw - 24px));max-width:960px;height:640px;
+ max-height:min(664px,calc(100dvh - 24px));padding:0;overflow:hidden;
+ border:0;border-image:none;border-radius:0;background-color:transparent;
+ background-image:var(--place-art);background-size:100% 100%;
+}
+#dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) #modal{
+ height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;
+ padding:88px 82px 78px 102px!important;
+}
+#dialog[data-frame=menu][data-place=collections] #modal{padding:72px 90px 64px!important}
+#dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) .menu-navigation{
+ flex:none;position:relative;top:auto;min-height:46px;padding:0 44px 10px 0!important;
+ border:0;border-bottom:1px solid #c8a66c;background:none!important;box-shadow:none;border-radius:0;
+}
+#dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) .menu-navigation .shell-close{
+ top:0!important;right:0!important;width:34px;height:34px;min-width:34px;min-height:34px;
+}
+#dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) .dialog-content{
+ flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+ padding:12px 8px 12px 0!important;background:transparent!important;border-radius:0;
+ scrollbar-width:thin;scrollbar-color:#bd965c #eadbb9;
+}
+@container dialog (max-width:700px){
+ #dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) #modal{
+  padding:76px 48px 64px!important;
+ }
+}
+/* A narrow page stacks actions rather than squeezing chapter names and progress
+   between an illustration and a full-width reward button. */
+@container dialog (max-width:450px){
+ #dialog[data-frame=menu]:is([data-place=adventures],[data-place=collections]) #modal{
+  padding:84px 28px 72px 36px!important;
+ }
+ #modal .travel-list article{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px}
+ #modal .travel-list img{width:48px;height:72px}
+ #modal .travel-list article>button{grid-column:1/-1;width:100%;max-width:none;margin:0}
+ #modal .event-row{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px}
+ #modal .event-row>button{grid-column:1/-1;width:100%;max-width:none;margin:0}
+}
+
 /* A book is a fixed surface; its pages, not its cover, own the scrollbar. */
 #dialog[data-frame=menu][data-place=study]{width:min(1000px,calc(100vw - 24px))!important;max-width:1000px;height:680px;max-height:min(680px,calc(100dvh - 24px));overflow:hidden;border:0;border-image:none;border-radius:0;background-color:transparent;background-image:var(--place-art);background-size:100% 100%;box-shadow:0 16px 50px #172a3244}
 #dialog[data-frame=menu][data-place=study] #modal{height:100%;min-height:0;display:flex;flex-direction:column;padding:118px 74px 122px!important;overflow:hidden}

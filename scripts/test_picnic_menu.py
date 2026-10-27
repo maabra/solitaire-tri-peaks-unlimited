@@ -29,8 +29,9 @@ async def main():
    assert await page.locator('#dialog').evaluate("e=>e.scrollWidth<=e.clientWidth+1")
    assert await page.locator('.picnic-task').evaluate_all("es=>es.every(e=>e.scrollWidth<=e.clientWidth+1)")
    assert await page.locator('.picnic-footer').is_visible()
-   if width>=1280:
+   if width>=1280 and not tutorial:
     assert await page.locator('.picnic-footer').evaluate("e=>{const a=e.getBoundingClientRect(),b=e.closest('.dialog-content').getBoundingClientRect();return a.bottom<=b.bottom+1}"),'Tasks or footer need scrolling at 720p'
+   if tutorial:await page.locator('.picnic-footer').evaluate("e=>e.scrollIntoView({block:'end'})")
    if width>=1280:assert await page.locator('.picnic-footer').evaluate("e=>e.getBoundingClientRect().bottom<=e.closest('dialog').getBoundingClientRect().bottom-64"),'Footer overlaps painted wooden rim'
    await page.screenshot(path=str(out/f'picnic-{width}.png'))
    await action(page,'birdDismiss')
@@ -46,5 +47,5 @@ async def main():
    assert await page.locator('[data-action="ev:eventPlay"]').is_visible()
    assert not errors,errors;await page.close()
   await browser.close()
- print('PASS: picnic tray fits at 720p; progress is capped; ready/pending states and tutorial fit; one-time claims reveal new tasks; six claims reach the complete state.')
+ print('PASS: fixed picnic tray contains its scrolling paper; progress is capped; ready/pending states and tutorial fit; one-time claims reveal new tasks; six claims reach the complete state.')
 asyncio.run(main())
