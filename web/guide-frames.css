@@ -1,0 +1,101 @@
+/* Pip owns a compact nine-slice frame. Stretch its plain rails, keeping corner art intact.
+   Explicit scope overrides older menu variants without changing the cabinet's dimensions. */
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] {
+ border:0 solid transparent;
+ border-image:url('assets/pip-help-frame.png') 220 fill / 28px stretch;
+ border-radius:0;
+ background:none;
+ box-shadow:0 8px 20px #20372e40;
+ padding:28px;
+ display:grid;
+ grid-template-columns:64px minmax(0,1fr);
+ gap:8px 12px;
+ overflow:visible;
+ color:#654c49;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame]>.pip-sprite {
+ grid-column:1;grid-row:1/3;align-self:center;width:64px;height:64px;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-copy {display:contents}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-copy>small {display:none}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-copy>strong {
+ grid-column:2;grid-row:1;align-self:end;margin:0;font-size:16px;line-height:1.3;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-copy>p {
+ grid-column:2;grid-row:2;margin:0;font-size:13px;line-height:1.4;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-places {
+ grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:9px;margin:4px 0 0;padding:3px 5px 9px 3px;max-height:238px;
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;
+ scrollbar-color:#b18a51 #f7e6bf;scrollbar-gutter:stable;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-places button {
+ min-height:76px;min-width:0;padding:8px 4px;font-size:12px;line-height:1.2;gap:5px;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-actions {
+ grid-column:1/-1;grid-row:auto;display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:4px 0 0;
+}
+:is(body,#app,#dialog) .bird-guide[data-guide-frame] .guide-actions button {
+ min-height:36px;padding:7px 13px;font-size:12px;
+}
+body .bird-guide[data-guide-frame]:not(.in-panel):not(.in-play) {
+ width:352px;max-width:352px;max-height:480px;right:26px;bottom:104px;
+}
+#dialog .bird-guide[data-guide-frame].in-panel {
+ width:100%;max-width:480px;margin:0 auto 18px;
+}
+/* An open destination picker floats inside its parent menu, instead of becoming
+   an oversized first row that pushes the actual menu off its illustrated surface. */
+#dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=places] {
+ position:absolute!important;inset:auto 20px 20px auto;width:352px;max-width:calc(100% - 40px);
+ margin:0;z-index:30;
+}
+#dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=lesson] {
+ max-width:none;padding:18px 22px;border-image-width:22px;
+ grid-template-columns:48px minmax(0,1fr) auto;gap:5px 12px;margin:0 0 12px;
+}
+#dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=lesson]>.pip-sprite {
+ width:48px;height:48px;
+}
+#dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=lesson] .guide-actions {
+ grid-column:3;grid-row:1/3;align-self:center;flex-wrap:nowrap;margin:0;
+}
+/* Short play tips still reserve the existing bay above helpers. A destination picker
+   is a menu of its own and must not squeeze the card table or the helper column. */
+#app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] {
+ padding:20px;border-image-width:20px;grid-template-columns:42px minmax(0,1fr);
+ gap:6px 8px;max-height:240px;
+}
+#app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson]>.pip-sprite {
+ width:42px;height:42px;
+}
+#app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] .guide-copy>strong {font-size:14px}
+#app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] .guide-copy>p {font-size:12px}
+#app .bird-guide[data-guide-frame].in-play[data-guide-panel=places] {
+ position:fixed;left:auto;right:26px;top:auto;bottom:104px;width:352px;max-height:480px;
+}
+/* Jewel tips retain a horizontal header lane above the board, with a smaller rail. */
+body[data-game-mode=gems] #app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] {
+ position:fixed;left:114px;right:114px;top:104px;bottom:auto;width:auto;
+ max-height:80px;padding:14px 18px;border-image-width:16px;
+ grid-template-columns:40px minmax(0,1fr);gap:12px;
+}
+body[data-game-mode=gems] #app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson]>.pip-sprite {
+ grid-area:auto;width:40px;height:40px;
+}
+body[data-game-mode=gems] #app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] .guide-copy {
+ display:grid;grid-template-columns:180px minmax(0,1fr) auto;align-items:center;gap:12px;
+}
+body[data-game-mode=gems] #app .bird-guide[data-guide-frame].in-play[data-guide-panel=lesson] .guide-copy>:is(strong,p,.guide-actions) {
+ grid-area:auto;margin:0;
+}
+/* Explanations have their own matching surface rather than showing the larger study painting behind them. */
+#context-help.context-help {
+ width:min(470px,calc(100vw - 24px));max-width:calc(100vw - 24px);
+ max-height:min(660px,calc(100dvh - 24px));overflow:auto;
+ border:0 solid transparent;border-image:url('assets/pip-help-frame.png') 220 fill / 28px stretch;
+ border-radius:0;background:none;box-shadow:0 12px 38px #20372e55;
+ padding:30px!important;
+}
+#context-help.context-help .help-close {top:14px;right:14px}

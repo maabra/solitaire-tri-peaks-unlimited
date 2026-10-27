@@ -14,6 +14,7 @@ async def main():
   await page.locator('[data-action="'+bad+'"]').click();await page.locator('.bird-guide').wait_for()
   assert 'A little tip from Pip' in await page.locator('.bird-guide').inner_text()
   assert await page.locator('.bird-guide .pip-sprite').count()==1
+  assert await page.locator('.bird-guide').evaluate("e=>e.querySelector('.guide-copy>p').getBoundingClientRect().bottom<=e.querySelector('.guide-actions').getBoundingClientRect().top"),'Guide buttons overlap its explanation'
   assert await page.locator('#toast.show').count()==0
   assert await page.locator('.bird-guide').evaluate("e=>{const a=e.getBoundingClientRect(),b=document.querySelector('.play-actions').getBoundingClientRect();return a.bottom<b.top}")
   assert await page.locator('[data-action=share],[data-action=openDeal],[data-action=favorite]').count()==0

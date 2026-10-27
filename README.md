@@ -63,6 +63,8 @@ Helpers unlock through progress and obstacle discovery. Pip introduces places, e
 | Picnic and Milestones | Collect rewards for the things you already do while playing |
 | Chapter collections | Earn stars, postcards, chests, card backs and tables |
 
+![Daily Picnic with separate task progress, rewards and claim buttons](docs/screenshots/picnic.png)
+
 ![Gem Garden with its jewel board and controls](docs/screenshots/garden.png)
 
 ![Sticker collections in the illustrated album menu](docs/screenshots/album.png)

@@ -1,0 +1,84 @@
+/* The picnic is a compact task tray, with a fixed rim and one scrollable content area.
+   Rewards remain session commands; this layout only makes progress and claiming explicit. */
+#dialog[data-frame=menu][data-place=picnic] {
+ width:min(960px,calc(100vw - 24px));max-width:960px;height:560px;
+ max-height:min(664px,calc(100dvh - 24px));border:0;border-image:none;border-radius:18px;
+ background:transparent url('assets/menu-place-picnic.png') center/100% 100% no-repeat;
+ box-shadow:0 14px 40px #20372e66;overflow:hidden;
+}
+#dialog[data-frame=menu][data-place=picnic] #modal {
+ height:100%;min-height:0;display:flex;flex-direction:column;padding:28px 64px!important;
+}
+#dialog[data-place=picnic] .menu-navigation {
+ flex:none;min-height:48px;padding:0 80px 10px 120px!important;
+ border:0;background:none!important;box-shadow:none;
+}
+#dialog[data-place=picnic] .menu-navigation .menu-location {display:none}
+#dialog[data-place=picnic] .menu-navigation .shell-close {top:0!important;right:90px!important}
+#dialog[data-frame=menu][data-place=picnic] .dialog-content {
+ flex:1;min-height:0;padding:8px 2px 10px!important;background:none;
+ overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;
+}
+#dialog[data-place=picnic] .event-missions>.panel-heading {
+ min-height:44px;gap:10px;margin:0;padding:0;
+}
+#dialog[data-place=picnic] .panel-heading .heading-art {
+ width:42px;height:42px;flex-basis:42px;background:none;border:0;box-shadow:none;
+}
+#dialog[data-place=picnic] .panel-heading h2 {font-size:26px}
+.picnic-summary {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 16px}
+.picnic-summary p {margin:0;font-size:14px;color:#735747}
+.picnic-summary>span {font-size:12px;color:#806754}
+.picnic-tasks {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.picnic-task {
+ min-width:0;display:grid;grid-template-rows:auto auto auto 1fr auto;gap:8px;
+ padding:14px;min-height:228px;border:2px solid #ddc69b;border-radius:18px;
+ background:#fffaf0f5;box-shadow:0 4px 0 #b9a17a44;
+}
+.picnic-task.is-ready {border-color:#94b566;background:#fffdef}
+.picnic-task-heading {display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:9px;min-height:42px}
+.picnic-task-heading h3 {margin:0;color:#674d45;font-size:17px;line-height:1.3}
+.picnic-task-status {justify-self:start;border-radius:12px;background:#f0e5cd;padding:4px 9px;font-size:11px;color:#826c52}
+.picnic-task.is-ready .picnic-task-status {background:#dcebc0;color:#3d652c}
+.picnic-progress {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:9px}
+.picnic-progress progress {width:100%;height:10px;min-width:0;margin:0;border:0;border-radius:8px;box-shadow:none;accent-color:#78ac44;overflow:hidden}
+.picnic-progress progress::-webkit-progress-bar {background:#e7dfc9;border-radius:8px}
+.picnic-progress progress::-webkit-progress-value {background:#87b84c;border-radius:8px;box-shadow:none}
+.picnic-progress small {font-size:12px;white-space:nowrap;color:#735747}
+.picnic-reward {display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #e7d8b8;padding-top:8px}
+.picnic-reward>small {font-size:12px;color:#806754}
+.picnic-reward>div {display:flex;align-items:center;gap:10px;font-size:13px}
+#modal .picnic-claim {width:100%;min-height:40px;margin:0;padding:8px 12px;font-size:14px}
+#modal .picnic-claim:disabled {opacity:1;background:#ede5d5;color:#938675;border-color:#d0c6b3;box-shadow:0 3px #b8ad9b;text-shadow:none;cursor:default}
+.picnic-footnote {margin:12px 0 0;text-align:center;font-size:12px;color:#806754}
+.event-missions>.related-places {display:none}
+.picnic-complete {grid-column:1/-1;text-align:center;padding:36px 24px;max-width:500px;margin:auto}
+.picnic-complete h3 {font-size:24px;margin:12px 0}
+.picnic-complete p {font-size:14px;line-height:1.5}
+@container dialog (max-width:740px) {
+ .picnic-tasks {grid-template-columns:1fr;gap:12px}
+ .picnic-task {grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;min-height:0;gap:10px 14px;padding:14px}
+ .picnic-task-heading {grid-area:1/1}
+ .picnic-task-status {grid-area:2/1}
+ .picnic-progress {grid-area:3/1}
+ .picnic-reward {grid-area:1/2/3/3;flex-direction:column;justify-content:center;border:0;padding:0}
+ #modal .picnic-claim {grid-area:3/2;width:150px}
+}
+@container dialog (max-width:450px) {
+ #dialog[data-frame=menu][data-place=picnic] #modal {padding:24px!important}
+ .picnic-task {grid-template-columns:1fr}
+ .picnic-task-heading,.picnic-task-status,.picnic-progress,.picnic-reward,#modal .picnic-claim {grid-area:auto}
+ .picnic-reward {flex-direction:row}
+ #modal .picnic-claim {width:100%}
+ #dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=lesson] {grid-template-columns:40px minmax(0,1fr);padding:16px;gap:6px}
+ #dialog .bird-guide[data-guide-frame].in-panel[data-guide-panel=lesson] .guide-actions {grid-column:1/-1;grid-row:auto}
+}
+
+/* Keep a clear route back to earning progress, including after all six claims. */
+#dialog .picnic-footer{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:8px}
+.picnic-footer .picnic-footnote{margin:0;text-align:left}
+.picnic-footer>button{min-height:36px;font-size:12px;padding:7px 14px;flex:none}
+
+#dialog[data-frame=menu][data-place=picnic]:has(.bird-guide[data-guide-panel=lesson]){height:640px}
+@container dialog (max-width:740px){#dialog[data-place=picnic] .menu-navigation{padding-left:60px!important}}
+@container dialog (max-width:450px){#dialog[data-place=picnic] .menu-navigation{padding-right:48px!important}#dialog[data-place=picnic] .menu-parent{display:none}.picnic-footer{flex-wrap:wrap}}

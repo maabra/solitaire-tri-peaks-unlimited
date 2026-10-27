@@ -3,7 +3,7 @@ const scenes={shop:'spring-village',settings:'moonlit-garden',journal:'autumn-or
 // Choose the illustrated menu surface after the content's semantic role is known.
 export function decorateMenuScene(root,topic){
  root.dataset.menuScene=topic;
- const place=topic==='shop'?'shop':['album','albums','pack','tokenShop','customize','postcard'].includes(topic)?'collections':['settings','journal','guide','default'].includes(topic)?'study':'adventures';
+ const place=topic==='missions'?'picnic':topic==='shop'?'shop':['album','albums','pack','tokenShop','customize','postcard'].includes(topic)?'collections':['settings','journal','guide','default'].includes(topic)?'study':'adventures';
  const dialog=root.closest('dialog');
  if(dialog.dataset.frame==='menu'){dialog.dataset.place=place;dialog.style.setProperty('--place-art',`url("assets/menu-place-${place}.png")`);}else{delete dialog.dataset.place;dialog.style.removeProperty('--place-art');}
  root.style.setProperty('--menu-scene',`url("assets/${scenes[topic]??'spring-village'}.png")`);
