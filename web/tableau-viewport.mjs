@@ -1,5 +1,7 @@
 // Fit the complete deal, never the remaining cards: clearing a card cannot move
 // its neighbors. One uniform scale preserves the engine's overlap geometry.
+// Fit the full formation bounds, including rotated cards, inside the available board area.
+// The outer game stays at its fixed size; only tableau placement responds to the formation.
 export function fitTableau(slots,width,viewportHeight,compact=false){
  const bounds=slots.map(s=>{
   const angle=s.Angle*Math.PI/180,c=Math.abs(Math.cos(angle)),n=Math.abs(Math.sin(angle));

@@ -1,4 +1,6 @@
 // The game has its own viewport. UI pixels stay UI pixels: never scale the app.
+// The cabinet defines a fixed-size game surface. Small browser windows scroll around it
+// instead of shrinking every card, label and hit target.
 export function frameSize(){return {width:1280,height:720};}
 export const gameWidth=()=>document.body.clientWidth;
 export const gameHeight=()=>document.body.clientHeight;

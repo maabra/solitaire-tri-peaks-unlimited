@@ -1,5 +1,7 @@
 namespace MeadowPeaks;
 
+// Undo captures board and mechanic state together. Restoring only the visible cards would
+// leave keys, timers or other obstacle state inconsistent with the restored move.
 public record Snapshot(bool[] Removed, List<Card> Stock, Card Waste, int Score, int Streak, MechanicState? Mechanics = null);
 public sealed record SavedRun(int Seed, int Level, bool Endless, bool[] Removed, List<Card> Stock, Card Waste, int Score, int Streak, int BestStreak, int FreeUndos, bool Paid, Deal? DealtBoard = null, MechanicState? Mechanics = null);
 public sealed partial class Hand : ISolitaireHand, IAdventureHand
@@ -53,6 +55,8 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     public IEnumerable<int> Moves => Enumerable.Range(0, removed.Length).Where(CanPlay);
     public bool CanUndo => history.Count > 0 && !Paid;
     void Remember() => history.Push(new((bool[])removed.Clone(), stock.ToList(), Waste, Score, Streak, state));
+    // Check legality before taking a snapshot or mutating the hand. Rejected input must not
+    // consume an undo step or advance obstacles that count successful actions.
     public bool Play(int i)
     {
         if (!CanPlay(i)) return false;

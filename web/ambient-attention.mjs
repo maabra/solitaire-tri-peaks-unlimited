@@ -2,6 +2,8 @@ import {gameIcon} from './game-art.mjs';
 import {motionAllowed} from './celebration-effects.mjs';
 export const attentionDelay=(random=Math.random)=>4000+Math.floor(random()*10000);
 // Each badge/glint owns its next timeout; rerenders do not restart its neighbors.
+// Give each visible badge its own timer rather than using a global animation tick.
+// Independent schedules keep exclamation marks and glints from pulsing in unison.
 export function installAmbientAttention(){
  const records=new Map(),media=matchMedia('(prefers-reduced-motion: reduce)');
  const selector='.new-feature-badge,.map-icon:has(.new-feature-badge),.event-tile:has(.new-feature-badge),.tool:has(.new-feature-badge)';

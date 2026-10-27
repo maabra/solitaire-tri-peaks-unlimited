@@ -2,6 +2,8 @@ namespace MeadowPeaks;
 
 public sealed class TriPeaksRules : ISolitaireRules
 {
+    // Explicit cover links take priority over geometric overlap. Authored fans and rotated
+    // formations cannot reliably infer blocking from row and horizontal distance alone.
     public bool Exposed(IReadOnlyList<Slot> layout, IReadOnlyList<bool> removed, int i)
     {
         if (removed[i]) return false;

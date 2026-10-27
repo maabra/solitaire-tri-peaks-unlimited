@@ -3,6 +3,8 @@ import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
 OUT=Path('docs/screenshots');OUT.mkdir(exist_ok=True)
+# Create an isolated sample profile for reproducible captures. Documentation screenshots
+# should exercise the real interface without modifying the developer's saved adventure.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)

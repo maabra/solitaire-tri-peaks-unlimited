@@ -10,6 +10,8 @@ public sealed class PrizeWheel
 {
     readonly Progress profile;readonly Wallet wallet;readonly PowerupInventory inventory;readonly IRandomSource random;readonly IPrizeWheelPolicy policy;
     public PrizeWheel(Progress profile,Wallet wallet,PowerupInventory inventory,IRandomSource random,IPrizeWheelPolicy? policy=null){this.profile=profile;this.wallet=wallet;this.inventory=inventory;this.random=random;this.policy=policy??new GardenWheelPolicy();}
+    // Derive available spins from earned garden milestones and persisted consumption.
+    // Reopening the wheel must not create another free spin.
     public int Spins=>Math.Max(0,1+profile.Garden/5-profile.WheelSpinsUsed);
     public IReadOnlyList<WheelPrize> Prizes=>policy.Prizes;
     public WheelPrize? Spin()

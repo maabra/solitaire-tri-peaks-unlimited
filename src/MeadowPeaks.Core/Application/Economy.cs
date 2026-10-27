@@ -9,6 +9,8 @@ public sealed class StandardEconomyPolicy : IEconomyPolicy
     public int ChapterGift => 150;
     public int ChapterWilds => 1;
 
+    // Replay rewards are intentionally smaller than first-clear rewards. Star quality is
+    // based on the best streak, so later draws do not erase an earlier strong run.
     public WinReward Reward(WinContext context)
     {
         int stars = context.BestStreak >= 9 ? 3 : context.BestStreak >= 5 ? 2 : 1;

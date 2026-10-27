@@ -9,5 +9,7 @@ public sealed class StoryDealProvider : IVersionedDealProvider
         previous=new AdventureDealProvider(new SeededDealProvider(new AdventureLayouts(),rules));
     }
     public Deal Generate(int seed,int level)=>current.Generate(seed,level);
+    // A saved generation identifies the original rules/layout algorithm, not just a visual style.
+    // Dispatch to that version so replay and save restoration remain deterministic.
     public Deal GenerateVersion(int seed,int level,string generation)=>generation=="MP16"?previous.Generate(seed,level):generation=="MP18"?story.Generate(seed,level):generation=="MP19"?current.Generate(seed,level):throw new ArgumentException("Unknown deal generation.");
 }

@@ -19,6 +19,8 @@ async def main():
   assert await gate.get_attribute('class')=='chapter-gate is-locked'
   await gate.click();assert await page.locator('.adventure-map').get_attribute('data-chapter')=='1'
   await page.screenshot(path=str(out/'locked.png'))
+  # Replay the deal's actual witness up to its final move, then finish through the UI.
+  # This checks the saved win-to-gate transition rather than merely styling an open gate.
   last=await page.evaluate("""async()=>{const {Session}=await import('./session.mjs'),{features}=await import('./journey-guide.mjs'),{helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=100;s.p.Stars=Object.fromEntries(Array.from({length:99},(_,i)=>[i+1,1]));s.p.Hearts=30;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.start(100,false,12345);const path=s.hand.Deal.Solution;for(const step of path.slice(0,-1)){if(step.Index<0){s.tick(2);s.draw();}else s.play(step.Index);}s.save();return path.at(-1).Index;}""")
   await page.reload();await route(page,'continue');await page.locator(f'[data-action="card:{last}"]').click()
   await page.locator('.victory').wait_for();await page.locator('[data-action=next]').click()

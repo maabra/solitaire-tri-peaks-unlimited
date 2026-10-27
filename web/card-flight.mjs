@@ -7,6 +7,8 @@ export function flyCard(source,target,{face=source,offset={x:0,y:0},delay=0,kind
  const style=getComputedStyle(source),w=parseFloat(style.width)||a.width,h=parseFloat(style.height)||a.height;
  const left=a.x+a.width/2-w/2-stage.x+offset.x,top=a.y+a.height/2-h/2-stage.y+offset.y;
  const dx=b.x+b.width/2-(a.x+a.width/2+offset.x),dy=b.y+b.height/2-(a.y+a.height/2+offset.y);
+ // The clone is visual only: strip interaction and identity so it cannot intercept a click
+ // or duplicate an accessible card while the real hand has already advanced.
  const copy=face.cloneNode(true);copy.removeAttribute('data-action');copy.removeAttribute('id');copy.removeAttribute('title');
  copy.classList.remove('entering','hint-card','guide-highlight');copy.classList.add('card-flight');copy.dataset.flight=kind;copy.disabled=true;copy.tabIndex=-1;copy.setAttribute('aria-hidden','true');
  copy.style.cssText=`position:fixed;left:${left}px;top:${top}px;width:${w}px;height:${h}px;--cw:${w}px;z-index:11000;pointer-events:none;opacity:1;transform-origin:center`;

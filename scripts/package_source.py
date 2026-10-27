@@ -5,6 +5,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 root = Path(__file__).resolve().parents[1]
 output = root / "artifacts" / "MeadowPeaks-source.zip"
 output.parent.mkdir(exist_ok=True)
+# Use an allowlist for the source export. The reference examples and local build/cache
+# directories are not project source and should never leak into a distributed archive.
 allowed = ["src", "tests", "tools", "scripts", "docs", ".github", "web", "shared"]
 files = [root / name for name in ("README.md", "LICENSE", ".gitignore", ".gitattributes", "global.json", "TODO.txt")]
 for directory in allowed:

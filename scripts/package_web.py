@@ -3,6 +3,8 @@ from pathlib import Path
 from zipfile import ZipFile,ZIP_DEFLATED
 root=Path(__file__).resolve().parents[1]
 web=root/'web'
+# List runtime assets explicitly: source tests, local saves and build tooling do not belong
+# in the hosted game. ZIP paths are relative to web/ so extraction produces the site root.
 files=[web/'index.html',*web.glob('*.css'),web/'icon.svg',*web.glob('*.mjs'),*web.joinpath('assets').rglob('*')]
 output=root/'artifacts'/'MeadowPeaks-web.zip'
 output.parent.mkdir(exist_ok=True)

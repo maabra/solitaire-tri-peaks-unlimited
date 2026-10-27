@@ -234,6 +234,8 @@ public sealed class GameSession
         return true;
     }
 
+    // Persist the live hand and garden alongside profile counters. A resumed session needs
+    // the same board state, not a freshly generated approximation of the current level.
     public void Save()
     {
         Profile.Active = Hand?.Capture(Seed, Level, Endless);

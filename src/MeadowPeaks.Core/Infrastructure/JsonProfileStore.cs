@@ -11,6 +11,8 @@ public sealed class JsonProfileStore : IProfileStore
     {
         warning = "";
         if (!File.Exists(path)) return new();
+        // Try the main file before its backup, but preserve both if neither validates.
+        // A failed load should not destroy the only copy of a player's adventure.
         foreach (var candidate in new[] { path, path + ".bak" })
         {
             try
@@ -28,6 +30,8 @@ public sealed class JsonProfileStore : IProfileStore
     public void Save(Progress profile)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+        // Serialize to a sibling temporary file before replacing the live save. The existing
+        // valid save is copied to the backup separately, so corrupt data cannot replace recovery.
         string temp = path + ".tmp";
         File.WriteAllText(temp, JsonSerializer.Serialize(profile, new JsonSerializerOptions { WriteIndented = true }));
         // Only a valid previous save may replace the recovery backup.

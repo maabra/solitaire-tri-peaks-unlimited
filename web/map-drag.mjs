@@ -1,6 +1,8 @@
 // Pan only the map surface. Scrollbars and all HUD furniture keep native input.
 export function installMapDrag(viewport){
  let drag=null;
+ // Native scrollbars and interactive furniture must keep their own pointer handling.
+ // Capturing their pointers here would turn a menu or scrollbar drag into a map pan.
  const furniture='.map-dock,.map-controls,.chapter-ribbon,.map-companion,.bird-guide,button,a,input,select,textarea,[role="scrollbar"]';
  viewport.addEventListener('pointerdown',e=>{
   if(e.pointerType==='touch'||e.button!==0||!e.isPrimary||e.target.closest(furniture))return;

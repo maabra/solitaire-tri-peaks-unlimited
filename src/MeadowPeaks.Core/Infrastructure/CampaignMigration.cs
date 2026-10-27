@@ -2,6 +2,8 @@ namespace MeadowPeaks;
 
 public static class CampaignMigration
 {
+    // Validate the legacy envelope first, then archive records outside the illustrated campaign.
+    // Migration must be safe to run again whenever a profile is loaded.
     public static Progress Apply(Progress profile)
     {
         if (!ProfileValidator.Valid(profile, true)) throw new InvalidDataException("Invalid saved adventure.");

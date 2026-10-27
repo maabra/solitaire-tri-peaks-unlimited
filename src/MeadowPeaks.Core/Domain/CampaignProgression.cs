@@ -14,6 +14,8 @@ public interface IDifficultyProgression
 // Progression describes level rules, never permanent player upgrades.
 public sealed class CampaignProgression : IDifficultyProgression
 {
+    // Map obstacle introductions to the shared content catalog. Pacing can change without
+    // rewriting the underlying card rules or the algorithms used by historical deals.
     public static int Introduction(CardKind kind) => kind switch
     {
         CardKind.Gift => 50, CardKind.Ice => 100, CardKind.Key or CardKind.Lock => 200,

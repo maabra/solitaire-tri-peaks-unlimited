@@ -1,4 +1,6 @@
 export const STARTING_HEARTS=3,MAX_HEARTS=999;
+// This object only bounds the heart balance. Session decides when an attempt loses a
+// heart and records that charge, so opening or resuming a menu cannot charge it twice.
 export class Lives {
  constructor(profile){this.p=profile;}
  get count(){return this.p.Hearts;}

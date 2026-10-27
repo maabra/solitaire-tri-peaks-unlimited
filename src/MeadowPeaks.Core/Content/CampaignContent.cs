@@ -3,6 +3,8 @@ namespace MeadowPeaks.Content;
 // The campaign ends with the last original illustrated chapter. Endless play is separate.
 public static class CampaignContent
 {
+    // The art collection sets the campaign cap. Derive totals here so unlock pacing,
+    // validation and the exported browser catalog agree on the last playable chapter.
     public const int ChapterCount = 100;
     public const int LevelsPerChapter = 100;
     public const int TotalLevels = ChapterCount * LevelsPerChapter;

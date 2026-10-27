@@ -6,6 +6,8 @@ public sealed record DealReference(int Level, int Seed, bool Endless, string Gen
 public static class DealCodes
 {
     const string Protocol = "MP16";
+    // The code stores a generation, level and seed rather than the whole board. Its short
+    // checksum catches transcription errors; it is not authentication or save encryption.
     public static string Encode(DealReference deal)
     {
         if (deal.Level<1 || deal.Level>=int.MaxValue || deal.Seed<0 || !deal.Endless && deal.Level>MeadowCampaign.TotalLevels) throw new ArgumentOutOfRangeException(nameof(deal));

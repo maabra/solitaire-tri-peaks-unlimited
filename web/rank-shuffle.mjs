@@ -13,6 +13,8 @@ export class RankShuffle{
   const candidates=indices.filter(i=>hand.isExposed(i)&&hand.allows({...hand.face(i),...faces[i]}));
   if(!candidates.length)return false;
   if(!candidates.some(i=>adjacent(hand.Waste.Rank,faces[i].Rank)))faces[candidates[rng.next(candidates.length)]].Rank=hand.Waste.Rank%13+1;
+  // Discard undo history after changing faces so Undo cannot reconstruct a board whose
+  // visible ranks belong to a different shuffle. Prize identities remain on the original cards.
   hand.s.Faces={...hand.s.Faces,...faces};hand.s.FaceSource={};hand.history=[];
   hand.s.LastEffect='shuffle';return true;
  }

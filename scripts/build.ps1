@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
+    # Fail before packaging if the shared browser catalog is stale. A successful native
+    # compile alone cannot detect mismatched unlock values in the bundled JavaScript.
     dotnet run --project tools/MeadowPeaks.ContentExporter -- --check .
     if ($LASTEXITCODE -ne 0) { throw 'Regenerate browser content from the C# interface catalog before building.' }
     if (-not $SkipEngineTests) {
@@ -20,6 +22,8 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'Publish failed. For an offline machine, use -OfflineInstalledRuntime.' }
     }
     $env:MEADOW_PEAKS_CACHE=Join-Path $projectRoot 'artifacts/desktop-cache'
+    # Exercise the packaged executable, not just the source build, to catch missing assets
+    # and WebView/runtime problems before treating the output folder as distributable.
     $process = Start-Process -FilePath (Join-Path $output 'MeadowPeaks.exe') -ArgumentList '--smoke' -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(180000)) { $process.Kill(); throw 'UI smoke test timed out.' }
     $result = Get-Content (Join-Path $output 'smoke-result.txt') -Raw

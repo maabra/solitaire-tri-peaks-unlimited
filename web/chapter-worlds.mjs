@@ -12,6 +12,8 @@ export async function chapterPicture(chapter){
  const promise=paint(chapter);cache.set(chapter,promise);if(cache.size>4)cache.delete(cache.keys().next().value);
  try{return await promise;}catch(e){cache.delete(chapter);throw e;}
 }
+// Use the same centered portrait crop for both the mural and its terrain route.
+// A wider crop or a different aspect ratio would put the road over the wrong scenery.
 async function paint(chapter){
  const index=collectionIndex(chapter),extra=index>=51,local=extra?index-51:index,asset=Math.floor(local/3),column=local%3,image=await load('assets/'+(extra?'portrait-extra-':'portrait-worlds-')+String(asset).padStart(2,'0')+'.png');
  const canvas=document.createElement('canvas');canvas.width=384;canvas.height=2480;const c=canvas.getContext('2d'),sw=image.width/3,sx=column*sw;

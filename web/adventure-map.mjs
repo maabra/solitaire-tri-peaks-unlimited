@@ -19,6 +19,8 @@ export function roadFor(chapter=1){
  const points=Array.from({length:440},(_,i)=>{const y=MAP_HEIGHT-260-i*20;return [terrainX(chapter,y),y]});
  points.push([gate[0],355]);const road={centers,stops,points,gate};cache.set(chapter,road);if(cache.size>12)cache.delete(cache.keys().next().value);return road;
 }
+// Gate entry is navigation after a saved chapter win, not another reward transaction.
+// Unlocked progress keeps gates open for returning players; the final one leads to Endless.
 export function chapterGateState(profile,chapter){
  const end=chapter*100,final=chapter===chapterCorridors.length;
  return {end,final,open:!!profile.Stars[end]||profile.Unlocked>end,next:final?null:chapter+1};

@@ -7,6 +7,8 @@ import {chapterName} from './chapter-worlds.mjs';
 import {features,featureUnlocked,journeyOptions,featureBadge} from './journey-guide.mjs';
 import {gameIcon} from './game-art.mjs';
 const button=(label,action,cls='',extra='')=>`<button data-action="${action}" class="${cls}" ${extra}>${label}</button>`;
+// Render the scrolling painting and route in one coordinate space. The app subsequently hoists
+// the ribbon, activity dock and controls out of that space so they stay fixed while exploring.
 export function overworldMarkup(session,chapter,background){const start=(chapter-1)*100+1,cleared=Array.from({length:100},(_,i)=>session.p.Stars[start+i]??0).filter(Boolean).length,stops=roadFor(chapter).stops,gate=roadFor(chapter).gate,gateway=chapterGateState(session.p,chapter);
  const labels={garden:'Gem Garden',wheel:'Lucky wheel',missions:'Picnic',album:'Album',tournament:'Trophies',balloon:'Balloon',bingo:'Bingo',regatta:'Regatta',voyage:'Voyage',chest:'Treasure',customize:'Card studio',travel:'Travel Hub',hunt:'Souvenir hunt',trail:'Treasure trail',memory:'Matching garden',tickets:'Ticket trail',postcard:'Postcards',milestones:'Milestones'};
  const ready=new Map(journeyOptions(session).filter(o=>typeof o.badge==='number'&&o.badge>0).map(o=>[o.id,o.badge]));

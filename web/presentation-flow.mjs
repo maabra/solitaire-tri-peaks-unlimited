@@ -10,6 +10,8 @@ export async function flyReward(from,to,icon='coins',count=6){
  }));
 }
 // Presentation only. Rewards were already committed by Session's winning move.
+// Completion can finish by animation or by the skip action. The caller checks that the
+// same hand is still active before showing results, avoiding stale UI after navigation.
 export async function presentCompletion(hand,stillCurrent,done){
  if(reduced()){if(stillCurrent())done();return;}
  const overlay=document.createElement('button');overlay.className='completion-stage';overlay.setAttribute('aria-label','Skip celebration');

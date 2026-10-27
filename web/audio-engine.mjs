@@ -1,4 +1,6 @@
 // Original procedural score and effects. No recordings, downloads or external services.
+// Browsers require a user gesture before audio can start. Keep unlocking, volume and playback
+// inside one owner so rerendering a menu does not create competing music players.
 export class MeadowAudio {
  constructor(getSettings){this.settings=getSettings;this.context=null;this.scene='map';this.voices=new Set();this.step=0;this.next=0;this.timer=null;this.unlocked=false;this.hidden=()=>{if(document.hidden)this.pause();else if(this.unlocked)this.resume();};document.addEventListener('visibilitychange',this.hidden);}
  async unlock(){this.unlocked=true;await this.resume();}

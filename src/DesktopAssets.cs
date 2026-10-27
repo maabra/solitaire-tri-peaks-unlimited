@@ -4,6 +4,8 @@ namespace MeadowPeaks;
 internal static class DesktopAssets
 {
     public static readonly string Root=Environment.GetEnvironmentVariable("MEADOW_PEAKS_CACHE") ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"MeadowPeaks");
+    // Runtime and asset preparation is shared by normal startup and smoke checks. Cache
+    // extracted files so opening the game does not repeatedly unpack the bundled renderer.
     public static async Task<string?> Runtime()
     {
         string cab=Path.Combine(AppContext.BaseDirectory,"WebViewRuntime.cab");if(!File.Exists(cab))return null;

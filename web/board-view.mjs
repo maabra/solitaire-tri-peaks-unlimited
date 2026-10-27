@@ -2,6 +2,8 @@ import {flyCard} from './card-flight.mjs';
 import {motion} from './motion.mjs';
 // Preserve the board and surviving card nodes during a move. No re-deal,
 // reflow, or entrance animation is applied to untouched cards.
+// Patch surviving cards in place instead of rebuilding the tableau on every move. Stable DOM nodes
+// keep their positions and focus while a separate decorative copy flies toward the waste.
 export function patchBoard(host,markup,incremental,reduced,effect=null){
  const template=document.createElement('template');template.innerHTML=markup;
  const board=host.querySelector('.board'),next=template.content;

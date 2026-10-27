@@ -19,6 +19,8 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
     public int LastGain { get; private set; }
     readonly Random rng;
     public GemGame(int seed) { this.seed=seed;rng = new Random(seed); Fresh(); }
+    // Avoid free matches in the starting grid and retry boards with no legal swap.
+    // The player should begin with a choice, rather than an automatic cascade or a dead end.
     void Fresh()
     {
         do

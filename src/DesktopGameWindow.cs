@@ -37,8 +37,12 @@ internal sealed partial class DesktopGameWindow:Form
             await browser.EnsureCoreWebView2Async(environment);var core=browser.CoreWebView2;
             core.Settings.AreDevToolsEnabled=false;core.Settings.AreDefaultContextMenusEnabled=false;core.Settings.IsStatusBarEnabled=false;
 
+            // Inject the native save before application modules run, so the shared interface starts
+            // from the desktop profile rather than briefly creating a separate browser adventure.
             await core.AddScriptToExecuteOnDocumentCreatedAsync("globalThis.meadowDesktop={profile:"+initialProfile+",warning:"+JsonSerializer.Serialize(loadWarning)+",readOnly:"+((smoke||checking)?"true":"false")+"};");
             core.WebMessageReceived+=MessageReceived;
+            // The WebView is an offline application host. Restrict navigation to its private origin
+            // so an external document cannot receive the injected profile or use the native bridge.
             core.NavigationStarting+=(_,e)=>{if(!e.Uri.StartsWith(Origin,StringComparison.Ordinal))e.Cancel=true;};
             FormWindowState previousState=WindowState;Rectangle previousBounds=Bounds;FormBorderStyle previousBorder=FormBorderStyle;
             core.ContainsFullScreenElementChanged+=(_,_)=>{if(core.ContainsFullScreenElement){previousState=WindowState;previousBounds=Bounds;previousBorder=FormBorderStyle;WindowState=FormWindowState.Normal;FormBorderStyle=FormBorderStyle.None;Bounds=Screen.FromControl(this).Bounds;}else{FormBorderStyle=previousBorder;Bounds=previousBounds;WindowState=previousState;}};
