@@ -3,6 +3,7 @@ import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
 OUT=Path('artifacts/map-pip-screenshots');OUT.mkdir(exist_ok=True)
+# Scenario: Actual map clicks, bounded chapter text, soft scenery, and early/locked Pip paths. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1274,'height':1267},reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))

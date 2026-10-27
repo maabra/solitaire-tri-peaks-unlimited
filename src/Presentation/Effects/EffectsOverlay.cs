@@ -16,6 +16,7 @@ internal sealed class EffectsOverlay : Form
     public float ViewScale { get; set; } = 1;
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public PointF ViewOffset { get; set; }
+    // Create a transparent native surface dedicated to decorations above game controls.
     public EffectsOverlay(EffectScene scene, IGameArtwork artwork)
     {
         this.scene = scene; this.artwork = artwork;
@@ -27,12 +28,14 @@ internal sealed class EffectsOverlay : Form
     {
         get { var p = base.CreateParams; p.ExStyle |= 0x20 | 0x80 | 0x80000 | 0x08000000; return p; }
     }
+    // Keep the decorative overlay from intercepting normal game input.
     protected override void WndProc(ref Message message)
     {
         if (message.Msg == 0x84) { message.Result = new IntPtr(-1); return; }
         if (message.Msg == 0x21) { message.Result = new IntPtr(3); return; }
         base.WndProc(ref message);
     }
+    // Align visibility and bounds with the owner while respecting reduced motion.
     public void Follow(Form owner, bool enabled)
     {
         if (!enabled || scene.ReducedMotion || !owner.Visible || owner.WindowState == FormWindowState.Minimized || !owner.ContainsFocus) { Hide(); return; }
@@ -41,7 +44,9 @@ internal sealed class EffectsOverlay : Form
         if (!Visible) Show(owner);
         RenderNativeFrame();
     }
+    // Suppress ordinary background painting for the layered transparent surface.
     protected override void OnPaintBackground(PaintEventArgs e) { }
+    // Leave rendering to the layered-frame path instead of ordinary control painting.
     protected override void OnPaint(PaintEventArgs e) { }
 
     // A per-pixel alpha surface avoids color-key fringes around fading particles.
@@ -71,15 +76,25 @@ internal sealed class EffectsOverlay : Form
             if (screen != IntPtr.Zero) ReleaseDC(IntPtr.Zero, screen);
         }
     }
-    [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; public NativePoint(int x, int y) { X = x; Y = y; } }
-    [StructLayout(LayoutKind.Sequential)] struct NativeSize { public int Width, Height; public NativeSize(int w, int h) { Width = w; Height = h; } }
+    [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; /* Store the point in the unmanaged structure layout required by Windows drawing APIs. */
+    public NativePoint(int x, int y) { X = x; Y = y; } }
+    [StructLayout(LayoutKind.Sequential)] struct NativeSize { public int Width, Height; /* Store frame dimensions in the unmanaged structure layout required by Windows drawing APIs. */
+    public NativeSize(int w, int h) { Width = w; Height = h; } }
     [StructLayout(LayoutKind.Sequential, Pack = 1)] struct BlendFunction { public byte BlendOp, BlendFlags, SourceConstantAlpha, AlphaFormat; }
+    // Acquire the Windows drawing context used when updating the layered surface.
     [DllImport("user32.dll")] static extern IntPtr GetDC(IntPtr window);
+    // Release a Windows drawing context acquired for the overlay frame.
     [DllImport("user32.dll")] static extern int ReleaseDC(IntPtr window, IntPtr dc);
+    // Create the temporary memory drawing context for compositing a frame.
     [DllImport("gdi32.dll")] static extern IntPtr CreateCompatibleDC(IntPtr dc);
+    // Select the frame bitmap into the temporary native drawing context.
     [DllImport("gdi32.dll")] static extern IntPtr SelectObject(IntPtr dc, IntPtr obj);
+    // Release the temporary native bitmap handle after compositing.
     [DllImport("gdi32.dll")] static extern bool DeleteObject(IntPtr obj);
+    // Release the temporary memory drawing context after uploading a frame.
     [DllImport("gdi32.dll")] static extern bool DeleteDC(IntPtr dc);
+    // Submit the premultiplied-alpha frame to the transparent Windows overlay.
     [DllImport("user32.dll", SetLastError = true)] static extern bool UpdateLayeredWindow(IntPtr window, IntPtr destinationDC, ref NativePoint destination, ref NativeSize size, IntPtr sourceDC, ref NativePoint source, uint colorKey, ref BlendFunction blend, uint flags);
+    // Release the overlay's owned drawing surface before disposing the form.
     protected override void Dispose(bool disposing) { if (disposing) surface?.Dispose(); base.Dispose(disposing); }
 }

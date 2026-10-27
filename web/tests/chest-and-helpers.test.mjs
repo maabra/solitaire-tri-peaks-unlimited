@@ -1,3 +1,4 @@
+// Exercise chest thresholds, helper ownership and reward persistence independently of animations.
 import assert from 'node:assert/strict';
 import {chestTiers,chestTierFor,chestReward} from '../chest-tiers.mjs';
 import {extraWinRewards} from '../win-rewards.mjs';

@@ -2,6 +2,7 @@ import asyncio,json
 from pathlib import Path
 from playwright.async_api import async_playwright
 OUT=Path('artifacts/ui-audit');OUT.mkdir(exist_ok=True)
+# Scenario: Exercise audit ui in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True)

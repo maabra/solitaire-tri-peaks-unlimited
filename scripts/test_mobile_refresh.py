@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: Exercise mobile refresh in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1280,'height':800},reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))

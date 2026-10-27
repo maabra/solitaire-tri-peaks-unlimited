@@ -1,6 +1,8 @@
 import {motion} from './motion.mjs';
 import {gameIcon} from './game-art.mjs';
+// Check motion preferences before starting a presentation sequence.
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.body.classList.contains('reduced');
+// Animate an already-earned reward from its source toward the wallet; do not grant it here.
 export async function flyReward(from,to,icon='coins',count=6){
  if(!from||!to||reduced())return;
  const a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
@@ -18,12 +20,15 @@ export async function presentCompletion(hand,stillCurrent,done){
  overlay.innerHTML=`<span class="stock-bonus-art">${Array.from({length:Math.min(hand.Stock.length,12)},(_,i)=>`<i style="--i:${i}">${gameIcon('ratingStar',36)}</i>`).join('')}</span><strong>${hand.Stock.length?'Stock bonus':'Beautifully played!'}</strong><small>Tap to skip</small>`;
  document.body.append(overlay);
  let finish;const skip=new Promise(resolve=>{finish=resolve});overlay.onclick=finish;
+ // Wait for the animation interval or the player's skip action, whichever finishes first.
  const wait=ms=>Promise.race([new Promise(resolve=>setTimeout(resolve,ms)),skip]);
  try{if(hand.Stock.length)await wait(motion.completeStock);if(!stillCurrent())return;overlay.querySelector('strong').textContent='You win!';overlay.classList.add('celebrating');await wait(motion.completeWin);if(stillCurrent())done();}finally{overlay.remove();}
 }
+// Animate the displayed stars and totals from the already-committed win reward.
 export function animateResults(root,stars,coins){
  const amounts=root.querySelectorAll('[data-result-coins]');
  if(reduced())return;
  for(const [i,star]of [...root.querySelectorAll('.result-star.earned')].entries())star.animate([{transform:'scale(.2)',opacity:0},{transform:'scale(1.35)',opacity:1,offset:.7},{transform:'scale(1)',opacity:1}],{duration:motion.star,delay:i*motion.starStagger,fill:'backwards'});
- const begin=performance.now();function frame(now){if(!root.isConnected)return;const t=Math.min(1,(now-begin)/motion.resultCount);for(const el of amounts)el.textContent=Math.round(coins*(1-(1-t)**3)).toLocaleString();if(t<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);
+ const begin=performance.now();/* Advance displayed result totals and stop when the target panel has been removed. */
+ function frame(now){if(!root.isConnected)return;const t=Math.min(1,(now-begin)/motion.resultCount);for(const el of amounts)el.textContent=Math.round(coins*(1-(1-t)**3)).toLocaleString();if(t<1)requestAnimationFrame(frame);}requestAnimationFrame(frame);
 }

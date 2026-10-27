@@ -3,6 +3,7 @@ namespace MeadowPeaks;
 internal static class LuckyWheelArt
 {
     static readonly Color[] colors={Color.FromArgb(229,96,170),Color.FromArgb(119,112,212),Color.FromArgb(75,201,219),Color.FromArgb(140,211,87),Color.FromArgb(235,136,113),Color.FromArgb(180,94,212),Color.FromArgb(93,202,184),Color.FromArgb(217,148,77)};
+    // Paint the wheel at its current animation angle using the actual prize ordering.
     public static void Draw(Graphics g,PointF center,float radius,float angle,IReadOnlyList<WheelPrize> prizes)
     {
         var state=g.Save();g.TranslateTransform(center.X,center.Y);g.RotateTransform(angle);

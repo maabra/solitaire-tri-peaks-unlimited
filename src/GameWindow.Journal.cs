@@ -3,18 +3,21 @@ namespace MeadowPeaks;
 public sealed partial class GameWindow
 {
     int journalPage, mechanicsPage;
+    // Refresh the temporary stock-preview controls from the active effect state.
     void UpdatePeekControls()
     {
         bool show = (hand as ITemporaryHand)?.Effects.PeekSeconds is not > 0 || hand?.Won == true;
         foreach (string name in new[] { "mechanics", "remix", "shareDeal" })
             if (Controls.Find(name,false).FirstOrDefault() is { } control) control.Visible=show;
     }
+    // Copy the current versioned deal reference through the native clipboard.
     void CopyDeal()
     {
         if(session.ShareCode is not { } code || smoke) return;
         try { Clipboard.SetText(code); Tell("\U0001f4cb \u2713"); }
         catch(System.Runtime.InteropServices.ExternalException) { Tell("Clipboard is busy. Try again."); }
     }
+    // Validate a supplied historical deal reference before requesting its hand.
     void ImportDeal()
     {
         using var dialog=new Form { Text="Open a deal code", ClientSize=new(590,165), FormBorderStyle=FormBorderStyle.FixedDialog, StartPosition=FormStartPosition.CenterParent, MaximizeBox=false, MinimizeBox=false };
@@ -32,6 +35,7 @@ public sealed partial class GameWindow
             screen="play"; overlay=""; selectedPowerup=null; cardHint=-1; Save(); Build(); PresentSceneEntrance();
         });
     }
+    // Build native journal controls from saved statistics and claims.
     void BuildJournal()
     {
         var goals=session.Picnic.Goals;
@@ -59,6 +63,7 @@ public sealed partial class GameWindow
             mapPage=(next-1)/20;Navigate("map");
         });
     }
+    // Draw saved progress and journal decoration behind its controls.
     void PaintJournal(Graphics g)
     {
         Art.Text(g,"Your journal",260,174,34,artwork.Ink,true,760,true);

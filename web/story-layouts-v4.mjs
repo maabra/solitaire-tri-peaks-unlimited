@@ -6,16 +6,22 @@ const names=['Garden packets','Terraced courtyard','Descending steps','Open roya
  'Crown promenade','Lantern avenue','Woven terraces','Butterfly fans'];
 export const formationFamiliesV4=128;
 
+// Convert authored points into slots and compute their cover links before the hand is dealt.
 function compile(points){
+ // Test authored card footprints when constructing the explicit covering graph.
  const overlap=(q,r)=>{const a=q.Angle*Math.PI/180,b=r.Angle*Math.PI/180;
   return [a,a+Math.PI/2,b,b+Math.PI/2].every(t=>Math.abs((r.DrawX-q.DrawX)*Math.cos(t)+(r.DrawY-q.DrawY)*Math.sin(t))<
    37*(Math.abs(Math.cos(a-t))+Math.abs(Math.cos(b-t)))+52*(Math.abs(Math.sin(a-t))+Math.abs(Math.sin(b-t)))-1);
  };
  return points.map((p,i)=>({...p,X:i%10,Row:Math.floor(i/10),BlockedBy:points.flatMap((q,j)=>j>i&&overlap(p,q)?[j]:[])}));
 }
+// Build packet/fan formation families with deliberate covering rather than arbitrary scatter.
 function structured(family,variation,opening=0){
- const p=[],add=(x,y,angle=0)=>p.push({DrawX:x,DrawY:y,Angle:angle});
+ const p=[],/* Append an authored point or option to the current local collection. */
+ add=(x,y,angle=0)=>p.push({DrawX:x,DrawY:y,Angle:angle});
+ // Place a layered packet of cards with consistent spacing and rotation.
  const packet=(x,y,n=4,lean=0)=>{for(let j=0;j<n;j++)add(x+lean*j,y+j*27,lean*.8);};
+ // Place a curved spread of cards whose overlaps will be compiled into cover links.
  const fan=(x,y,n,rx,ry,from=-60,to=60)=>{for(let i=0;i<n;i++){const a=from+(to-from)*i/(n-1),t=a*Math.PI/180;add(x+Math.sin(t)*rx,y-Math.cos(t)*ry,a*.42);}};
  if(opening===1){fan(500,180,6,320,80,-54,54);fan(500,253,7,390,105,-60,60);}
  else if(opening===2){for(const [r,n]of [4,3,2,3,2].entries())for(let i=0;i<n;i++)add(500+(i-(n-1)/2)*125,60+r*57);}
@@ -40,12 +46,14 @@ function structured(family,variation,opening=0){
  if(!opening){const mirror=variation%2?-1:1;for(const q of p){q.DrawX=500+(q.DrawX-500)*mirror;q.Angle*=mirror;q.DrawY+=(variation-1.5)*Math.sin(q.DrawX*.01)*5;}}
  return compile(p);
 }
+// Name the current formation family, including the occasional long-garden variant.
 export function storyNameV4(level){
  if(level>=1000&&level%100===95)return 'Long garden · '+longCardCount(level)+' cards';
  if(level<=4)return ['Pip’s first fan','Little courtyard','Three bouquets','Four little gardens'][level-1];
  const family=(level-5)%128;if(family<64)return names[family%16]+['',' · Twin paths',' · Terraces',' · Festival'][Math.floor(family/16)];
  return storyNameV3(level);
 }
+// Build the current formation with explicit cover relationships and deterministic variation.
 export function storyLayoutV4(level){
  if(level>=1000&&level%100===95){
   const count=longCardCount(level),columns=level<2500?6:8,depth=count/columns,points=[];
@@ -56,4 +64,5 @@ export function storyLayoutV4(level){
  const family=(level-5)%128;if(family>=64)return storyLayoutV3(level);
  return structured(family%16,Math.floor(family/16)+Math.floor((level-5)/128)%4);
 }
+// Select the authored long-garden size only at the designated campaign milestones.
 export const longCardCount=level=>level<2500?60:level<6000?80:level<9000?104:120;

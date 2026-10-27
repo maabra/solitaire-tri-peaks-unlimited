@@ -1,6 +1,7 @@
 // Clip each atlas cell in its own square coordinate system. CSS sizing can no
 // longer expose an adjacent cell when an icon is displayed in a narrow slot.
 let serial=0;
+// Address one generated sprite inside its atlas while preserving the requested display size.
 export function atlasIcon(file,index,columns,rows,width,height,size,classes='',attributes=''){
  const w=width/columns,h=height/rows,x=index%columns*w,y=Math.floor(index/columns)*h;
  const clip=`atlas-cell-${++serial}`;

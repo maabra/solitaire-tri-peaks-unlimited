@@ -1,10 +1,14 @@
 import {gemMarkup} from './gem-art.mjs';
 const colors=['#bc6a74','#6e8fbb','#edb95d','#75a87e','#a481b4','#77b7bc'];
 const icons=['♥','◆','✦','✿','●','⬟'];
-const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const /* Wait between recorded jewel animation phases without changing the resolved game result. */
+ pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+// Play the engine's recorded swap and cascade frames without rerunning reward logic.
 export async function animateGemMatch(grid,first,second,frames,finalCells,reduced){
+ // Check whether jewel animations should be replaced by their final visual state.
  const noMotion=()=>!!reduced||document.body.classList.contains('reduced')||matchMedia('(prefers-reduced-motion: reduce)').matches;
  const buttons=[...grid.querySelectorAll('.gem')];
+ // Read the rendered jewel cells needed to apply an animation frame.
  const cells=values=>values.forEach((v,i)=>{buttons[i].innerHTML=gemMarkup(v);buttons[i].style.background=`linear-gradient(145deg,${colors[v]},${colors[v]}cc)`});
  buttons.forEach(b=>{b.disabled=true;b.classList.remove('found','selected')});
  const rects=buttons.map(b=>b.getBoundingClientRect()),box=grid.getBoundingClientRect(),base={x:box.x+grid.clientLeft,y:box.y+grid.clientTop,width:grid.clientWidth,height:grid.clientHeight};

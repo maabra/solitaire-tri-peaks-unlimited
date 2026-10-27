@@ -6,6 +6,7 @@ from urllib.request import urlopen
 from collections import Counter
 
 cache=Path('artifacts/reference-study/cache/levels');cache.mkdir(parents=True,exist_ok=True)
+# Read the referenced input into the catalog representation used by the inspection script.
 def read(level):
  path=cache/f'level{level}.json'
  try:

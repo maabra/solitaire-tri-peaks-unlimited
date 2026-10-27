@@ -1,3 +1,4 @@
+// Lock the fixed cabinet dimensions so small windows scroll instead of shrinking the whole UI.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {frameSize} from '../game-frame.mjs';

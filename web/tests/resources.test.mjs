@@ -1,3 +1,4 @@
+// Check semantic resource labels and quantities without relying on a browser screenshot.
 import assert from 'node:assert/strict';
 import {resourceTextParts,resourceBadge,swapHeartProgress} from '../resource-view.mjs';
 assert.deepEqual(resourceTextParts('90 coins grown ? +1 heart').filter(p=>typeof p==='object'),[

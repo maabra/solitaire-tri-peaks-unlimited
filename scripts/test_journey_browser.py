@@ -3,9 +3,11 @@ import asyncio,json
 from pathlib import Path
 from playwright.async_api import async_playwright
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'artifacts'/'journey-screenshots';OUT.mkdir(exist_ok=True)
+# Scenario: Portrait worlds, Pip onboarding, natural unlocks, skins, responsive tables. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True);errors=[]
+  # Create the isolated browser context and seed its scenario-specific saved profile.
   async def context(profile=None,size=(1280,800)):
    c=await browser.new_context(viewport={'width':size[0],'height':size[1]},reduced_motion='reduce');await c.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
    if profile:await c.add_init_script('if(!localStorage.getItem("meadow-peaks-profile"))localStorage.setItem("meadow-peaks-profile",'+json.dumps(json.dumps(profile))+');')

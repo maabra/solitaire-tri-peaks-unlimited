@@ -4,18 +4,26 @@ import {chestReward} from './chest-tiers.mjs';
 import {SeededRandom,clone} from './core.mjs';
 export const categories=['Village treasures','Winter wonders','Autumn harvest','Moonlight magic','Lavender picnic','Ocean discoveries','Desert journey','Cherry blossoms','Forest friends','Festival lights'];
 export const stickerNames=[['Watering can','Wheelbarrow','Flower basket','Birdhouse','Garden gate','Garden boots','Sunflower','Teapot','Beehive','Wishing well'],['Snowman','Mittens','Sleigh','Pinecone','Lantern','Snow globe','Scarf','Ice castle','Penguin','Cabin'],['Pumpkin','Acorn','Mushroom','Maple leaf','Apple pie','Scarecrow','Fox','Harvest basket','Squirrel','Autumn bouquet'],['Telescope','Moon','Crystal','Owl','Comet','Potion','Fairy door','Night flower','Moth','Storybook'],['Lavender vase','Picnic basket','Sun hat','Bicycle','Honey','Butterfly','Soap','Lavender','Parasol','Bench'],['Shell','Coral','Turtle','Pineapple','Coconut','Surfboard','Fish','Starfish','Sandcastle','Ukulele'],['Camel','Cactus','Magic lamp','Urn','Oasis','Compass','Carpet','Hourglass','Stone arch','Jewel'],['Cherry blossom','Fan','Paper crane','Bonsai','Koi','Bridge','Parasol','Teacup','Lantern','Pagoda'],['Deer','Fern','Hedgehog','Dragonfly','Robin','Moss','Rabbit','Treehouse','Mushroom house','Waterfall'],['Balloon','Carousel','Fireworks','Bunting','Cupcake','Drum','Trumpet','Mask','Ferris wheel','Crown']];
+// Reject fractional, negative or oversized persisted activity counters.
 const integer=(n,max=2147483647)=>Number.isInteger(n)&&n>=0&&n<=max;
-const period=(now,ms)=>Math.floor(now/ms), month=now=>new Date(now).toISOString().slice(0,7);
+// Turn the supplied clock value into the activity's reset-period identifier.
+const period=(now,ms)=>Math.floor(now/ms), /* Identify the monthly reward period independently from individual session visits. */
+ month=now=>new Date(now).toISOString().slice(0,7);
+// Map a sticker index to the album's rarity tier.
 export const rarity=id=>Math.floor((id%10)/2)+1;
+// Create the initial state for the adventure activities before applying persisted progress.
 const fresh=now=>({Schema:1,Stats:{clears:0,draws:0,spent:0,wins:0,stars:0,arrows:0,packs:0},Claimed:[],Album:{Index:0,Cards:{},Packs:[1],Tokens:0,Categories:[],Complete:false,Last:[]},Daily:{At:now,Values:{},Claimed:[]},Pass:{Month:month(now),Wins:0,Claimed:[]},Tournament:{Period:period(now,7*86400000),Score:0,Claimed:[],League:0},Hunt:{Round:0,Arrows:0,Used:0,Open:[],Claimed:[]},Bingo:{Round:0,Tokens:0,Drawn:[],Lines:[]},Regatta:{Period:period(now,7*86400000),Distance:0,Streak:0,Claimed:[]},Balloon:{Week:-1,Stage:0,Active:false,Arrows:0},Tickets:{Week:-1,Stage:0,Active:false},Chest:[],Postcards:[],WheelAt:0,Notice:[]});
+// Reject malformed activity state before it can affect rewards or the player's wallet.
 export function validateAdventure(a,maxChapters=CHAPTER_SET_COUNT){
  if(!a||a.Schema!==1)throw Error('Unsupported adventure collection.');
+ // Require an activity counter to satisfy the supplied numeric bound.
  const check=(v,max)=>{if(!integer(v,max))throw Error('Invalid adventure counter.');};
  if(!a.Stats||Object.keys(a.Stats).some(k=>!['clears','draws','spent','wins','stars','arrows','packs'].includes(k)))throw Error('Invalid lifetime counters.');
  for(const v of Object.values(a.Stats))check(v);
  if(a.Album.Archive!=null){if(!Array.isArray(a.Album.Archive)||a.Album.Archive.length>10000)throw Error('Invalid album gallery.');for(const old of a.Album.Archive){check(old.Index);if(!old.Cards||Object.entries(old.Cards).some(([id,n])=>!/^\d+$/.test(id)||!integer(+id,99)||!integer(n,1000000)||!n)||!Array.isArray(old.Categories)||old.Categories.some(i=>!integer(i,9)))throw Error('Invalid completed album.');}}
  for(const [id,n]of Object.entries(a.Album.Cards)){if(!/^\d+$/.test(id))throw Error('Invalid sticker.');check(+id,99);check(n,1000000);if(!n)throw Error('Invalid sticker count.');}
  check(a.Album.Index);check(a.Album.Tokens);if(!Array.isArray(a.Album.Packs)||a.Album.Packs.length>10000||a.Album.Packs.some(n=>!integer(n,5)||n<1))throw Error('Invalid pack collection.');
+ // Require a bounded list of unique valid activity identifiers.
  const list=(v,max)=>{if(!Array.isArray(v)||v.length>100000||new Set(v).size!==v.length||v.some(n=>!integer(n,max)))throw Error('Invalid adventure progress.');};
  list(a.Album.Categories,9);list(a.Hunt.Open,80);list(a.Bingo.Drawn,24);list(a.Bingo.Lines,11);list(a.Hunt.Claimed);list(a.Pass.Claimed,99);list(a.Tournament.Claimed);list(a.Regatta.Claimed);list(a.Chest,maxChapters);list(a.Postcards,maxChapters);list(a.Daily.Claimed,5);
  if(!Array.isArray(a.Claimed)||a.Claimed.length>10000||a.Claimed.some(x=>typeof x!=='string'||x.length>80))throw Error('Invalid reward ledger.');
@@ -24,36 +32,68 @@ export function validateAdventure(a,maxChapters=CHAPTER_SET_COUNT){
  return a;
 }
 export class AdventureSystems {
+ // Bind activity state to the session so rewards use its shared wallet and persistence.
  constructor(session){this.s=session;const existing=session.p.Adventure;this.a=session.p.Adventure??=fresh(session.now());if(!existing){this.a.Stats.wins=session.p.Garden;this.a.Stats.stars=Object.values(session.p.Stars).reduce((a,b)=>a+b,0);}validateAdventure(this.a);this.a.Album.Archive??=[];this.refresh();}
+ // Reset period-based activities when their saved day or month no longer matches the clock.
  refresh(){const a=this.a,now=this.s.now();if(now>=a.Daily.At+86400000)a.Daily={At:now,Values:{},Claimed:[]};const m=month(now);if(a.Pass.Month<m){a.Pass={Month:m,Wins:0,Claimed:[]};a.Notice=['A new monthly voyage is ready.'];}const week=period(now,7*86400000);for(const name of ['Tournament','Regatta'])if(a[name].Period<week){const old=a[name];if(name==='Tournament')a[name]={Period:week,Score:0,Claimed:[],League:Math.min(5,old.League+(old.Score>=500?1:0))};else a[name]={Period:week,Distance:0,Streak:0,Claimed:[]};}return a;}
+ // Apply the activity's bounded coins, hearts, packs and helper prizes to the session.
  reward({coins=0,item=null,count=1,pack=0,arrows=0,bingo=0,hearts=0}={}){if(hearts)this.s.lives.add(hearts);this.s.credit(coins);if(item)this.s.add(item,count);if(pack&&this.a.Album.Packs.length<10000)this.a.Album.Packs.push(pack);this.a.Hunt.Arrows=Math.min(2147483647,this.a.Hunt.Arrows+arrows);this.a.Bingo.Tokens=Math.min(2147483647,this.a.Bingo.Tokens+bingo);}
+ // Advance activity counters from the supplied game event.
  record(key,n=1){this.refresh();this.a.Stats[key]=Math.min(2147483647,(this.a.Stats[key]??0)+n);this.a.Daily.Values[key]=Math.min(2147483647,(this.a.Daily.Values[key]??0)+n);}
+ // Record a finished hand's contributions to eligible activity tracks.
  onWin(stars,newLevel=true,campaign=true){this.s.side?.onWin(newLevel);this.record('wins');this.record('stars',stars);const a=this.a;if(campaign)a.Pass.Wins=Math.min(2147483647,a.Pass.Wins+1);a.Bingo.Tokens=Math.min(2147483647,a.Bingo.Tokens+1);if(newLevel){a.Regatta.Streak=Math.min(2147483647,a.Regatta.Streak+1);a.Regatta.Distance=Math.min(2147483647,a.Regatta.Distance+[1,5,10,20,50][Math.min(4,a.Regatta.Streak-1)]);}if(newLevel&&a.Balloon.Active){a.Balloon.Stage++;if(a.Balloon.Stage===3){a.Balloon.Active=false;this.reward({coins:150,pack:3,arrows:3});}}if(newLevel&&a.Tickets.Active&&++a.Tickets.Stage===10){a.Tickets.Active=false;this.reward({coins:400,pack:4,item:'tnt'});}}
+ // Record abandonment consequences for the active adventure mode.
  onAbandon(){this.a.Regatta.Streak=0;if(this.a.Balloon.Active){this.a.Balloon.Stage=0;this.a.Balloon.Arrows=0;}if(this.a.Tickets.Active)this.a.Tickets.Stage=0;}
+ // Calculate today's mission targets, progress and claim state.
  get missions(){this.refresh();const specs=[['wins','Win 3 hands',3,60],['clears','Clear 60 cards',60,70],['draws','Draw 20 cards',20,50],['spent','Spend 150 coins',150,75],['stars','Earn 12 stars',12,80],['packs','Open 2 sticker packs',2,60]];return specs.map(([key,name,target,coins],id)=>({id,key,name,target,coins,current:this.a.Daily.Values[key]??0,claimed:this.a.Daily.Claimed.includes(id)})).filter(g=>!g.claimed).slice(0,3);}
+ // Grant an achieved mission's reward once and persist its claimed marker.
  claimMission(id){const g=this.missions.find(g=>g.id===id);if(!g||g.current<g.target)return false;this.a.Daily.Claimed.push(id);this.reward({hearts:1,coins:g.coins});this.s.save();return true;}
+ // Describe long-term milestone progress from the profile's accumulated activity.
  get milestones(){return Object.entries(this.a.Stats).map(([key,current])=>{let tier=0;while(this.a.Claimed.includes(key+':'+tier))tier++;const base=({clears:100,draws:50,spent:500,wins:10,stars:20,arrows:10,packs:5}[key]??10),limit=Math.ceil(Math.log2(2147483647/base)),target=Math.min(2147483647,base*2**Math.min(40,tier));return {key,current,tier,target,finished:tier>limit,coins:50+25*tier};});}
+ // Validate a reached milestone and record its one-time reward claim.
  claimMilestone(key){const g=this.milestones.find(g=>g.key===key);if(!g||g.finished||g.current<g.target)return false;this.a.Claimed.push(key+':'+g.tier);this.reward({hearts:1,coins:g.coins,pack:g.tier%3===2?2:0});this.s.save();return true;}
+ // Consume an owned pack, choose its stickers and record duplicates through album state.
  openPack(){if(!this.a.Album.Packs.length)return null;const album=this.a.Album,tier=album.Packs.shift(),rng=new SeededRandom(crypto.getRandomValues(new Uint32Array(1))[0]%2147483647),results=[];for(let i=0;i<3;i++){const r=i===0?tier:1+rng.next(tier),id=rng.next(10)*10+(r-1)*2+rng.next(2),fresh=!album.Cards[id];album.Cards[id]=Math.min(1000000,(album.Cards[id]??0)+1);if(fresh)this.reward({coins:r*5});else album.Tokens=Math.min(2147483647,album.Tokens+r*5);results.push({id,fresh,rarity:r});}album.Last=results;this.record('packs');this.s.save();return results;}
+ // Validate the pack purchase before spending wallet or exchange currency.
  buyPack(tier){const cost=[0,30,60,100,160,240][tier];if(!cost||this.a.Album.Tokens<cost||this.a.Album.Packs.length>=10000)return false;this.a.Album.Tokens-=cost;this.a.Album.Packs.push(tier);this.s.save();return true;}
+ // Grant a completed sticker-category prize only if it has not been claimed.
  claimCategory(id){if(!integer(id,9)||this.a.Album.Categories.includes(id)||!Array.from({length:10},(_,i)=>this.a.Album.Cards[id*10+i]).every(Boolean))return false;this.a.Album.Categories.push(id);this.reward({hearts:1,coins:250,pack:3,item:'joker'});if(this.a.Album.Categories.length===10&&!this.a.Album.Complete){this.a.Album.Complete=true;this.reward({coins:2000,pack:5,item:'tnt',count:3});}this.s.save();return true;}
+ // Advance to the next album only when the current collection satisfies its completion rules.
  nextAlbum(){if(!this.a.Album.Complete||this.a.Album.Index>=2147483647||this.a.Album.Archive.length>=10000)return false;const old=this.a.Album,archive=[...old.Archive,{Index:old.Index,Cards:clone(old.Cards),Categories:[...old.Categories],Complete:true,Tokens:0,Packs:[]}];this.a.Album={Archive:archive,Index:this.a.Album.Index+1,Cards:{},Packs:[3],Tokens:this.a.Album.Tokens,Categories:[],Complete:false,Last:[]};this.s.save();return true;}
+ // Calculate the progress requirement for the requested voyage/pass reward step.
  passTarget(tier){return (tier+1)*(tier+10)/2;}
+ // Grant a reached pass reward once using its saved claim state.
  claimPass(tier){if(!integer(tier,99)||this.a.Pass.Claimed.includes(tier)||this.a.Pass.Wins<this.passTarget(tier))return false;this.a.Pass.Claimed.push(tier);this.reward({hearts:1,coins:60+tier*10,pack:tier%3===2?Math.min(5,1+Math.floor(tier/3)):0,item:tier%2?'extra':'joker'});this.s.save();return true;}
+ // Record earned trophy progress for the active tournament period.
  trophy(n){this.a.Tournament.Score+=n;}
+ // Calculate the tournament's claimable progress goals.
  get tournamentGoals(){return [100,250,500,1000,2000].map((target,id)=>({id,target,coins:100+id*75,claimed:this.a.Tournament.Claimed.includes(id)}));}
+ // Validate and record a tournament goal reward before presentation.
  claimTournament(id){if(!integer(id,4))return false;const g=this.tournamentGoals[id];if(!g||g.claimed||this.a.Tournament.Score<g.target)return false;this.a.Tournament.Claimed.push(id);this.reward({hearts:1,coins:g.coins,pack:Math.min(5,id+1)});this.s.save();return true;}
+ // Build deterministic offline regatta competitors for the current event.
  get crews(){const a=this.a.Regatta,rng=new SeededRandom(a.Period+9107),elapsed=Math.max(0,this.s.now()-a.Period*7*86400000)/(7*86400000);return [{name:'Your meadow crew',score:a.Distance,you:true},...['Coral Comets','Lavender Sails','Willow Wanderers','Amber Otters'].map(name=>({name:name+' · CPU',score:Math.floor((80+rng.next(260))*elapsed),you:false}))].sort((a,b)=>b.score-a.score);}
+ // Build the event's offline rival standings from its deterministic period state.
  get tournamentRivals(){const a=this.a.Tournament,rng=new SeededRandom(a.Period+3109),elapsed=Math.max(0,this.s.now()-a.Period*604800000)/604800000;return [{name:'You',score:a.Score,you:true},...['Clover Captain','Coral Collector','Moonlit Mariner','Willow Wanderer'].map(name=>({name:name+' \u00b7 CPU',score:Math.floor((100+rng.next(900))*(a.League+1)*elapsed),you:false}))].sort((a,b)=>b.score-a.score);}
+ // Grant the eligible regatta reward once for the current event.
  claimRegatta(id){if(!integer(id,4))return false;const target=[25,75,150,300,600][id];if(!target||this.a.Regatta.Claimed.includes(id)||this.a.Regatta.Distance<target)return false;this.a.Regatta.Claimed.push(id);this.reward({hearts:1,coins:100+id*75,pack:Math.min(5,id+1),item:id%2?'extra':'joker'});this.s.save();return true;}
+ // Initialize the balloon activity's next playable destination.
  startBalloon(){const week=period(this.s.now(),7*86400000);if(this.a.Balloon.Active||this.a.Balloon.Week===week)return false;this.a.Balloon={Week:week,Stage:0,Active:true,Arrows:0};if(this.s.hand?.Deal.AdventureRules&&!this.s.endless&&!this.s.hand.Won){this.s.hand.Deal.Balloon=true;this.s.hand.Deal.Cards.forEach((c,i)=>{if(!this.s.hand.Removed[i])c.Arrow=i%7===3?1:0;});}this.s.save();return true;}
+ // Start at most one ticket run per event week while preserving an already active run.
  startTickets(){const week=period(this.s.now(),7*86400000);if(this.a.Tickets.Active||this.a.Tickets.Week===week)return false;this.a.Tickets={Week:week,Stage:0,Active:true};this.s.save();return true;}
+ // Add earned arrows to the active balloon run and its hunt inventory.
  arrow(n=1){if(!this.a.Balloon.Active)return;this.a.Hunt.Arrows+=n;this.a.Balloon.Arrows+=n;}
+ // Choose the treasure attached to the requested hunt position.
  huntReward(index){const rng=new SeededRandom(31013+this.a.Hunt.Round*97+index*337);const n=rng.next(100);return n<5?{pack:Math.min(5,1+this.a.Hunt.Round%5)}:n<12?{item:'joker'}:n<20?{bingo:2}:{coins:5+rng.next(5)*5};}
+ // Spend an arrow on a valid hunt tile and record its reveal and reward.
  shoot(index){const h=this.a.Hunt;if(!integer(index,80)||!h.Arrows||h.Open.includes(index))return null;h.Arrows--;h.Open.push(index);h.Used=Math.min(2147483647,h.Used+1);this.record('arrows');const reward=this.huntReward(index);this.reward(reward);if(h.Used%10===0)this.reward({arrows:2,coins:50,hearts:1});if(h.Open.length===81){this.reward({coins:300,pack:5});h.Round=Math.min(2147483647,h.Round+1);h.Open=[];}this.s.save();return reward;}
+ // Consume an available draw and record new marks and completed-line prizes.
  bingoDraw(){const b=this.a.Bingo;if(!b.Tokens)return null;b.Tokens--;const remaining=Array.from({length:25},(_,i)=>i).filter(i=>!b.Drawn.includes(i)),rng=new SeededRandom(b.Round*901+this.a.Stats.wins*37+b.Drawn.length*17+11),cell=remaining[rng.next(remaining.length)];b.Drawn.push(cell);const lines=[...Array.from({length:5},(_,r)=>Array.from({length:5},(_,c)=>r*5+c)),...Array.from({length:5},(_,c)=>Array.from({length:5},(_,r)=>r*5+c)),[0,6,12,18,24],[4,8,12,16,20]];let won=0;for(let i=0;i<12;i++)if(!b.Lines.includes(i)&&lines[i].every(n=>b.Drawn.includes(n))){b.Lines.push(i);won++;this.reward({hearts:1,coins:50+Math.min(200,b.Round*10),pack:i>=10?3:1});}if(b.Drawn.length===25){this.reward({coins:200,pack:4});b.Round=Math.min(2147483647,b.Round+1);b.Drawn=[];b.Lines=[];}this.s.save();return {cell,won};}
+ // Sum retained level stars within the requested hundred-level chapter.
  chapterStars(chapter){return Array.from({length:100},(_,i)=>this.s.p.Stars[(chapter-1)*100+i+1]??0).reduce((a,b)=>a+b,0);}
+ // Check chapter-star eligibility and record the chest reward so it cannot be claimed twice.
  claimChest(chapter){if(!integer(chapter,CHAPTER_SET_COUNT)||chapter<1||this.a.Chest.includes(chapter))return false;const stars=this.chapterStars(chapter);if(stars<10)return false;this.a.Chest.push(chapter);this.reward(chestReward(stars));this.s.save();return true;}
+ // Record the eligible chapter postcard reward once.
  claimPostcard(chapter){if(!integer(chapter,CHAPTER_SET_COUNT)||chapter<1||this.chapterStars(chapter)<6||this.a.Postcards.includes(chapter))return false;this.a.Postcards.push(chapter);this.reward({coins:30});this.s.save();return true;}
+ // Validate the timed wheel's availability before granting and saving its selected prize.
  timedSpin(){if(this.s.now()<this.a.WheelAt)return null;this.a.WheelAt=this.s.now()+86400000;const index=crypto.getRandomValues(new Uint32Array(1))[0]%8,prizes=[{coins:25},{item:'wild'},{coins:50},{item:'extra'},{coins:100},{item:'remove',hearts:1},{coins:75},{coins:40}];this.reward(prizes[index]);this.s.save();return {index,...prizes[index],label:prizes[index].coins?prizes[index].coins+' coins':'1 '+prizes[index].item+(prizes[index].hearts?' + 1 heart':'')};}
 }

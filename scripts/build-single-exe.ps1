@@ -5,6 +5,7 @@ Push-Location $projectRoot
 try {
     dotnet run --project tools/MeadowPeaks.ContentExporter -- --check .
     if ($LASTEXITCODE -ne 0) { throw 'Regenerate browser content from the C# interface catalog before publishing.' }
+    # Embed game assets and native dependencies so extraction produces the same offline game as the folder build.
     dotnet publish src/MeadowPeaks.csproj -c Release -r win-x64 --self-contained true `
         -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
         -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true `
@@ -13,6 +14,7 @@ try {
     $executable = Join-Path (Join-Path $projectRoot 'artifacts') $OutputName
     Copy-Item artifacts/single-file/MeadowPeaks.exe $executable -Force
     $env:MEADOW_PEAKS_CACHE=Join-Path $projectRoot 'artifacts/desktop-cache'
+    # Smoke-test the copied single executable, including its extraction path, before treating it as distributable.
     $process = Start-Process -FilePath $executable -ArgumentList '--smoke' -WindowStyle Hidden -PassThru
     if (-not $process.WaitForExit(180000)) { $process.Kill(); throw 'Single-file UI smoke test timed out.' }
     $result = Get-Content artifacts/smoke-result.txt -Raw

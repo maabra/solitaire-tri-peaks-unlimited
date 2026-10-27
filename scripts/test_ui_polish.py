@@ -3,6 +3,7 @@ import asyncio,json
 from pathlib import Path
 from playwright.async_api import async_playwright
 OUT=Path('artifacts/polish-screenshots');OUT.mkdir(exist_ok=True)
+# Scenario: Shared menu flow, text containment, top-layer help, motion and saved-hand continuity. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)

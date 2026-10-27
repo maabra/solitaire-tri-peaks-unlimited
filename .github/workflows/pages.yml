@@ -1,3 +1,4 @@
+# Validate generated C# content and engine fixtures before packaging the static browser site.
 name: Play on GitHub Pages
 on:
   push:

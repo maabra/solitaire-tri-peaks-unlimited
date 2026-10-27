@@ -3,9 +3,11 @@ using System.Text.Json;
 
 static class TemporaryTests
 {
+    // Exercise timed helper expiry, cooldowns and undo/restoration without relying on wall-clock delays.
     public static void Run(Action<bool,string> check)
     {
         var rules = new TriPeaksRules();
+        // Build a small purpose-specific deal fixture so the test isolates the intended mechanics.
         Deal Board(params Card[] cards) => new() { TemporaryRules = true, Cards = cards, Layout = cards.Select((_,i) => new Slot(i*2,0)).ToArray(), Waste = new(5,0), Stock = new[] { new Card(8,1), new Card(9,1) } };
         var plain = Board(new(6,0),new(7,0),new(8,0));
         var drawTimer=new Hand(plain,rules);
@@ -82,8 +84,11 @@ static class TemporaryTests
     }
     sealed class StaticDeals : IDealProvider
     {
-        readonly Deal deal; public StaticDeals(Deal deal) => this.deal=deal;
+        readonly Deal deal; /* Retain the exact supplied deal for targeted rule and restoration checks. */
+    public StaticDeals(Deal deal) => this.deal=deal;
+        // Return the supplied fixture instead of introducing unrelated generation randomness.
         public Deal Generate(int seed,int level) => deal;
     }
-    sealed class Seeds : IRandomSource { public int NextSeed() => 42; }
+    sealed class Seeds : IRandomSource { /* Supply a seed through the injected random source so game logic need not own global randomness. */
+    public int NextSeed() => 42; }
 }

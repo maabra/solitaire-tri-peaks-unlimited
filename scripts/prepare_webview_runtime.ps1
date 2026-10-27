@@ -1,3 +1,5 @@
+# Fetch the pinned official renderer into a partial file, then verify its checksum before promoting it.
+# An existing verified CAB is reused; interrupted downloads never become the accepted runtime.
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $root=Split-Path -Parent $PSScriptRoot

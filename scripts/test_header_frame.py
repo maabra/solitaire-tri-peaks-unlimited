@@ -2,6 +2,7 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: The header and its icon artwork must clear the carved game and map rails. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/header-frame');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

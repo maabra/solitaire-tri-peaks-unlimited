@@ -1,6 +1,7 @@
 """Navigate between activities, resume a hand, interrupt wheel and claim flights."""
 import asyncio
 from playwright.async_api import async_playwright
+# Scenario: Navigate between activities, resume a hand, interrupt wheel and claim flights. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)

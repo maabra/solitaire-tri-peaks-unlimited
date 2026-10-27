@@ -7,6 +7,7 @@ public sealed class SolitaireFactory : ISolitaireFactory, IVersionedSolitaireFac
     readonly IDealProvider legacyDeals;
     readonly ICardMechanics mechanics;
 
+    // Bind replaceable deal, rule and mechanic policies behind the common factory contract.
     public SolitaireFactory(IDealProvider deals, ISolitaireRules rules, IDealProvider legacyDeals, ICardMechanics? mechanics = null)
     {
         this.mechanics = mechanics ?? new CardMechanics();
@@ -15,9 +16,12 @@ public sealed class SolitaireFactory : ISolitaireFactory, IVersionedSolitaireFac
         this.legacyDeals = legacyDeals;
     }
 
+    // Construct a hand from a newly generated deal with the configured rule policies.
     public ISolitaireHand Create(int seed, int level) => new Hand(deals.Generate(seed, level), rules, mechanics);
+    // Use the requested historical generation when constructing a restored/shared deal.
     public ISolitaireHand CreateVersion(int seed,int level,string generation) => deals is IVersionedDealProvider versioned ? new Hand(versioned.GenerateVersion(seed,level,generation),rules,mechanics) : Create(seed,level);
 
+    // Prefer the captured board and validate it before reconstructing saved live state.
     public ISolitaireHand? Restore(SavedRun run)
     {
         // New saves carry their board. Legacy saves use the original generator,
@@ -32,12 +36,15 @@ public sealed class SolitaireFactory : ISolitaireFactory, IVersionedSolitaireFac
         return Hand.Restore(run, deal, rules, mechanics);
     }
 
+    // Check card/layout relationships before accepting a serialized board as playable.
     static bool ValidBoard(Deal? deal) => deal != null && deal.Layout != null && deal.Cards != null && deal.Stock != null && deal.Layout.Count > 0 && deal.Layout.Count <= 52 && deal.Layout.Count == deal.Cards.Count && deal.Layout.All(s => s != null && float.IsFinite(s.X) && s.Row >= 0 && s.Row <= 20) && deal.Cards.Concat(deal.Stock).Append(deal.Waste).All(c => c != null && c.Rank >= 1 && c.Rank <= 13 && c.Suit >= 0 && c.Suit <= 3 && Enum.IsDefined(typeof(CardKind), c.Kind) && c.Strength >= 0 && c.Strength <= 200);
 }
 
 public sealed class GemGameFactory : ICoinGameFactory, IPersistentCoinGameFactory
 {
+    // Construct a jewel game from the supplied deterministic seed.
     public ICoinGame Create(int seed) => new GemGame(seed);
+    // Replay the saved accepted swaps and reject a garden that cannot be reproduced.
     public ICoinGame? Restore(GemRun run)
     {
         if(run.Seed<0||run.Swaps==null||run.Swaps.Count>20)return null;

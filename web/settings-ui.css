@@ -1,3 +1,4 @@
+/* Settings controls and backup actions inside the illustrated book, with scrolling confined to its content. */
 .audio-sliders{display:grid;gap:12px;margin:18px 0}
 .volume-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 12px;padding:14px 16px;background:linear-gradient(#fff9e6,#f0dfbd);border:2px solid #e6c697;border-radius:19px;color:#705069;min-width:0}
 .volume-label{display:flex;align-items:center;gap:9px;font-weight:800;min-width:0}

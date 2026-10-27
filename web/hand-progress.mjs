@@ -1,10 +1,13 @@
 import {gameIcon} from './game-art.mjs';
+// Count progress against the actual level objective instead of assuming every card is required.
 export function goalProgress(hand){
  const goals=hand.Deal.GoalCards??hand.Removed.map(()=>true);
  const total=goals.filter(Boolean).length,cleared=goals.filter((goal,i)=>goal&&hand.Removed[i]).length;
  return {cleared,total,icon:hand.Deal.Objective?.gold?'coins':hand.Deal.Objective?.suit===2?'ruby':hand.Deal.Objective?.suit===0?'seal':'cardProgress'};
 }
+// Combine objective and score information into the play header's progress model.
 export function handProgress(hand){const p=goalProgress(hand);return `${gameIcon(p.icon,22)} <span>Cleared</span> <b>${p.cleared} / ${p.total}</b>`;}
+// Choose the contextual hand message from legal moves, stock and completion state.
 export function handStatus(hand){
  if(hand.Won)return `${gameIcon('check',22)} All goals complete!`;
  if(hand.Failed)return `${gameIcon('bomb',22)} Try Undo or Replay`;

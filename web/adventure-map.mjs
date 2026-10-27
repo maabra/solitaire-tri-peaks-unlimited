@@ -12,6 +12,7 @@ export function terrainX(chapter,y){
  // Smoothstep stays inside the authored corridor: no Catmull-Rom overshoot.
  const blend=f*f*(3-2*f);return MAP_WIDTH*(row[i]+(row[i+1]-row[i])*blend)/100;
 }
+// Cache the full chapter geometry so drawing, level positions and the gate share identical coordinates.
 export function roadFor(chapter=1){
  if(cache.has(chapter))return cache.get(chapter);
  const centers=Array.from({length:100},(_,i)=>{const y=MAP_HEIGHT-260-i*88;return [terrainX(chapter,y),y]});
@@ -26,6 +27,9 @@ export function chapterGateState(profile,chapter){
  return {end,final,open:!!profile.Stars[end]||profile.Unlocked>end,next:final?null:chapter+1};
 }
 export const route=roadFor(1).stops;
+// Draw the road and landing pads behind level buttons using one shared SVG coordinate space.
 export function routeMarkup(chapter=1){const {points,stops}=roadFor(chapter),d=path(points);return `<svg class="map-trail" viewBox="0 0 ${MAP_WIDTH} ${MAP_HEIGHT}" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="road-stone-${chapter}" width="144" height="144" patternUnits="userSpaceOnUse"><image href="assets/road-stone-border.png" width="144" height="144" preserveAspectRatio="xMidYMid slice"/></pattern></defs><path class="trail-edge-shadow" d="${d}"/><path class="trail-shadow" d="${d}" style="stroke:url(#road-stone-${chapter})"/><g class="stop-landing-shadows">${stops.map(([x,y])=>`<ellipse cx="${x}" cy="${y+11}" rx="47" ry="34"/>`).join('')}</g><path class="trail-sand" d="${d}"/><path class="trail-stitches" d="${d}"/><g class="stop-landings">${stops.map(([x,y],i)=>`<g data-landing="${i}"><ellipse class="stop-landing" cx="${x}" cy="${y+5}" rx="46" ry="35"/><ellipse class="stop-landing-rim" cx="${x}" cy="${y+5}" rx="40" ry="29"/></g>`).join('')}</g></svg>`;}
+// Join sampled terrain coordinates without adding curve overshoot between them.
 function path(points){return points.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(2)},${y}`).join(' ');}
+// Use the common generated-art icon renderer for map furniture.
 export function menuIcon(kind){return gameIcon(kind,60)}

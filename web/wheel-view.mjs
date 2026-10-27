@@ -3,6 +3,7 @@ import {pipMarkup} from './pip-view.mjs';
 import {escapeHtml} from './ui-markup.mjs';
 import {resourceBadge} from './resource-view.mjs';
 
+// Render the wheel and its prize labels from the same prize ordering used by the reward logic.
 export function wheelView(session,busy=false,lastPrize=''){
  const remaining=Math.max(0,session.events.a.WheelAt-session.now());
  const cooldown=remaining?(remaining>=3600000?Math.ceil(remaining/3600000)+'h':Math.ceil(remaining/60000)+'m'):'Ready';

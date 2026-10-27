@@ -7,6 +7,7 @@ internal static class StoryLandscape
         using var stream=Assembly.GetExecutingAssembly().GetManifestResourceStream("MeadowPeaks.StoryMeadow.png");
         if(stream==null)return null;using var image=Image.FromStream(stream);return new Bitmap(image);
     });
+    // Paint the bundled story background, with the renderer's fallback when artwork is unavailable.
     public static void Draw(Graphics g,int region)
     {
         if(Background.Value is not {} image){Art.Landscape(g,region);return;}

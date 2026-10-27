@@ -3,6 +3,7 @@ using System.Text.Json;
 
 static class ProgressionTests
 {
+    // Check mechanic introductions, bounded difficulty and solvable deals around progression boundaries.
     public static void Run(Action<bool,string> check)
     {
         var progression = new CampaignProgression();
@@ -36,6 +37,7 @@ static class ProgressionTests
             foreach (var step in deal.Solution) { hand.AdvanceTime(60); check(step.Index<0 ? TimedMoves.Draw(hand) : hand.Play(step.Index), "Milestone is solvable without active effects"); }
             check(hand.Won, "Milestone solved");
         }
+        // Build a small purpose-specific deal fixture so the test isolates the intended mechanics.
         Deal Board(params Card[] cards) => new() { TemporaryRules=true, Cards=cards, Layout=cards.Select((_,i)=>new Slot(i*2,0)).ToArray(), Waste=new(5,0) };
         var h=new Hand(Board(new Card(6,0){Kind=CardKind.Stone,Strength=4},new(7,0)),rules);
         for(int hit=1;hit<=3;hit++) check(h.Play(0) && !h.Removed[0] && h.Effects.ArmorDamage![0]==hit, "Four-hit armor peels one layer at a time");

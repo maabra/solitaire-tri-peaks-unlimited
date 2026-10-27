@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from PIL import Image,ImageDraw
 
+# Capture reference scenes and their observed layout details for visual review.
 async def study(page):
  import sys
  if '--menus' in sys.argv:
@@ -24,6 +25,7 @@ async def study(page):
   im=Image.open(out/f'level-{level}.png');im.thumbnail((320,200));x=i%4*320;y=i//4*225;sheet.paste(im,(x,y+22));draw.text((x+8,y+5),f'Reference level {level}',fill='#352d33')
  sheet.save(out/'overview.jpg')
 
+# Inspect the available reference menus and retain their captured visual states.
 async def menus(page):
  out=Path('artifacts/reference-study/menus');out.mkdir(exist_ok=True)
  await page.evaluate("""()=>{clearTimeout(window.TimerCheck);window.map_n=1;window.level=20;window.level_finish=20;window.first_start=0;window.all_level=Array(560).fill(3);window.all_level_col=560;window.coins=5000;window.keys=10;game.state.start('Map')}""")

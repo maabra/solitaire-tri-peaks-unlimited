@@ -2,6 +2,7 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: Home controls fit the game, and scenery moves with the map instead of HUD. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/home-map');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

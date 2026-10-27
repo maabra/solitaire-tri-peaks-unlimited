@@ -5,8 +5,10 @@ namespace MeadowPeaks;
 public sealed class JsonProfileStore : IProfileStore
 {
     readonly string path;
+    // Bind this store to one save path; all recovery files stay beside it.
     public JsonProfileStore(string path) { this.path = path; }
     public static string DefaultPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MeadowPeaks", "progress.json");
+    // Validate the primary file, then try its backup without deleting failed recovery candidates.
     public Progress Load(out string warning)
     {
         warning = "";
@@ -27,6 +29,7 @@ public sealed class JsonProfileStore : IProfileStore
         warning = "The save could not be read. A new profile is open; the old files are preserved until you make progress.";
         return new();
     }
+    // Write a temporary file and preserve only a valid previous save as the recovery backup.
     public void Save(Progress profile)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);

@@ -1,6 +1,7 @@
 ﻿namespace MeadowPeaks;
 internal static class Program
 {
+    // Initialize Windows application services and select normal startup or diagnostic execution.
     [STAThread]
     static void Main(string[] args)
     {

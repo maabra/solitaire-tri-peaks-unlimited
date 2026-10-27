@@ -4,7 +4,9 @@ namespace MeadowPeaks;
 public interface IAdventureHand
 {
     bool Failed { get; }
+    // Describe the selected card's current obstacle badge.
     string CardStatus(int index);
+    // Explain why the selected interaction is currently blocked.
     string BlockReason(int index);
 }
 public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = false, bool Failed = false,
@@ -16,14 +18,20 @@ public sealed record MechanicState(int Turns = 0, int Clears = 0, bool HasKey = 
 // Stateless policy. All mutable state lives in snapshots, so saves and undo agree.
 public interface ICardMechanics
 {
+    // Check obstacle eligibility using the supplied snapshot without mutating it.
     bool Allows(Card card, MechanicState state);
+    // Check obstacle eligibility using the supplied snapshot without mutating it.
     bool Allows(Card card, MechanicState state, Card waste) => Allows(card,state);
+    // Describe the card's current obstacle requirement for presentation.
     string Status(Card card, MechanicState state);
+    // Return mechanic state after an accepted action, suitable for saving and undo.
     MechanicState Advance(MechanicState state, Deal deal, IReadOnlyList<bool> removed, Card? played);
+    // Calculate the extra-stock bonus caused by a clear.
     int Bonus(Card played, Card previous);
 }
 public sealed class CardMechanics : ICardMechanics
 {
+    // Evaluate obstacle permissions from the supplied snapshot without owning mutable hand state.
     public bool Allows(Card card, MechanicState state) => card.Kind switch
     {
         CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength,
@@ -32,8 +40,10 @@ public sealed class CardMechanics : ICardMechanics
         CardKind.Gate => state.PhaseSeconds > 0 || state.Turns%2 == card.Strength,
         _ => true
     };
+    // Evaluate obstacle permissions from the supplied snapshot without owning mutable hand state.
     public bool Allows(Card card, MechanicState state, Card waste) => Allows(card,state) &&
         (card.Kind != CardKind.ColorSeal || waste.Rank == 0 || (waste.Suit is 1 or 2) == (card.Strength == 1));
+    // Describe the obstacle's current requirement from the card and mechanic counters.
     public string Status(Card card, MechanicState state) => card.Kind switch
     {
         CardKind.Ice => state.ThawSeconds > 0 || state.Clears >= card.Strength ? "\u2744\u2713" : $"\u2744{card.Strength - state.Clears}",
@@ -52,11 +62,13 @@ public sealed class CardMechanics : ICardMechanics
         CardKind.ColorSeal => card.Strength == 1 ? "\u2665" : "\u2660",
         _ => ""
     };
+    // Return the next mechanic state after a successful action, retaining state needed for undo/save.
     public MechanicState Advance(MechanicState state, Deal deal, IReadOnlyList<bool> removed, Card? played)
     {
         var next = state with { Turns = state.Turns + 1, Clears = state.Clears + (played == null ? 0 : 1), HasKey = state.HasKey || played?.Kind == CardKind.Key, Keys = Math.Max(state.Keys, state.HasKey ? 1 : 0) + (played?.Kind == CardKind.Key ? 1 : 0), Run = played == null ? 0 : state.Run + 1, FuseDelay = state.FuseDelay + (state.ShieldSeconds > 0 ? 1 : 0) };
         return next with { Failed = deal.Cards.Where((c, i) => !removed[i]).Any(c => c.Kind == CardKind.Bomb && c.Strength + next.FuseDelay <= next.Turns) };
     }
+    // Determine the extra-stock reward caused by this clear and its previous waste face.
     public int Bonus(Card played, Card previous) => played.Kind switch
     {
         CardKind.Gift => 3,
@@ -71,8 +83,10 @@ public sealed class AdventureDealProvider : IDealProvider
     readonly IDealProvider source;
     readonly IDifficultyProgression progression;
     readonly string? generation;
+    // Bind the base generator and mechanic policy used to decorate adventure deals.
     public AdventureDealProvider(IDealProvider source, IDifficultyProgression? progression = null,string? generation=null)
     { this.source = source; this.progression = progression ?? new CampaignProgression(); this.generation=generation; }
+    // Add level-appropriate adventure obstacles to the underlying solvable deal.
     public Deal Generate(int seed, int level)
     {
         var deal = source.Generate(seed, level);

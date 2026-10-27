@@ -3,6 +3,7 @@ using System.Text.Json;
 
 static class WebFixtures
 {
+    // Export native engine results for browser parity tests rather than duplicating expected outcomes by hand.
     public static void Export(string path)
     {
         var rules = new TriPeaksRules();

@@ -2,7 +2,9 @@
 // The cabinet defines a fixed-size game surface. Small browser windows scroll around it
 // instead of shrinking every card, label and hit target.
 export function frameSize(){return {width:1280,height:720};}
+// Read the current logical game width rather than the outer browser viewport.
 export const gameWidth=()=>document.body.clientWidth;
+// Read the current logical game height rather than the outer browser viewport.
 export const gameHeight=()=>document.body.clientHeight;
 if(typeof document!=='undefined'){
  // Fixed HUD children do not reliably inherit their map's native wheel target.
@@ -26,7 +28,9 @@ if(typeof document!=='undefined'){
   area.scrollLeft+=x;area.scrollTop+=y;
   event.preventDefault();
  },{passive:false});
+ // Measure the centered game origin for effects positioned in local game coordinates.
  const offsets=()=>{const r=document.body.getBoundingClientRect(),style=document.documentElement.style;style.setProperty('--game-offset-x',r.left+'px');style.setProperty('--game-offset-y',r.top+'px');};
+ // Recalculate the cabinet's position when the browser viewport changes.
  const fit=()=>{
   const size=frameSize(innerWidth,innerHeight),style=document.documentElement.style;
   style.setProperty('--game-width',size.width+'px');style.setProperty('--game-height',size.height+'px');
@@ -39,6 +43,7 @@ if(typeof document!=='undefined'){
  const decorations=document.createElement('div');decorations.id='frame-ornaments';decorations.setAttribute('aria-hidden','true');decorations.innerHTML='<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i><i class="crest top"></i><i class="crest bottom"></i>';document.documentElement.append(decorations);
  fit();addEventListener('resize',fit);new ResizeObserver(fit).observe(document.documentElement);
  addEventListener('scroll',offsets,true);
+ // Update the scenery used outside the fixed cabinet without resizing the playable surface.
  const backdrop=()=>{const image=document.querySelector('.map-scenery')?.style.backgroundImage||document.querySelector('.landscape')?.style.backgroundImage;if(image)document.documentElement.style.setProperty('--game-backdrop',image);};
  new MutationObserver(backdrop).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['style']});
 }

@@ -7,7 +7,9 @@ public sealed record DifficultyProfile(int Tier, CardKind Focus, int HazardBudge
 }
 public interface IDifficultyProgression
 {
+    // Describe the mechanic focus and bounded obstacle pressure for this level.
     DifficultyProfile ForLevel(int level);
+    // Report whether the requested mechanic has been introduced by this level.
     bool Unlocked(CardKind kind, int level);
 }
 
@@ -24,7 +26,9 @@ public sealed class CampaignProgression : IDifficultyProgression
         CardKind.Gate => 2000, CardKind.ColorSeal => 2300,
         _ => 1
     };
+    // Check whether the requested mechanic belongs in this level's generated rule set.
     public bool Unlocked(CardKind kind, int level) => level >= Introduction(kind);
+    // Calculate bounded hazard pressure and select a focus among already introduced mechanics.
     public DifficultyProfile ForLevel(int level)
     {
         int tier = Math.Max(0, level / 100);
@@ -36,6 +40,7 @@ public sealed class CampaignProgression : IDifficultyProgression
         if (tier == 20) focus = CardKind.Gate;
         if (tier == 23) focus = CardKind.ColorSeal;
         if (tier >= 24) focus = new[] { CardKind.Ice, CardKind.Lock, CardKind.Bomb, CardKind.Stone, CardKind.Vine, CardKind.Gate, CardKind.ColorSeal, CardKind.Normal }[(tier-24)%8];
+        // Increase this difficulty component only after its introduction tier, then at six-tier intervals.
         int Steps(int first) => tier < first ? 0 : 1 + (tier-first)/6;
         // Bounded upgrades preserve a reasonable difficulty ceiling. Once a
         // component reaches its cap, later tiers focus on different combinations.

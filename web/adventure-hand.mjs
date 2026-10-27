@@ -3,7 +3,9 @@ import {storyLayoutV4,storyNameV4} from './story-layouts-v4.mjs';
 import {campaignProgression} from './progression.mjs';
 import {storyLayoutV3,storyNameV3} from './story-layouts-v3.mjs';
 import {Hand,generate,SeededRandom,K,clone,adjacent} from './core.mjs';
+// Choose the optional suit or gold-card objective for this level's cadence.
 export const specialGoal=level=>level%75===0?{name:'Clear all gold cards',suit:null,gold:true}:level%40===0?{name:'Clear all diamond cards',suit:2}:level%60===0?{name:'Clear all spade cards',suit:0}:null;
+// Retry bounded deterministic seed offsets when a candidate cannot satisfy the adventure witness.
 export function adventureDeal(seed,level,balloon=false,generation="MP21"){for(let attempt=0;attempt<16;attempt++){try{return buildAdventureDeal((seed+attempt*7919)%2147483647,level,balloon,generation)}catch(error){if(attempt===15)throw error;}}}
 // Generation tags select historical behavior as well as layouts. Keep old branches stable so
 // restoring an older hand does not silently change its obstacles or solution.
@@ -20,6 +22,7 @@ function buildAdventureDeal(seed,level,balloon=false,generation="MP21"){
  for(let i=0;i<d.Cards.length;i++)if(d.Cards[i].Kind===K.Bomb){bombs.set(i,199);d.Cards[i].Strength=199;}
  for(const step of originalSolution){if(h.Won)break;if(step.Index<0){if(!h.draw())throw Error('Invalid planned draw.');h.tick(2);path.push({Index:-1});continue;}
   const i=step.Index,c=d.Cards[i],desired=originalRanks[i],motion=c.Motion??0,steps=h.s.MotionSteps[i]??0,source=h.s.FaceSource[i];
+  // Wrap a moving rank around the thirteen-card cycle, including Ace and King.
   const wrap=n=>(n%13+13)%13+1;
   if(source)d.Cards[source.Index].TornadoFaces[i].Rank=wrap(desired-1-motion*(steps-source.Steps));
   else c.Rank=wrap(desired-1-motion*steps);
@@ -37,20 +40,33 @@ function buildAdventureDeal(seed,level,balloon=false,generation="MP21"){
  return d;
 }
 export class AdventureHand extends Hand {
+ // Attach adventure mutation state to the base hand and initialize exposure tracking.
  constructor(deal,run=null){super(deal,run);this.s.Faces??={};this.s.MotionSteps??={};this.s.FaceSource??={};this.s.IceThawed??=[];this.s.ExposedAt??={};this.s.Earned??={Packs:[],Trophies:0,Arrows:0};this.watchExposure();}
+ // Resolve the card's current face after moving ranks and tornado substitutions.
  face(i){const c={...this.Deal.Cards[i],...this.s.Faces[i]};c.TrophyTurns=c.Trophy?Math.max(0,5-(this.s.Turns-(this.s.ExposedAt?.[i]??this.s.Turns))):0;return c;}
+ // Record when cards become exposed so timed or move-dependent mutations start consistently.
  watchExposure(){for(let i=0;i<this.Removed.length;i++)if(this.isExposed(i)&&this.s.ExposedAt[i]==null)this.s.ExposedAt[i]=this.s.Turns;}
 
+ // Check adventure obstacles against the current face and waste before rank matching.
  allows(c){if(c.Kind===K.Ice)return true;if(c.Kind===16)return this.s.Turns>0&&this.s.Turns%2===(c.FogParity??1);return super.allows(c);}
+ // Combine exposure, obstacle permissions and rank matching into legal-play availability.
  can(i){return i>=0&&i<this.Removed.length&&!this.Won&&!this.Failed&&this.isExposed(i)&&this.allows(this.face(i))&&adjacent(this.Waste.Rank,this.face(i).Rank);}
+ // Advance action-counted obstacles and moving faces after a successful game action.
  advanceMove(played){super.advanceMove(played);for(let i=0;i<this.Removed.length;i++)if(!this.Removed[i]&&this.isExposed(i)&&this.Deal.Cards[i].Motion){const c=this.face(i),step=this.Deal.Cards[i].Motion;this.s.Faces[i]={Rank:(c.Rank-1+step+13)%13+1,Suit:c.Suit};this.s.MotionSteps[i]=(this.s.MotionSteps[i]??0)+1;}this.watchExposure();}
+ // Record the cleared card's attached pack, trophy or arrow rewards in this hand's earned state.
  collect(i){const c=this.Deal.Cards[i];if(c.Pack)this.s.Earned.Packs.push(c.Pack);if(c.Trophy&&this.s.Turns-(this.s.ExposedAt[i]??this.s.Turns)<5)this.s.Earned.Trophies+=c.Trophy;if(c.Arrow)this.s.Earned.Arrows+=c.Arrow;}
+ // Determine whether fog permits revealing this exposed card's face.
  fogVisible(i){const c=this.face(i);return c.Kind!==16||this.s.Turns>0&&this.s.Turns%2===(c.FogParity??1);}
+ // Apply a deterministic face mutation while tracking its source for save and witness reconstruction.
  tornado(source){const rng=new SeededRandom(this.s.Turns*7919+this.Deal.AdventureSeed+43);const map=this.Deal.Cards[source].TornadoFaces??={};for(let i=0;i<this.Removed.length;i++)if(this.isExposed(i)){map[i]??={Rank:rng.next(13)+1,Suit:rng.next(4)};this.s.Faces[i]={...map[i]};this.s.FaceSource[i]={Index:source,Steps:this.s.MotionSteps[i]??0};}const first=this.Deal.Cards.findIndex((c,i)=>this.isExposed(i)&&this.allows(this.face(i)));if(first>=0&&!this.Deal.WitnessReady){map[first].Rank=this.Waste.Rank%13+1;this.s.Faces[first]={...map[first]};}}
 
+ // Handle adventure-specific interactions before delegating ordinary clearing to the base hand.
  play(i){if(!this.can(i))return false;const c=this.face(i);if(c.Kind===K.Ice&&!this.s.IceThawed.includes(i)&&this.s.ThawSeconds<=0){this.remember();this.s.IceThawed.push(i);this.advanceMove(null);this.s.LastEffect='thaw';return true;}const original=this.Deal.Cards[i];this.Deal.Cards[i]={...c,Kind:c.Kind===K.Ice?K.Normal:c.Kind};const ok=super.play(i);this.Deal.Cards[i]=original;if(!ok)return false;if(this.Removed[i]){this.collect(i);this.Waste={...c};if(c.Kind===15){this.tornado(i);this.s.LastEffect='tornado';}if(this.Streak>0&&this.Streak%5===0){for(let n=0;n<2&&this.Stock.length<100;n++)this.Stock.push({Rank:(c.Rank+n+3)%13+1,Suit:(c.Suit+n)%4,Kind:0,Strength:0,TemporaryStock:false});this.s.LastEffect='streak';}}return true;}
+ // Apply an adventure helper while preserving its obstacle and reward bookkeeping.
  use(id,target=null,seed=42){if(id==='shuffle')return RankShuffle.apply(this,seed);if(!['tnt','joker','remove'].includes(id)){const turns=this.s.Turns,before=clone(this.s),history=this.history,ok=super.use(id,target,seed);if(ok&&this.s.Turns===turns)this.advanceMove(null);if(ok&&id==='scout'&&!this.Moves.length){this.s=before;this.history=history;return false;}return ok;}if(this.Won||this.Failed||this.s.HelperCooldown>0)return false;const indices=id==='tnt'?this.Deal.Cards.map((c,i)=>i).filter(i=>this.isExposed(i)):[target];if(!indices.length||indices.some(i=>!Number.isInteger(i)||!this.isExposed(i)))return false;this.history=[];for(const i of indices){this.collect(i);this.Removed[i]=true;this.Score=Math.min(2147483647,this.Score+20);const c=this.face(i);if(c.Kind===K.Key){this.s.Keys++;this.s.HasKey=true;}if(c.Kind===K.Gift)for(let n=0;n<3&&this.Stock.length<100;n++)this.Stock.push({Rank:(c.Rank+n+3)%13+1,Suit:(c.Suit+n)%4,Kind:0,Strength:0,TemporaryStock:false});this.onClear(c);}if(id==='joker')this.Waste=this.face(target);this.s.Clears+=indices.length;this.advanceMove(null);this.s.LastEffect=id;return true;}
+ // Describe the card's current obstacle state for its visible badge.
  badge(i){const c=this.face(i);let text=c.Kind===K.Ice?'❄'+(this.s.IceThawed.includes(i)||this.s.ThawSeconds>0?'✓':'1'):c.Kind===15?'🌀':c.Kind===16?(this.fogVisible(i)?'\u{1f441}':'\u2601'):c.Motion?(c.Motion>0?'↑':'↓'):super.badge(i);return text;}
 }
 // Suit and gold objectives end as soon as their marked cards are cleared.
-Object.defineProperty(AdventureHand.prototype,'Won',{get(){const g=this.Deal.Objective;if(!g)return this.Removed.every(Boolean);return this.Deal.Cards.every((c,i)=>this.Removed[i]||!(this.Deal.GoalCards?.[i]??(g.gold?c.Gold:c.Suit===g.suit))); }});
+Object.defineProperty(AdventureHand.prototype,'Won',{get/* Evaluate the special objective when present; otherwise require every board card to be removed. */
+ (){const g=this.Deal.Objective;if(!g)return this.Removed.every(Boolean);return this.Deal.Cards.every((c,i)=>this.Removed[i]||!(this.Deal.GoalCards?.[i]??(g.gold?c.Gold:c.Suit===g.suit))); }});

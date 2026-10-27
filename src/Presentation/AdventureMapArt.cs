@@ -4,7 +4,9 @@ internal static class AdventureMapArt
 {
     static readonly Lazy<Bitmap> background=new(()=>new Bitmap(typeof(AdventureMapArt).Assembly.GetManifestResourceStream("MeadowPeaks.AdventureVillage.png")!));
     public static readonly PointF[] Route={new(330,650),new(430,632),new(530,650),new(630,620),new(720,575),new(750,510),new(670,475),new(570,490),new(470,470),new(390,425),new(355,360),new(420,310),new(520,320),new(620,340),new(720,310),new(820,270),new(875,210),new(775,190),new(670,215),new(560,190)};
+    // Draw native adventure scenery behind the map controls.
     public static void Landscape(Graphics g){g.DrawImage(background.Value,new RectangleF(0,0,1280,800));}
+    // Draw the native map road using its ordered stop coordinates.
     public static void Trail(Graphics g)
     {
         using var shadow=new Pen(Color.FromArgb(120,88,118,55),47){LineJoin=LineJoin.Round,StartCap=LineCap.Round,EndCap=LineCap.Round};
@@ -12,6 +14,7 @@ internal static class AdventureMapArt
         using var stitches=new Pen(Color.FromArgb(197,171,114),2){DashPattern=new float[]{2,5},LineJoin=LineJoin.Round};
         g.DrawCurve(shadow,Route,.5f);g.DrawCurve(sand,Route,.5f);g.DrawCurve(stitches,Route,.5f);
     }
+    // Paint the chapter label panel and its decorative trim.
     public static void Ribbon(Graphics g,RectangleF r,string title,string caption)
     {
         Art.Box(g,new(r.X-2,r.Y+5,r.Width+4,r.Height),Color.FromArgb(140,109,41,58),12);
@@ -20,6 +23,7 @@ internal static class AdventureMapArt
         Art.Text(g,caption,r.X,r.Y+7,10,Color.FromArgb(255,235,188),true,r.Width,true);
         Art.Text(g,title,r.X,r.Y+24,25,Color.White,true,r.Width,true);
     }
+    // Draw a level stop with its current state and earned-star decoration.
     public static void Node(Graphics g,RectangleF r,Color fill,bool enabled,bool current)
     {
         var oval=new RectangleF(r.X+3,r.Y+3,r.Width-6,r.Height-8);
@@ -28,6 +32,7 @@ internal static class AdventureMapArt
         using var edge=new Pen(current?Color.FromArgb(255,242,174):enabled?Color.FromArgb(224,245,247):Color.FromArgb(164,199,207),5);g.DrawEllipse(edge,oval);
         using var glint=new Pen(Color.FromArgb(130,255,255,220),2);g.DrawArc(glint,oval.X+6,oval.Y+6,oval.Width-12,oval.Height-12,200,100);
     }
+    // Draw the native map activity icon in its supplied bounds.
     public static void Icon(Graphics g,RectangleF r,string kind)
     {
         float x=r.X+r.Width/2,y=r.Y+r.Height*.40f,s=r.Width*.28f;

@@ -2,10 +2,13 @@ import {collectionIndex,CHAPTER_SET_COUNT} from './chapter-collection.mjs';
 import {chapterTitles,tableGrids} from './art-catalog.mjs';
 // One original portrait mural per campaign chapter; map and Travel Hub share it.
 import {SeededRandom} from './core.mjs';
+// Look up the original illustrated chapter title through the shared collection index.
 export function chapterName(chapter){return chapterTitles[collectionIndex(chapter)];}
 
 const images=new Map(),cache=new Map();
+// Reuse image-loading promises and discard failed entries so a later request can retry.
 function load(src){if(src.startsWith('data:'))return new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>{images.delete(src);reject(Error('Artwork unavailable'));};i.src=src;}));return images.get(src);}
+// Return the chapter mural, caching the expensive crop rather than repainting on every menu visit.
 export async function chapterPicture(chapter){
  if(collectionIndex(chapter)===0)return 'assets/map-meadow-720p.png';
  if(cache.has(chapter))return cache.get(chapter);
@@ -21,10 +24,13 @@ async function paint(chapter){
  const sourceWidth=Math.min(sw-2,image.height*canvas.width/canvas.height);c.drawImage(image,sx+(sw-sourceWidth)/2,0,sourceWidth,image.height,0,0,canvas.width,canvas.height);
  return canvas.toDataURL('image/jpeg',.92);
 }
+// Crop a small destination preview from the same mural used by the full map.
 export async function chapterThumbnail(chapter){const url=await chapterPicture(chapter),image=await load(url),canvas=document.createElement('canvas');canvas.width=120;canvas.height=260;canvas.getContext('2d').drawImage(image,0,Math.max(0,image.height-image.width*260/120),image.width,Math.min(image.height,image.width*260/120),0,0,120,260);return canvas.toDataURL('image/jpeg',.85);}
 
+// Select the collected table's visual styling from its art collection.
 export function tableStyle(chapter){const tile=(chapter-1)*5%16;return {image:'assets/card-tables.png',position:`${tile%4*100/3}% ${Math.floor(tile/4)*100/3}%`,hue:(chapter*13%17)-8};}
 const tables=new Map();
+// Load the selected collected table artwork for the playing surface.
 export async function tableSurface(chapter,width,height){
  const tile=chapter===0?100:collectionIndex(chapter),key=`${tile}:${width}:${height}`;if(tables.has(key))return tables.get(key);
  const promise=(async()=>{const extra=tile>=48&&tile<100,group=extra?Math.floor((tile-48)/16):tile===100?3:Math.floor(tile/16),local=extra?(tile-48)%16:tile===100?0:tile%16,image=await load(extra?'assets/chapter-tables-'+group+'.png':group===3?'assets/card-tables.png':'assets/card-tables-'+group+'.png'),grid=tableGrids[group],cols=extra&&group===3?2:4,col=local%cols,row=Math.floor(local/cols),sx=extra?col*image.width/cols+3:grid.x[0][col]+2,sy=extra?row*image.height/cols+3:grid.y[0][row]+2,sw=extra?image.width/cols-6:grid.x[1][col]-sx-2,sh=extra?image.height/cols-6:grid.y[1][row]-sy-2;
@@ -34,4 +40,5 @@ export async function tableSurface(chapter,width,height){
   return c.toDataURL('image/jpeg',.9);
  })();tables.set(key,promise);if(tables.size>12)tables.delete(tables.keys().next().value);try{return await promise;}catch(e){tables.delete(key);throw e;}
 }
+// Fit the tableau to the selected surface without changing the hand's cover relationships.
 export function fitCardTable(root,chapter){const shell=root.querySelector('.board-shell');if(!shell)return;shell.classList.add('painted-table');const w=Math.round(shell.clientWidth),h=Math.round(shell.clientHeight),key=`${chapter}:${w}:${h}`;if(shell.dataset.tableKey===key)return;shell.dataset.tableKey=key;tableSurface(chapter,w,h).then(url=>{if(shell.isConnected&&shell.dataset.tableKey===key){shell.style.backgroundImage=`url('${url}')`;shell.classList.add('painted-table');}}).catch(()=>{});}

@@ -13,6 +13,7 @@ public sealed class GameSession
     public PowerupCatalog Powerups { get; }
     public ICampaignCatalog Campaign { get; }
     public PrizeWheel Wheel { get; }
+    // Apply an available wheel spin and save its prize before UI animation begins.
     public WheelPrize? SpinWheel(){var prize=Wheel.Spin();if(prize!=null)Save();return prize;}
     public PicnicTrail Picnic { get; }
     public Progress Profile { get; }
@@ -27,6 +28,7 @@ public sealed class GameSession
     public bool DailyClaimed => Profile.Daily == clock.Today.ToString("yyyy-MM-dd");
     public int GardenGifts => Math.Max(0, Profile.Garden / Economy.GardenInterval - Profile.GardenClaimed);
 
+    // Compose the injected engines and policies, restore validated progress and recover active games.
     public GameSession(ISolitaireFactory solitaire, ICoinGameFactory coinGames,
         IProfileStore store, IEconomyPolicy economy, PowerupCatalog powerups,
         IGameClock clock, IRandomSource random, ICampaignCatalog? campaign = null, IPicnicPolicy? picnicPolicy = null, IPrizeWheelPolicy? wheelPolicy = null)
@@ -64,10 +66,14 @@ public sealed class GameSession
         }
         DiscoverHand();
     }
+    // Record mechanics seen in the active hand so helper discovery follows actual play.
     void DiscoverHand(){if(Hand==null)return;Profile.HighestPlayedLevel=Math.Max(Profile.HighestPlayedLevel,Level);foreach(var card in Hand.Deal.Cards)Profile.SeenMechanics.Add(card.Kind);}
+    // Resolve whether progress and mechanic history have introduced this helper.
     public bool HelperDiscovered(string id)=>HelperDiscovery.Discovered(Profile,id);
+    // Resolve whether the current board presents a useful target for this helper.
     public bool HelperRelevant(string id)=>HelperDiscovery.Relevant(Hand,id);
 
+    // Validate the destination before replacing an attempt with a newly generated hand.
     public void StartHand(int level, bool endless)
     {
         if (level < 1 || (!endless && (level > Campaign.LevelCount || level > Profile.Unlocked)))
@@ -82,6 +88,7 @@ public sealed class GameSession
         if (endless) Profile.EndlessDeal = Math.Min(int.MaxValue - 1, level + 1);
     }
 
+    // Restart the captured deal rather than rerolling its original layout and faces.
     public void Replay()
     {
         if (Hand == null) return;
@@ -91,6 +98,7 @@ public sealed class GameSession
         Hand = solitaire.Restore(fresh) ?? throw new InvalidOperationException("Unable to replay this deal.");
     }
 
+    // Replace the current hand using the supported fresh-seed behavior.
     public void Remix()
     {
         if (Profile.FreshDealCooldown>0 || Hand == null) return;
@@ -99,12 +107,14 @@ public sealed class GameSession
         Hand = next; Seed = nextSeed; Profile.FreshDealCooldown=30;
     }
 
+    // Advance elapsed-time effects through the injected hand capability.
     public void AdvanceTime(double seconds)
     {
         if(!double.IsFinite(seconds) || seconds<=0) return;
         Profile.FreshDealCooldown=Math.Max(0,Profile.FreshDealCooldown-seconds);
         (Hand as ITemporaryHand)?.AdvanceTime(seconds);
     }
+    // Add or remove a supported campaign level from the saved collection.
     public bool ToggleFavorite(int level)
     {
         if(level<1 || level>Profile.Unlocked) return false;
@@ -112,6 +122,7 @@ public sealed class GameSession
         return true;
     }
     public string? ShareCode => Hand==null || Hand.Deal.Generation is not ("MP16" or "MP18" or "MP19") ? null : DealCodes.Encode(new(Level,Seed,Endless,Hand.Deal.Generation));
+    // Validate the versioned reference before replacing the current hand with its deal.
     public bool StartSharedDeal(string code)
     {
         if(!DealCodes.TryParse(code,out var reference) || reference==null || !reference.Endless && reference.Level>Profile.Unlocked) return false;
@@ -120,6 +131,7 @@ public sealed class GameSession
         if(Endless) Profile.EndlessDeal=Math.Max(Profile.EndlessDeal,Math.Min(int.MaxValue-1,Level+1));
         return true;
     }
+    // Submit a legal card action and record session-level clear consequences only on success.
     public bool PlayCard(int index)
     {
         if(Hand==null) return false;
@@ -127,8 +139,10 @@ public sealed class GameSession
         if(!Hand.Play(index)) return false;
         Picnic.Clear(Hand.Removed.Count(x=>x)-before); return true;
     }
+    // Delegate drawing to the active hand; rejected draws leave the state unchanged.
     public bool Draw() => Hand?.Draw() == true;
 
+    // Check reversible history and the free/paid undo cost before restoring a move.
     public CommandResult Undo()
     {
         if (Hand == null || !Hand.CanUndo) return CommandResult.Unavailable;
@@ -139,6 +153,7 @@ public sealed class GameSession
         return CommandResult.Applied;
     }
 
+    // Check inventory and eligibility before consuming the helper and applying its effect.
     public CommandResult UsePowerup(string id, int? target = null)
     {
         var powerup = Powerups.Find(id);
@@ -152,6 +167,7 @@ public sealed class GameSession
         return CommandResult.Applied;
     }
 
+    // Validate the helper and wallet balance before debiting coins and increasing inventory.
     public CommandResult BuyPowerup(string id)
     {
         var powerup = Powerups.Find(id);
@@ -161,6 +177,7 @@ public sealed class GameSession
         return CommandResult.Applied;
     }
 
+    // Commit a won hand's payout once and advance campaign/endless progress through its saved marker.
     public WinReward? CompleteHand()
     {
         if (Hand == null || !Hand.Won || Hand.Paid) return null;
@@ -192,6 +209,7 @@ public sealed class GameSession
         return result;
     }
 
+    // Grant the local-day gift once using the injected clock and saved claim date.
     public int ClaimDaily()
     {
         if (DailyClaimed) return 0;
@@ -200,6 +218,7 @@ public sealed class GameSession
         return Economy.DailyGift;
     }
 
+    // Grant only the five-win garden milestones not already recorded as claimed.
     public int ClaimGarden()
     {
         int gifts = Math.Max(0, GardenGifts);
@@ -211,6 +230,7 @@ public sealed class GameSession
 
     public const int GardenRefreshSeconds = 3600;
     public double GardenRefreshRemaining => Math.Max(0, (Profile.GardenRefreshAt-clock.UtcNow.ToUnixTimeMilliseconds())/1000.0);
+    // Resume the existing garden or create its initial deterministic board.
     public void OpenCoinGame()
     {
         if(CoinGame!=null) return;
@@ -218,6 +238,7 @@ public sealed class GameSession
         if(GardenRefreshRemaining<=0) Profile.GardenRefreshAt=clock.UtcNow.ToUnixTimeMilliseconds()+GardenRefreshSeconds*1000;
         Save();
     }
+    // Replace the garden only after its persisted refresh deadline has passed.
     public bool NewCoinGame()
     {
         if(GardenRefreshRemaining>0) return false;
@@ -226,6 +247,7 @@ public sealed class GameSession
         Profile.GardenRefreshAt=clock.UtcNow.ToUnixTimeMilliseconds()+GardenRefreshSeconds*1000;
         Save();return true;
     }
+    // Credit the actual gain from an accepted jewel move and record daily progress.
     public bool PlayGems(int first, int second)
     {
         if (CoinGame?.Play(first, second) != true) return false;

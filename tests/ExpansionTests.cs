@@ -3,9 +3,11 @@ using System.Text.Json;
 
 static class ExpansionTests
 {
+    // Exercise added helper, mechanic and formation behavior with controlled board fixtures.
     public static void Run(Action<bool,string> check)
     {
         var rules=new TriPeaksRules();
+        // Build a small purpose-specific deal fixture so the test isolates the intended mechanics.
         Deal Board(params Card[] cards) => new() { TemporaryRules=true, Generation="MP16", Layout=cards.Select((_,i)=>new Slot(i*2,0)).ToArray(), Cards=cards, Waste=new(5,0), Stock=new[] {new Card(7,1),new Card(8,0)} };
         var h=new Hand(Board(new Card(6,0){Kind=CardKind.Gate,Strength=1},new(6,1)),rules);
         check(!h.CanPlay(0) && TimedMoves.Draw(h) && h.CanPlay(0), "Successful draws flip phase gates");
@@ -36,6 +38,7 @@ static class ExpansionTests
         var profile=new Progress {Unlocked=2300};var clock=new Clock();
         var catalog=new PowerupCatalog(new IPowerup[]{new WildPowerup(),new TemporaryPowerup("peek","eye","6s",40)});
         var store=new MemoryProfileStore(profile);
+        // Create an isolated test session with the supplied replaceable engine and storage dependencies.
         GameSession Open(IProfileStore save) => new(factory,new GemGameFactory(),save,new StandardEconomyPolicy(),catalog,clock,new Seeds());
         var session=Open(store);profile=session.Profile;session.StartHand(2300,false);string share=session.ShareCode!;
         var original=session.Hand!.Deal;
@@ -71,5 +74,6 @@ static class ExpansionTests
         Console.WriteLine("Phase gates, color seals, four temporary helpers, sharing, favorites, daily picnic and bonus styles passed.");
     }
     sealed class Clock:IGameClock { public DateTime Today {get;set;}=new(2026,10,24); }
-    sealed class Seeds:IRandomSource { public int NextSeed()=>42; }
+    sealed class Seeds:IRandomSource { /* Supply a seed through the injected random source so game logic need not own global randomness. */
+    public int NextSeed()=>42; }
 }

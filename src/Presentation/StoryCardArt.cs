@@ -2,6 +2,7 @@ using System.Drawing.Drawing2D;
 namespace MeadowPeaks;
 internal static class StoryCardArt
 {
+    // Paint a readable native card face/back and its current hint or hover state.
     public static void Draw(Graphics g,RectangleF r,Card c,bool face,bool hint,bool hover)
     {
         Art.Card(g,r,c,face,hint,hover,labels:false);

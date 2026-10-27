@@ -1,3 +1,4 @@
+// Verify route-stack behavior: repeated destinations collapse loops and preserve independent scroll state.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {MenuJourney} from '../menu-journey.mjs';

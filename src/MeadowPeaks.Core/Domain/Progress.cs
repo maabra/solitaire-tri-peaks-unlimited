@@ -1,3 +1,5 @@
+// Persisted profile schema: property names and defaults are part of save compatibility.
+// Keep campaign history and the active board separate so migration can retain an unfinished hand.
 namespace MeadowPeaks;
 
 public sealed class Progress

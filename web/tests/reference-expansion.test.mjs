@@ -1,3 +1,4 @@
+// Replay current-generation witnesses and check formation, helper and save behavior at expansion boundaries.
 import assert from 'node:assert/strict';
 import {storyLayoutV4,storyNameV4,formationFamiliesV4} from '../story-layouts-v4.mjs';
 import {adventureDeal,AdventureHand} from '../adventure-hand.mjs';

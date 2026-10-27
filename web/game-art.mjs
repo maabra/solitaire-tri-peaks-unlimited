@@ -12,4 +12,5 @@ export function gameIcon(name,size=32){name=aliases[name]??name;if(name==='gems'
 
 
 export const kindIcon=['extra','ice','key','lock','bomb','gift','up','down','stone','prune','scout','lucky','shield','phase','seal','tornado','fog'];
+// Replace supported semantic placeholders with the common generated-art presentation.
 export function decorateIcons(root=document){for(const b of root.querySelectorAll('button[data-action]')){if(b.matches('.card,.gem,.story-node, .map-icon,.tool,.shell-close')||b.querySelector('.game-icon'))continue;const action=b.dataset.action.split(':')[0],name=aliases[action]??(names.includes(action)||extraNames.includes(action)?action:null);if(!name)continue;if(b.firstChild?.nodeType===3)b.firstChild.textContent=b.firstChild.textContent.replace(/^[^\p{L}\p{N}]+/u,'');b.insertAdjacentHTML('afterbegin',gameIcon(b.classList.contains('brand')?'flower':name,b.classList.contains('brand')?30:b.classList.contains('close')?28:23));b.classList.add('icon-button')}}

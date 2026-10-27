@@ -10,6 +10,7 @@ internal sealed partial class DesktopGameWindow:Form
     readonly Label loading=new(){Dock=DockStyle.Fill,Text="Meadow Peaks\nPreparing your meadow...",TextAlign=ContentAlignment.MiddleCenter,BackColor=Color.FromArgb(49,82,59),ForeColor=Color.FromArgb(255,244,211),Font=new Font("Segoe UI",22,FontStyle.Bold)};
     readonly IProfileStore store;readonly bool smoke,checking;Progress profile;string initialProfile,loadWarning="";bool loaded,closing,initializingNavigation;
     readonly System.Windows.Forms.Timer timeout=new(){Interval=170000};
+    // Restore native progress and configure the shared offline WebView game host.
     public DesktopGameWindow(IProfileStore store,bool smoke,bool checking)
     {
         this.store=store;this.smoke=smoke;this.checking=checking;
@@ -27,6 +28,7 @@ internal sealed partial class DesktopGameWindow:Form
         timeout.Tick+=(_,_)=>Fail(new TimeoutException("The game interface did not finish loading."));
         if(smoke||checking)timeout.Start();
     }
+    // Prepare the bundled renderer and inject the native profile before loading the shared UI.
     async Task Initialize()
     {
         try
@@ -70,6 +72,7 @@ internal sealed partial class DesktopGameWindow:Form
         }
         catch(Exception error){Fail(error);}
     }
+    // Handle allowed game-to-native bridge messages using the private hosted origin.
     void MessageReceived(object? sender,CoreWebView2WebMessageReceivedEventArgs e)
     {
         if(!e.Source.StartsWith(Origin,StringComparison.Ordinal))return;
@@ -80,6 +83,8 @@ internal sealed partial class DesktopGameWindow:Form
         }
         catch(Exception error){StartupDiagnostics.Write("MeadowPeaks-save-error.txt",error.ToString());browser.CoreWebView2.ExecuteScriptAsync("document.querySelector('#toast').textContent='Could not save progress. Export your adventure from Settings.';document.querySelector('#toast').classList.add('show');");}
     }
+    // Report startup failure and record diagnostics rather than leaving an unexplained loading screen.
     void Fail(Exception error){closing=true;timeout.Stop();if(smoke)StartupDiagnostics.Write("smoke-result.txt",error.ToString());StartupDiagnostics.Error(error,smoke||checking);Close();}
+    // Release host resources and timers when the game window closes.
     protected override void Dispose(bool disposing){if(disposing){timeout.Dispose();browser.Dispose();loading.Dispose();}base.Dispose(disposing);}
 }

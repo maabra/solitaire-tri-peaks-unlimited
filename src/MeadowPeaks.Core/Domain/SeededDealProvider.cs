@@ -4,6 +4,7 @@ public sealed class SeededDealProvider : IDealProvider
 {
     readonly ILayoutProvider layouts;
     readonly ISolitaireRules rules;
+    // Bind the replaceable layout and adjacency policies used to construct solvable deals.
     public SeededDealProvider(ILayoutProvider layouts, ISolitaireRules rules)
     {
         this.layouts = layouts;
@@ -18,6 +19,7 @@ public sealed class SeededDealProvider : IDealProvider
         for (int attempt = 0; attempt < 10000; attempt++)
         {
             var available = Enumerable.Range(0, 52).Select(i => new Card(i % 13 + 1, i / 13)).ToList();
+            // Choose and remove a card from the remaining deck so the same physical card is not dealt twice.
             Card Take(List<Card> choices) { var c = choices[rng.Next(choices.Count)]; available.Remove(c); return c; }
             var waste = Take(available.ToList());
             var current = waste;

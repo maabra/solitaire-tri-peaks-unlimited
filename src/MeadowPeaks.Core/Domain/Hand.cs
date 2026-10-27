@@ -9,8 +9,11 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     readonly ICardMechanics mechanics;
     MechanicState state = new();
     public bool Failed => state.Failed;
+    // Read per-card armor damage while retaining compatibility with the older peeled bit mask.
     int ArmorDamage(int i) => state.ArmorDamage != null && state.ArmorDamage.TryGetValue(i, out int damage) ? damage : ((state.Peeled & (1UL << i)) != 0 ? 1 : 0);
+    // Describe the remaining obstacle requirement for this card's visible badge.
     public string CardStatus(int i) => Deal.Cards[i].Kind == CardKind.Stone ? $"\u25c6{Math.Max(1, Math.Max(2, Deal.Cards[i].Strength)-ArmorDamage(i))}" : mechanics.Status(Deal.Cards[i], state);
+    // Explain the current obstacle or rank requirement without mutating the hand.
     public string BlockReason(int i)
     {
         if(Failed) return "A bomb burst. Undo the last move or replay this deal.";
@@ -37,9 +40,13 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
     public bool Paid { get; set; }
     readonly Stack<Snapshot> history = new();
     readonly ISolitaireRules rules;
+    // Initialize independent mutable state from the deal and the injected rule/mechanic policies.
     public Hand(Deal deal, ISolitaireRules rules, ICardMechanics? mechanics = null) { this.mechanics = mechanics ?? new CardMechanics(); this.rules = rules; Deal = deal; state = new(HintSeconds: deal.OpeningEffect == "glow" ? 8 : deal.TemporaryRules ? 3 : 0, LuckySeconds: deal.OpeningEffect == "harvest" ? 6 : 0, ShieldSeconds: deal.OpeningEffect == "shelter" ? 6 : 0); removed = new bool[deal.Cards.Count]; stock = deal.Stock.ToList(); Waste = deal.Waste; }
+    // Validate the index and ask the rule policy whether the card is uncovered.
     public bool IsExposed(int i) => i >= 0 && i < removed.Length && rules.Exposed(Deal.Layout, removed, i);
+    // Store the actual deal and live mechanic state so restoring does not regenerate a different board.
     public SavedRun Capture(int seed, int level, bool endless) => new(seed, level, endless, (bool[])removed.Clone(), stock.ToList(), Waste, Score, Streak, BestStreak, FreeUndos, Paid, Deal, state);
+    // Rebuild the saved hand only when its board and counters are consistent with the deal.
     internal static Hand? Restore(SavedRun run, Deal deal, ISolitaireRules rules, ICardMechanics? mechanics = null)
     {
         if (run.Level < 1 || (!run.Endless && run.Level > MeadowCampaign.TotalLevels) || run.Seed < 0 || run.Removed == null || run.Stock == null || run.Waste == null || run.Score < 0 || run.Streak < 0 || run.BestStreak < run.Streak || run.FreeUndos < 0 || run.FreeUndos > 3 || run.Waste.Rank < 0 || run.Waste.Rank > 13 || run.Waste.Suit < 0 || run.Waste.Suit > 3 || run.Stock.Count > 100 || run.Stock.Any(c => c == null || c.Rank < 1 || c.Rank > 13 || c.Suit < 0 || c.Suit > 3)) return null;
@@ -51,9 +58,11 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         return h;
     }
     public bool Won => removed.All(x => x);
+    // Combine active-hand, obstacle, exposure and adjacency checks before accepting a card.
     public bool CanPlay(int i) => i >= 0 && i < removed.Length && !Won && !Failed && mechanics.Allows(Deal.Cards[i], state, Waste) && IsExposed(i) && rules.Adjacent(Waste.Rank, Deal.Cards[i].Rank);
     public IEnumerable<int> Moves => Enumerable.Range(0, removed.Length).Where(CanPlay);
     public bool CanUndo => history.Count > 0 && !Paid;
+    // Capture cards, stock, waste and mechanic state together for a reversible action.
     void Remember() => history.Push(new((bool[])removed.Clone(), stock.ToList(), Waste, Score, Streak, state));
     // Check legality before taking a snapshot or mutating the hand. Rejected input must not
     // consume an undo step or advance obstacles that count successful actions.
@@ -75,11 +84,13 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         Score = (int)Math.Min(int.MaxValue, (long)Score + 20 + (long)Streak * 10 + (Deal.Layout[i].Row == 0 ? 100 : 0));
         return true;
     }
+    // Advance stock to waste only while drawing is allowed and the hand is still active.
     public bool Draw()
     {
         if (stock.Count == 0 || Won || Failed) return false;
         Remember(); Waste = stock[0]; stock.RemoveAt(0); Streak = 0; state = mechanics.Advance(state, Deal, removed, null) with {DrawCooldown=0}; return true;
     }
+    // Restore a move while retaining cooldowns and preventing restoration of already-expired timed bonuses.
     public bool Undo()
     {
         if (!CanUndo) return false;
@@ -102,11 +113,13 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
 
         if (FreeUndos > 0) FreeUndos--; return true;
     }
+    // Replace the waste with the Wild sentinel and clear history that predates this helper effect.
     public bool Wild()
     {
         if (Failed || Won || Waste.Rank == 0) return false;
         history.Clear(); if (Deal.TemporaryRules) state = state with { WildReturn = null, WildSeconds = 0 }; Waste = new(0, 0); return true;
     }
+    // Add deterministic rescue stock only after the current stock is empty.
     public bool Extra(int seed)
     {
         if (Failed || Won || stock.Count > 0) return false;
@@ -115,6 +128,7 @@ public sealed partial class Hand : ISolitaireHand, IAdventureHand
         for (int i = 0; i < 5; i++) stock.Add(new(rng.Next(1, 14), rng.Next(4)){TemporaryStock=false});
         return true;
     }
+    // Remove a valid exposed target and advance clear-dependent mechanics without rank matching.
     public bool Remove(int i)
     {
         if (Failed || Won || i < 0 || i >= removed.Length || !IsExposed(i)) return false;

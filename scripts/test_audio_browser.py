@@ -1,6 +1,7 @@
 """Audio settings persistence, synthesis output, pause and voice cleanup."""
 import asyncio
 from playwright.async_api import async_playwright
+# Scenario: Audio settings persistence, synthesis output, pause and voice cleanup. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True)

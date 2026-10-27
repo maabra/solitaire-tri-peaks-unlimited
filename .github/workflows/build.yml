@@ -1,3 +1,4 @@
+# Build and exercise the packaged Windows game so missing runtime/assets fail before distribution.
 name: Windows build
 on:
   push:

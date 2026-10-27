@@ -2,6 +2,7 @@
 
 internal static class StartupDiagnostics
 {
+    // Record startup diagnostics so failures can be investigated outside the game window.
     public static void Write(string name, string text)
     {
         foreach (string directory in new[] { Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MeadowPeaks") })
@@ -10,6 +11,7 @@ internal static class StartupDiagnostics
             catch(Exception e) when(e is IOException or UnauthorizedAccessException) { }
         }
     }
+    // Format and persist the startup exception with its relevant context.
     public static void Error(Exception error, bool checking)
     {
         Write("MeadowPeaks-error.txt", DateTimeOffset.Now+Environment.NewLine+error);

@@ -4,11 +4,13 @@ namespace MeadowPeaks;
 
 internal static class FestiveArt
 {
+    // Draw a decorative star using the supplied size and color.
     public static void Star(Graphics g, float x, float y, float radius, Color color, float angle = 0)
     {
         var points = Enumerable.Range(0, 10).Select(i => { double a = (i * 36 + angle - 90) * Math.PI / 180; float r = radius * (i % 2 == 0 ? 1 : .43f); return new PointF(x + (float)Math.Cos(a) * r, y + (float)Math.Sin(a) * r); }).ToArray();
         using var b = new SolidBrush(color); g.FillPolygon(b, points);
     }
+    // Draw a decorative blossom for native scenery and rewards.
     public static void Flower(Graphics g, float x, float y, float size, Color color)
     {
         using var stem = new Pen(Color.FromArgb(78, 141, 105), 2); g.DrawLine(stem, x, y, x - 2, y + size * 2.2f);
@@ -16,6 +18,7 @@ internal static class FestiveArt
         for (int i = 0; i < 5; i++) { float a = i * MathF.PI * 2 / 5; g.FillEllipse(petals, x + MathF.Cos(a) * size * .55f - size * .5f, y + MathF.Sin(a) * size * .55f - size * .5f, size, size); }
         using var center = new SolidBrush(Color.FromArgb(255, 211, 98)); g.FillEllipse(center, x - size * .3f, y - size * .3f, size * .6f, size * .6f);
     }
+    // Draw a decorative butterfly at the current presentation pose.
     public static void Butterfly(Graphics g, float x, float y, float phase, Color color, float size = 1)
     {
         float flap = .25f + .75f * MathF.Abs(MathF.Sin(phase * 4));
@@ -24,6 +27,7 @@ internal static class FestiveArt
         g.FillEllipse(light, x + 1, y - 8 * size, 13 * flap * size, 17 * size);
         using var body = new Pen(Art.Ink, 2 * size); g.DrawLine(body, x, y - 5 * size, x, y + 10 * size);
     }
+    // Draw the native mascot with the requested expression/pose.
     public static void Pip(Graphics g, float x, float y, float size = 1, bool party = false)
     {
         var saved = g.Save(); g.TranslateTransform(x, y); g.ScaleTransform(size, size);

@@ -23,6 +23,7 @@ public sealed partial class GameWindow : Form
     readonly System.Windows.Forms.Timer toastTimer = new() { Interval = 5000 };
     readonly System.Windows.Forms.Timer animation = new() { Interval = 33 };
     bool rebuilding;
+    // Initialize the native presentation, input handlers and injected session services.
     public GameWindow(GameSession session, IGameArtwork artwork, ISoundPlayer sound, bool smoke = false, EffectScene? visualEffects = null, bool startupCheck = false)
     {
         this.session = session;
@@ -48,21 +49,26 @@ public sealed partial class GameWindow : Form
         AccessibleName = "Meadow Peaks Solitaire";
         Build();
     }
+    // Persist the session's current live state before leaving or replacing a native view.
     void Save()
     {
         if(startupCheck) return;
         try { session.Save(); }
         catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) { message = "Progress could not be saved. Check access to your Local AppData folder."; Invalidate(); }
     }
+    // Show transient native feedback without changing game state.
     void Tell(string text)
     {
         message = text; toastTimer.Stop(); toastTimer.Start(); backdropDirty = true; Invalidate();
     }
+    // Play the requested native sound through the configured sound service.
     void Chime(SoundCue cue = SoundCue.Card)
     {
         if (profile.Sound && !smoke) { if (sound is IGameSoundtrack soundtrack) soundtrack.Play(cue); else sound.Play(); }
     }
+    // Create the native layout rectangle used by the surrounding controls.
     Rectangle Rect(float x, float y, float w, float h) => new((int)(offsetX + x * scale), (int)(offsetY + y * scale), Math.Max(1, (int)(w * scale)), Math.Max(1, (int)(h * scale)));
+    // Create a styled native command control and bind its action.
     GameButton Button(string name, string text, float x, float y, float w, float h, Action action, Color? fill = null, bool enabled = true)
     {
         var b = new GameButton(artwork) { Name = name, Text = text, AccessibleName = text.Replace("\n", " "), Bounds = Rect(x, y, w, h), Fill = fill ?? artwork.Cream, Enabled = enabled, TabIndex = Controls.Count };
@@ -71,6 +77,7 @@ public sealed partial class GameWindow : Form
         b.Advance(effects.Time, profile.ReducedMotion);
         b.Click += (_, _) => action(); Controls.Add(b); return b;
     }
+    // Rebuild the selected native screen and its controls from current session state.
     void Build()
     {
         if (rebuilding || IsDisposed) return;
@@ -97,8 +104,11 @@ public sealed partial class GameWindow : Form
         if (focused != null && Controls.Find(focused, false).FirstOrDefault() is { Enabled: true } found) found.Focus();
         backdropDirty = true; RefreshBackdrop(); ResumeLayout(); rebuilding = false; Invalidate();
     }
+    // Switch the native screen while retaining the shared session as the state owner.
     void Navigate(string target) { overlay = ""; selectedPowerup = null; gemAnimation = null; effects.Clear(); screen = target; Save(); Build(); PresentSceneEntrance(); }
+    // Open a native overlay above the current game screen.
     void ShowOverlay(string name) { overlay = name; selectedPowerup = null; gemAnimation = null; effects.Clear(); Build(); }
+    // Build resume, map and discovery controls from the current adventure state.
     void BuildHome()
     {
         Button("adventure", hand is {Won:false} ? $"Resume level {level:N0}  \u2192" : "Play adventure  \u2192", 88, 402, 345, 65, () => { if(hand is {Won:false}) Navigate("play"); else { mapPage = (profile.Unlocked - 1) / 20; Navigate("map"); } }, artwork.Gold);
@@ -111,12 +121,14 @@ public sealed partial class GameWindow : Form
         Button("importDeal", "\U0001f517 Open deal", 960, 520, 190, 47, ImportDeal);
         if (session.GardenGifts > 0) Button("gardenGift", $"Collect garden gift · +{session.Economy.GardenGift}", 810, 651, 325, 50, ClaimGarden, artwork.Gold);
     }
+    // Request the session's one-time local-day gift and refresh the view.
     void ClaimDaily()
     {
         if (session.DailyClaimed) return;
         int coins = session.ClaimDaily();
         Save(); Tell($"A little gift for a lovely day. +{coins} coins!"); Build(); RewardEffects(coins, new(348, 695));
     }
+    // Request eligible unclaimed garden milestones and refresh the displayed balances.
     void ClaimGarden()
     {
         if (session.GardenGifts == 0) return;
@@ -124,7 +136,9 @@ public sealed partial class GameWindow : Form
         Save(); Tell($"Your garden thanks you. +{coins} coins!"); Build(); RewardEffects(coins, new(960, 651));
     }
     int previewLevel;
+    // Show the destination's objective and eligibility before starting an attempt.
     void PreviewLevel(int n){previewLevel=n;ShowOverlay("levelPreview");}
+    // Build chapter-stop controls and their saved completion states.
     void BuildMap()
     {
         for(int i=0;i<20;i++)
@@ -140,7 +154,9 @@ public sealed partial class GameWindow : Form
         Button("jump","Go to level...",690,724,170,44,JumpLevel,Color.FromArgb(246,217,167));
         Button("next","\u203a",1035,720,58,49,()=>{mapPage++;Build();PresentSceneEntrance();},Color.FromArgb(154,87,173),mapPage<campaign.Chapters.Count-1);
     }
+    // Convert a level stop into native map drawing coordinates.
     static PointF MapPoint(int i)=>AdventureMapArt.Route[i];
+    // Validate the requested destination before navigating the map to it.
     void JumpLevel()
     {
         using var dialog = new Form { Text = "Find a level", ClientSize = new(330, 155), FormBorderStyle = FormBorderStyle.FixedDialog, StartPosition = FormStartPosition.CenterParent, MaximizeBox = false, MinimizeBox = false };
@@ -150,22 +166,26 @@ public sealed partial class GameWindow : Form
         dialog.Controls.AddRange(new Control[] { label, number, ok }); dialog.AcceptButton = ok;
         if (dialog.ShowDialog(this) == DialogResult.OK) { mapPage = ((int)number.Value - 1) / 20; Build(); }
     }
+    // Handle the current attempt before accepting a replacement hand.
     void ReplaceHand(Action action)
     {
         if (hand != null && !hand.Won) { confirmAction = action; ShowOverlay("replace"); }
         else action();
     }
+    // Start a campaign attempt through the shared session.
     void StartAdventure(int n)
     {
         if (n > profile.Unlocked || n < 1 || n > campaign.LevelCount) return;
         if (hand != null && !hand.Won && !endless && level == n) { Navigate("play"); return; }
         ReplaceHand(() => NewHand(n, false));
     }
+    // Start an endless hand separately from numbered campaign progress.
     void StartEndless()
     {
         if (hand != null && !hand.Won && endless) { Navigate("play"); return; }
         ReplaceHand(() => NewHand(profile.EndlessDeal, true));
     }
+    // Create the requested hand and rebuild the native play view.
     void NewHand(int n, bool infinite)
     {
         session.StartHand(n, infinite);
@@ -173,6 +193,7 @@ public sealed partial class GameWindow : Form
         if (!infinite && (n - 1) % campaign.LevelsPerChapter == 0) effects.Burst(new(1100, 179), WorldPalette.For(CurrentChapter.Theme).Accent, 20);
         Tell(n == 1 && !infinite ? "\u2660 \u2191 / \u2193     \U0001f50e 3s" : n % 100 == 0 ? $"\u2b06 {hand?.Deal.Difficulty?.Badge}" : hand?.Deal.Bonus == true && !profile.Stars.ContainsKey(n) && !infinite ? "\U0001f381 +125 \U0001fa99 +1 \u2728" : $"\u2660 {hand?.Deal.Layout.Max(s => s.Row) + 1} \u2195    \u2728");
     }
+    // Build the native tableau, stock, waste and helper controls.
     void BuildHand()
     {
         if (hand == null) { screen = "home"; BuildHome(); return; }
@@ -200,6 +221,7 @@ public sealed partial class GameWindow : Form
         if (hand.Won) Button("finishedNext", "Next hand  →", 920, 566, 230, 53, () => NewHand(endless ? profile.EndlessDeal : Math.Min(level + 1, campaign.LevelCount), endless || level == campaign.LevelCount), artwork.Gold);
         if (!hand.Moves.Any() && hand.Stock.Count == 0 && !hand.Won) Button("earn", "Earn coins  ◆", 920, 566, 230, 53, OpenGems, artwork.Gold);
     }
+    // Reuse the control for a surviving card so incremental updates do not recreate it.
     void EnsureCardControl(int i)
     {
             if (hand==null) return;
@@ -222,6 +244,7 @@ public sealed partial class GameWindow : Form
             b.TabStop = face; b.Enabled = face;
             b.BringToFront();
     }
+    // Update native card/control state after an accepted action without rerolling the deal.
     void RefreshHandView()
     {
         if(hand==null||screen!="play"||overlay.Length>0){Build();return;}
@@ -234,6 +257,7 @@ public sealed partial class GameWindow : Form
         for(int i=0;i<helpers.Length;i++){var h=helpers[i];var b=Button("power-"+h.Id,$"{h.Name} x{session.Inventory.Count(h.Id)}",383+i*225,698,210,57,()=>ActivatePowerup(h.Id),enabled:h.CanUse(hand)&&((hand as ITemporaryHand)?.Effects.HelperCooldown??0)<=0);b.Subtitle=PowerupCaption(h);}
         BuildPowerupPages(698);UpdatePeekControls();backdropDirty=true;RefreshBackdrop();Invalidate();
     }
+    // Submit the selected card to the session and present its accepted result.
     void PlayCard(int i)
     {
         if (hand == null) return;
@@ -277,6 +301,7 @@ public sealed partial class GameWindow : Form
         else Chime();
         cardHint = -1; Changed(); RevealCards(previous);
     }
+    // Refresh presentation and completion handling after game state changes.
     void Changed()
     {
         var result = session.CompleteHand();
@@ -290,14 +315,18 @@ public sealed partial class GameWindow : Form
         Save(); if(overlay.Length>0)Build();else RefreshHandView();
         if ((hand as IAdventureHand)?.Failed == true) Tell("A bomb burst! Undo your last move or replay this deal.");
     }
+    // Request a stock draw and refresh the native hand if it is accepted.
     void Draw() { if (session.Draw()) { effects.Fly(hand!.Waste, new(465, 593), new(604, 593)); selectedPowerup = null; cardHint = -1; Chime(); Changed(); } else Tell((hand as ITemporaryHand)?.Effects.DrawCooldown>0 ? $"Stock ready in {((ITemporaryHand)hand!).Effects.DrawCooldown:0.0}s" : "The stock is empty. Try a Wild, five more cards, or replay this deal."); }
+    // Request the session's free/paid undo behavior and refresh the board.
     void Undo()
     {
         var result = session.Undo();
         if (result == CommandResult.InsufficientCoins) { ShowOverlay("shop"); return; }
         if (result == CommandResult.Applied) { selectedPowerup = null; Changed(); }
     }
+    // Activate the Wild helper through the session's inventory rules.
     void Wild() => ActivatePowerup("wild");
+    // Select or apply a helper according to whether it requires a card target.
     void ActivatePowerup(string id)
     {
         var helper = session.Powerups.Find(id);
@@ -319,13 +348,16 @@ public sealed partial class GameWindow : Form
             selectedPowerup = null; Tell(helper.Name + " \u23f3"); Chime(SoundCue.Combo); Changed();
         }
     }
+    // Filter helpers by their discovery and current-hand relevance.
     IPowerup[] VisibleHelpers() {var visible=session.Powerups.All.Where(h=>session.HelperDiscovered(h.Id)&&(overlay=="shop"||screen!="play"||session.HelperRelevant(h.Id))).ToArray();powerupPage=Math.Clamp(powerupPage,0,Math.Max(0,(visible.Length-1)/3));return visible;}
+    // Arrange discovered helpers into the native helper controls.
     void BuildPowerupPages(float y)
     {
         int count=VisibleHelpers().Length; if (count <= 3) return;
         Button("prevPowerups", "‹", overlay == "shop" ? 233 : 105, y, 40, 48, () => { powerupPage--; Build(); }, enabled: powerupPage > 0);
         Button("nextPowerups", "›", overlay == "shop" ? 1008 : 1060, y, 40, 48, () => { powerupPage++; Build(); }, enabled: (powerupPage + 1) * 3 < count);
     }
+    // Request a timed hint from the hand and update its visual feedback.
     void Hint()
     {
         if (hand == null) return;
@@ -334,7 +366,9 @@ public sealed partial class GameWindow : Form
         if (cardHint >= 0) { Tell("Match highlighted for 3 seconds. Hints recharge in 15 seconds."); RefreshHandView(); Controls.Find("card" + cardHint, false).FirstOrDefault()?.Focus(); }
         else Tell(hand.Stock.Count > 0 ? "No cards fit right now. Draw from the stock (D)." : "No moves left. Use a helper, earn coins in Gem Garden, or replay the deal.");
     }
+    // Open the persistent jewel game through the session.
     void OpenGems() { session.OpenCoinGame(); selectedGem = -1; gemHint = -1; Navigate("gems"); }
+    // Build the native jewel grid and its current move/reward controls.
     void BuildGems()
     {
         session.OpenCoinGame();
@@ -351,6 +385,7 @@ public sealed partial class GameWindow : Form
         Button("gemnew", GardenRefreshCaption(), 84, 591, 270, 52, () => { if(!session.NewCoinGame()) return; selectedGem = -1; gemHint = -1; Build(); PresentSceneEntrance(); }, artwork.Gold, gemAnimation == null && session.GardenRefreshRemaining<=0);
         Button("backhand", hand != null && !hand.Won ? "Back to my hand  →" : "Back to adventure  →", 432, 702, 508, 53, () => Navigate(hand != null && !hand.Won ? "play" : "map"));
     }
+    // Track the first jewel and attempt a legal neighboring swap on the second selection.
     void SelectGem(int i)
     {
         if (gems == null || gems.Moves == 0 || gemAnimation != null) return;
@@ -368,11 +403,13 @@ public sealed partial class GameWindow : Form
         else Tell("Try a swap that makes a row or column of three. Invalid swaps cost no moves.");
         selectedGem = -1; gemHint = -1; Build();
     }
+    // Request a validated helper purchase and refresh the displayed wallet/inventory.
     void Buy(string id)
     {
         if (session.BuyPowerup(id) != CommandResult.Applied) { Tell("Need more coins? Earn coins in Gem Garden."); return; }
         Save(); Tell("Helper added to your collection."); Build(); effects.Burst(new(640, 440), artwork.Gold, 20); Chime(SoundCue.Coins);
     }
+    // Build the selected overlay's controls above the current native scene.
     void BuildOverlay()
     {
         Button("closeOverlay", "×", 1004, 148, 46, 44, () => { overlay = ""; Build(); });
@@ -422,11 +459,13 @@ public sealed partial class GameWindow : Form
             Button("cancel", "Keep my current hand", 419, 540, 442, 49, () => { overlay = ""; confirmAction = null; Build(); });
         }
     }
+    // Draw the current native view using the latest presentation state.
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e); RefreshBackdrop();
         if (backdrop != null) e.Graphics.DrawImageUnscaled(backdrop, 0, 0);
     }
+    // Paint the cached scenery behind interactive native controls.
     void PaintBackdrop(Graphics g)
     {
         g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -446,6 +485,7 @@ public sealed partial class GameWindow : Form
         }
         if (overlay.Length > 0) PaintOverlay(g);
     }
+    // Draw the home scene's noninteractive artwork.
     void PaintHome(Graphics g)
     {
         Art.Box(g, new(58, 116, 406, 635), Color.FromArgb(225, 255, 249, 230), 29);
@@ -474,6 +514,7 @@ public sealed partial class GameWindow : Form
         Art.Text(g, $"{profile.Garden:N0} hands cleared  ·  {profile.EndlessWins:N0} endless wins", 795, 632, 19, artwork.Ink, true);
         if (session.GardenGifts <= 0) Art.Text(g, $"{session.Economy.GardenInterval - profile.Garden % session.Economy.GardenInterval} more clears to your next {session.Economy.GardenGift}-coin gift", 795, 668, 16, artwork.Teal);
     }
+    // Draw chapter scenery, road and stop decoration behind native map controls.
     void PaintMap(Graphics g)
     {
         AdventureMapArt.Trail(g);
@@ -490,6 +531,7 @@ public sealed partial class GameWindow : Form
         Art.Box(g,new(460,695,360,7),Color.FromArgb(190,190,157),4);if(cleared>0)Art.Box(g,new(460,695,18*cleared,7),Color.FromArgb(122,195,67),4);
         FestiveArt.Pip(g,1127,585,.8f);Art.Box(g,new(1042,623,190,60),Color.FromArgb(245,255,247,220),16);Art.Text(g,"Every little step is\nsomething lovely.",1050,635,15,artwork.Teal,true,174,true);
     }
+    // Draw tableau and stock decoration from the active hand's state.
     void PaintHand(Graphics g)
     {
         if (hand == null) return;
@@ -528,6 +570,7 @@ public sealed partial class GameWindow : Form
         }
         if (selectedPowerup != null) Art.Text(g, "Choose an exposed card for your helper", 170, 557, 19, artwork.Cream, true, 220, true);
     }
+    // Draw jewel cells and the current cascade presentation frame.
     void PaintGems(Graphics g)
     {
         if (gems == null) return;
@@ -543,6 +586,7 @@ public sealed partial class GameWindow : Form
         Art.Box(g, new(995, 510, 225, 140), Color.FromArgb(220, artwork.Cream), 20);
         Art.Text(g, gems.Moves == 0 ? "Beautifully done!\nYour coins are saved.\nFresh Garden: 1 hour." : "Tip: four and five gems\nmake bigger matches.\nLook for cascades!", 1008, 526, 19, artwork.Teal, true, 210, true);
     }
+    // Draw the selected overlay's backdrop and noninteractive details.
     void PaintOverlay(Graphics g)
     {
         using var shade = new SolidBrush(Color.FromArgb(155, 12, 41, 33)); g.FillRectangle(shade, 0, 0, 1280, 800);
@@ -598,6 +642,7 @@ public sealed partial class GameWindow : Form
             Art.Text(g, overlay == "retry" ? "Replay this same deal from the beginning.\nYour current hand will be replaced.\nCoins already spent and helpers used stay spent." : "You have a hand in progress.\nStarting a new hand will replace it.\nYour coins and adventure progress are safe.", 280, 316, 22, artwork.Teal, false, 720, true);
         }
     }
+    // Translate supported keyboard shortcuts into the same commands used by buttons.
     void KeysPressed(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.F11) { WindowState = WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized; e.Handled = true; return; }
@@ -607,6 +652,7 @@ public sealed partial class GameWindow : Form
         else if (e.KeyCode == Keys.U) Undo(); else if (e.KeyCode == Keys.W) Wild(); else if (e.KeyCode == Keys.H) Hint(); else return;
         e.Handled = true; e.SuppressKeyPress = true;
     }
+    // Exercise the native window's main interactions and write its diagnostic result.
     void Smoke()
     {
         // IncludeAllContentForSelfExtract changes AppContext.BaseDirectory to
@@ -615,6 +661,7 @@ public sealed partial class GameWindow : Form
         try
         {
             Directory.CreateDirectory(Path.Combine(outputDirectory, "screenshots"));
+            // Save the current rendered native screen for visual inspection.
             void Shot(string name, float advance = .85f)
             {
                 AdvancePresentation(advance); Refresh();
@@ -630,6 +677,7 @@ public sealed partial class GameWindow : Form
                 }
                 image.Save(Path.Combine(outputDirectory, "screenshots", name + ".png"));
             }
+            // Trigger the requested native control during smoke verification.
             void Click(string name) { if(name.StartsWith("card")&&effects.Time<dealUntil)AdvancePresentation((float)(dealUntil-effects.Time+.01)); if(name=="draw" && (hand as ITemporaryHand)?.Effects.DrawCooldown>0) AdvancePresentation(2.01f); var b = Controls.Find(name, false).SingleOrDefault() as GameButton; if (b == null || !b.Enabled) throw new Exception("Missing or disabled UI button: " + name); var stableCards=Controls.OfType<GameButton>().Where(c=>c.Name.StartsWith("card")&&c.Name!=name).ToDictionary(c=>c.Name);b.PerformClick();if(overlay.Length==0 && screen=="play" && (name=="draw"||name.StartsWith("card")))foreach(var pair in stableCards)if(Controls.Find(pair.Key,false).FirstOrDefault() is Control current&&!ReferenceEquals(current,pair.Value))throw new Exception("Untouched card control was replaced"); }
             Navigate("home"); Shot("01-home"); Click("adventure"); Shot("02-adventure"); Click("map-wheel"); Shot("25-lucky-wheel"); Click("spinWheel"); Shot("26-wheel-result",4.3f); if(session.Wheel.Spins!=0||profile.WheelSpinsUsed!=1)throw new Exception("Wheel UI did not consume a welcome spin"); Click("closeOverlay"); Click("level1"); Shot("02-level-preview"); Click("playPreview"); Shot("03-solitaire",1.2f);
             var path = hand!.Deal.Solution.ToArray();
@@ -703,6 +751,7 @@ public sealed partial class GameWindow : Form
         catch (Exception ex) { File.WriteAllText(Path.Combine(outputDirectory, "smoke-result.txt"), ex.ToString()); Environment.ExitCode = 1; }
         finally { Close(); }
     }
+    // Release presentation resources, timers and controls owned by the native window.
     protected override void Dispose(bool disposing)
     {
         if (disposing) { iconTips.Dispose(); toastTimer.Dispose(); animation.Dispose(); effectsWindow?.Dispose(); backdrop?.Dispose(); } base.Dispose(disposing);

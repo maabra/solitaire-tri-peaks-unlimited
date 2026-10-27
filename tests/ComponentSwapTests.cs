@@ -3,6 +3,7 @@ using MeadowPeaks;
 
 internal static class ComponentSwapTests
 {
+    // Replace engine, economy, storage and random services to prove composition honors injected contracts.
     public static void Run(Action<bool, string> check)
     {
         var rules = new TriPeaksRules();
@@ -16,6 +17,7 @@ internal static class ComponentSwapTests
         var coins = new TestCoinGameFactory();
         var helper = new TestPowerup();
         var store = new MemoryProfileStore(new Progress { Coins = 30 });
+        // Create an isolated test session with the supplied replaceable engine and storage dependencies.
         GameSession Open(IProfileStore storage, ISolitaireFactory factory, IEconomyPolicy? economy = null, PowerupCatalog? helpers = null) =>
             new(factory, coins, storage, economy ?? new TestEconomy(), helpers ?? new(new[] { helper }), clock, random);
 
@@ -118,7 +120,9 @@ internal static class ComponentSwapTests
     {
         readonly int rank;
         public int Calls { get; private set; }
+        // Choose the fixed rank used to prove that a replacement deal provider is actually called.
         public TinyDeals(int rank = 2) { this.rank = rank; }
+        // Return a minimal deterministic deal and increment the call counter used by the composition test.
         public Deal Generate(int seed, int level)
         {
             Calls++;
@@ -128,12 +132,15 @@ internal static class ComponentSwapTests
     sealed class TinyLayouts : ILayoutProvider
     {
         public int Calls { get; private set; }
+        // Return a single-slot layout and record that the injected provider was used.
         public List<Slot> Create(int level) { Calls++; return new() { new(4, 0) }; }
     }
     sealed class AnyRankRules : ISolitaireRules
     {
         public int Calls { get; private set; }
+        // Accept neighboring ranks, including the Ace-King wrap and the supported Wild sentinel.
         public bool Adjacent(int a, int b) { Calls++; return true; }
+        // Check whether all cards covering this slot have been removed.
         public bool Exposed(IReadOnlyList<Slot> layout, IReadOnlyList<bool> removed, int index) => !removed[index];
     }
     sealed class TestEconomy : IEconomyPolicy
@@ -142,6 +149,7 @@ internal static class ComponentSwapTests
         public int DailyGift => 11;
         public int GardenGift => 13;
         public int GardenInterval => 1;
+        // Return a distinctive fixed payout so the test can detect use of the injected economy policy.
         public WinReward Reward(WinContext context) => new(2, 17);
     }
     sealed class TestPowerup : IPowerup
@@ -152,7 +160,9 @@ internal static class ComponentSwapTests
         public int Price => 7;
         public bool RequiresTarget => true;
         public int Applied { get; private set; }
+        // Check helper eligibility without consuming inventory or changing the hand.
         public bool CanUse(ISolitaireHand hand) => !hand.Won;
+        // Apply this helper only to a valid hand/target; the session owns inventory and payment.
         public bool Apply(ISolitaireHand hand, int? target, int seed)
         {
             if (!target.HasValue || !hand.Remove(target.Value)) return false;
@@ -160,10 +170,12 @@ internal static class ComponentSwapTests
         }
     }
     sealed class TestClock : IGameClock { public DateTimeOffset UtcNow {get;set;}=new(2026,10,24,12,0,0,TimeSpan.Zero); public DateTime Today { get; set; } = new(2026, 10, 24); }
-    sealed class TestRandom : IRandomSource { public int Calls { get; private set; } public int NextSeed() => ++Calls; }
+    sealed class TestRandom : IRandomSource { public int Calls { get; private set; } /* Supply a seed through the injected random source so game logic need not own global randomness. */
+    public int NextSeed() => ++Calls; }
     sealed class TestCoinGameFactory : ICoinGameFactory
     {
         public int Calls { get; private set; }
+        // Record factory use and return the controlled jewel-game test double.
         public ICoinGame Create(int seed) { Calls++; return new TestCoinGame(); }
     }
     sealed class TestCoinGame : ICoinGame
@@ -172,7 +184,9 @@ internal static class ComponentSwapTests
         public int Moves { get; private set; } = 20;
         public int Earned { get; private set; }
         public int LastGain { get; private set; }
+        // Return the test double's known valid jewel pair.
         public (int, int)? Hint() => (0, 1);
+        // Accept only the controlled test swap and expose its fixed reward result.
         public bool Play(int first, int second)
         {
             if (Moves != 20 || first != 0 || second != 1) return false;

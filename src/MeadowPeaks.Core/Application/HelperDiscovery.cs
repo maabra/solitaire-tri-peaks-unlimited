@@ -1,6 +1,7 @@
 namespace MeadowPeaks;
 public static class HelperDiscovery
 {
+    // Check progress and recorded mechanic encounters before revealing this helper.
     public static bool Discovered(Progress p,string id)=>id switch
     {
         "thaw"=>p.SeenMechanics.Contains(CardKind.Ice),"keypass"=>p.SeenMechanics.Contains(CardKind.Lock),
@@ -8,6 +9,7 @@ public static class HelperDiscovery
         "phase"=>p.SeenMechanics.Contains(CardKind.Gate),"lucky"=>p.SeenMechanics.Contains(CardKind.Lucky),
         "scout"=>p.HighestPlayedLevel>=35,"peek"=>p.HighestPlayedLevel>=50,_=>true
     };
+    // Check the live hand for an obstacle or state that the helper can address.
     public static bool Relevant(ISolitaireHand? hand,string id)
     {
         if(hand==null)return true;

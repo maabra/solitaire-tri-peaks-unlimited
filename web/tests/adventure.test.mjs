@@ -3,9 +3,13 @@ import {Session,ProfileStore,validateProfile,encodeDeal,parseDeal} from '../sess
 import {AdventureHand,adventureDeal} from '../adventure-hand.mjs';
 import {clone,K} from '../core.mjs';
 import {rarity} from '../adventure-systems.mjs';
+// Create a minimal card fixture with optional mechanic fields for targeted rule checks.
 const card=(Rank,Kind=0,extra={})=>({Rank,Suit:0,Kind,Strength:1,TemporaryStock:false,...extra});
+// Build a small fully exposed fixture so the test isolates mechanics rather than cover geometry.
 const board=cards=>({Cards:cards,Layout:cards.map((c,i)=>({X:i,Row:0,BlockedBy:[]})),Waste:card(5),Stock:[card(7),card(8)],TemporaryRules:true,AdventureRules:true});
-let now=Date.UTC(2026,9,24),memory=new Map(),adapter={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)},s=new Session(new ProfileStore(adapter),undefined,()=>now),e=s.events;
+let now=Date.UTC(2026,9,24),memory=new Map(),adapter={getItem:/* Read from the test's isolated in-memory storage instead of a real player's browser save. */
+ k=>memory.get(k)??null,setItem:/* Write into the test's isolated storage to exercise persistence and conflict handling. */
+ (k,v)=>memory.set(k,v)},s=new Session(new ProfileStore(adapter),undefined,()=>now),e=s.events;
 // Album: rarity guarantee, exact duplicate conversion, idempotent completion rewards.
 for(let tier=1;tier<=5;tier++){e.a.Album.Packs=[tier];const result=e.openPack();assert.equal(result.length,3);assert.equal(result[0].rarity,tier);assert.ok(result.every(r=>r.rarity<=tier));}
 e.a.Album.Cards=Object.fromEntries(Array.from({length:100},(_,i)=>[i,1]));e.a.Album.Packs=[5];let tokens=e.a.Album.Tokens;const results=e.openPack();assert.equal(e.a.Album.Tokens-tokens,results.reduce((n,r)=>n+r.rarity*5,0));

@@ -3,11 +3,13 @@ from urllib.request import urlopen
 from pathlib import Path
 from urllib.parse import quote
 from playwright.async_api import async_playwright
+# Open the saved reference in an isolated browser and inspect its resource failures and interactive states.
 async def main():
  root=Path('examples/website version');saved=next(root.glob('*10_files'))/'a_data'/'a_M6vp.htm';url='http://127.0.0.1:8766/'+quote(saved.relative_to(root).as_posix())
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1250,'height':781});errors=[];bad=[]
   page.on('pageerror',lambda e:errors.append(str(e)));page.on('response',lambda r:bad.append((r.status,r.url)) if r.status>=400 else None)
+  # Serve cached reference resources locally, rejecting paths that escape the cache directory.
   async def route(r):
    url=r.request.url
    if '/resource/' in url and url.startswith('http://127.0.0.1:8766/'):
@@ -59,6 +61,7 @@ async def main():
   print('Next controls:',await page.evaluate("""()=>{const out=[];function visit(o){if(o.worldVisible!==false&&o.visible&&o.alpha>0&&(o.text||o.inputEnabled))out.push({frame:o.frameName,text:o.text,x:Math.round(o.world?.x??o.x),y:Math.round(o.world?.y??o.y)});for(const c of o.children??[])visit(c)}visit(game.world);return out}"""))
   await page.wait_for_timeout(8000)
   await page.screenshot(path='artifacts/reference-study/map-ready.png')
+  # Interact with the reference frame and save the resulting state for inspection.
   async def click_frame(pattern):
    point=await page.evaluate("""pattern=>{let found;const re=new RegExp(pattern);function visit(o){if(!found&&o.inputEnabled&&o.worldVisible!==false&&o.visible&&o.alpha>0&&re.test(o.frameName??''))found={x:(o.world.x-game.camera.x)*1250/1280,y:(o.world.y-game.camera.y)*781/800};for(const c of o.children??[])visit(c)}visit(game.world);return found}""",pattern)
    if point:await page.mouse.click(point['x'],point['y']);return True

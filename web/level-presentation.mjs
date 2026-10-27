@@ -1,2 +1,3 @@
 import {specialGoal} from './adventure-hand.mjs';
+// Resolve a level's label, icon and special category from its campaign cadence.
 export function levelPresentation(level){const goal=specialGoal(level);if(level>=1000&&level%100===95)return {kind:'long',label:'Long garden',icon:'longLevel'};if(level%25===0)return {kind:'bonus',label:'Bonus',icon:'giftClosed'};if(goal)return {kind:goal.gold?'gold':goal.suit===2?'diamonds':'spades',label:goal.name,icon:goal.gold?'coins':goal.suit===2?'ruby':'seal'};if(level>=20&&level%20===0)return {kind:'expert',label:'Extra hard',icon:'expertLevel'};if(level>=10&&level%10===0)return {kind:'hard',label:'Hard',icon:'hardLevel'};return {kind:'normal',label:'Classic',icon:'play'};}

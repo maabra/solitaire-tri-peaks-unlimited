@@ -18,6 +18,7 @@ internal static class CardGuide
         new(CardKind.Gate,"Sun / moon gate","\u25d0",2000,"Match the board phase. Every successful move switches sun and moon."),
         new(CardKind.ColorSeal,"Color seal","\u2665",2300,"Match rank AND pile color: heart means red, spade means black.")
     };
+    // Explain the selected card's obstacle and interaction using the current hand state.
     public static string Describe(ISolitaireHand hand,int index)
     {
         var card=hand.Deal.Cards[index];
@@ -32,6 +33,7 @@ internal static class CardGuide
 }
 public sealed partial class GameWindow
 {
+    // Choose the native helper caption from inventory and availability.
     string PowerupCaption(IPowerup helper)
     {
         if(hand==null) return helper.Description.Replace("\n"," ");
@@ -46,6 +48,7 @@ public sealed partial class GameWindow
             "lucky"=>"+1 stock per clear - 10s", "thaw"=>"Ignore ice - 8s", "shield"=>"Pause bomb fuses - 10s", "scout"=>"Show matches - 5s",
             "keypass"=>"Ignore locks - 6s", "prune"=>"Ignore vines - 8s", "phase"=>"Open phase gates - 6s", "peek"=>"See next 3 draws - 6s", _=>"One-use helper" };
     }
+    // Draw the selected card's mechanic explanation.
     void PaintCardGuide(Graphics g)
     {
         Art.Text(g,"Know your cards",260,170,34,artwork.Ink,true,760,true);
@@ -62,6 +65,7 @@ public sealed partial class GameWindow
             Art.Text(g,e.Rule,x+64,y+30,13,artwork.Teal,false,288);
         }
     }
+    // Draw the native rules and mechanic reference view.
     void PaintHowToPlay(Graphics g)
     {
         Art.Text(g,"Clear the peaks, one card at a time",250,173,31,artwork.Ink,true,780,true);

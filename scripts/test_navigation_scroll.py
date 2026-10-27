@@ -1,8 +1,10 @@
 """Back returns to the same place in a book page rather than its top."""
 import asyncio,os
 from playwright.async_api import async_playwright
+# Trigger the normal delegated UI command rather than modifying the tested view directly.
 async def action(page,name):
  await page.evaluate("a=>{const e=document.createElement('button');e.dataset.action=a;(document.querySelector('#dialog').open?document.querySelector('#modal'):document.body).append(e);e.click();e.remove()}",name)
+# Scenario: Back returns to the same place in a book page rather than its top. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1440,'height':900},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')");await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'))

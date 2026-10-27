@@ -13,6 +13,7 @@ public sealed class TriPeaksRules : ISolitaireRules
             if (!removed[j] && layout[j].Row == slot.Row + 1 && Math.Abs(layout[j].X-slot.X) < .6f) return false;
         return true;
     }
+    // Accept neighboring ranks, including the Ace-King wrap and the supported Wild sentinel.
     public bool Adjacent(int a, int b) => a == 0 || b == 0 || Math.Abs(a - b) == 1 || Math.Abs(a - b) == 12;
 
 }

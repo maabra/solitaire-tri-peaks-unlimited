@@ -2,12 +2,14 @@
 namespace MeadowPeaks;
 internal static class HandmadeArt
 {
+    // Paint a readable styled label inside the supplied native bounds.
     public static void Label(Graphics g,string text,Font font,RectangleF rectangle,Color color)
     {
         using var brush=new SolidBrush(color);
         using var format=new StringFormat {Alignment=StringAlignment.Center,LineAlignment=StringAlignment.Center,Trimming=StringTrimming.EllipsisCharacter};
         g.DrawString(text,font,brush,rectangle,format);
     }
+    // Paint button chrome independently from its input behavior.
     public static void Button(Graphics g,RectangleF r,Color color,bool enabled,float hover,bool medallion)
     {
         float radius=medallion ? Math.Min(r.Width,r.Height)*.35f : 13;

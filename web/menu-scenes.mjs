@@ -1,5 +1,6 @@
 // Presentation only: menu scenes never own progress, rewards or navigation.
 const scenes={shop:'spring-village',settings:'moonlit-garden',journal:'autumn-orchard',guide:'enchanted-forest',hub:'spring-village',overview:'spring-village',album:'cherry-garden',customize:'lavender-valley',postcard:'tropical-cove',travel:'tropical-cove',missions:'autumn-orchard',regatta:'tropical-cove',voyage:'tropical-cove',tournament:'festival-garden',chest:'desert-oasis',milestones:'festival-garden',hunt:'enchanted-forest',bingo:'lavender-valley',balloon:'spring-village',tickets:'autumn-orchard',trail:'treasure-trail-scene',memory:'matching-garden-scene'};
+// Choose the illustrated menu surface after the content's semantic role is known.
 export function decorateMenuScene(root,topic){
  root.dataset.menuScene=topic;
  const place=topic==='shop'?'shop':['album','albums','pack','tokenShop','customize','postcard'].includes(topic)?'collections':['settings','journal','guide','default'].includes(topic)?'study':'adventures';

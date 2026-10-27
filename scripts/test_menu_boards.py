@@ -2,6 +2,7 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: Exercise real wins and the reused notice board, including bonus prizes. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/menu-boards');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

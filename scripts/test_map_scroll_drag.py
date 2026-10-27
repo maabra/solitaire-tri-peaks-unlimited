@@ -3,6 +3,7 @@ import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
 
+# Scenario: Native menu scrollbar drags must not be mistaken for map panning. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/map-input');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

@@ -16,6 +16,7 @@ public sealed partial class GameWindow
     ICampaignCatalog campaign => session.Campaign;
     Chapter CurrentChapter => campaign.ForLevel(screen == "map" ? mapPage * campaign.LevelsPerChapter + 1 : screen == "home" ? profile.Unlocked : endless ? (level - 1) % campaign.LevelCount + 1 : level);
 
+    // Advance presentation from elapsed time rather than tying game rules to repaint frequency.
     void AnimationTick(object? sender, EventArgs args)
     {
         double now = presentationClock.Elapsed.TotalSeconds;
@@ -30,6 +31,7 @@ public sealed partial class GameWindow
         }
         if (overlay == "win" && effects.Time - victoryStarted < 1.8 && !profile.ReducedMotion) { backdropDirty = true; Invalidate(Rect(300, 250, 680, 220)); }
     }
+    // Advance current visual effects and invalidate the areas that need repainting.
     void AdvancePresentation(float elapsed)
     {
         if (smoke) AdvanceTemporaryEffects(elapsed);
@@ -43,6 +45,7 @@ public sealed partial class GameWindow
         AdvanceWheel();
         if(effects.Time<dealUntil+.1){backdropDirty=true;Invalidate();}
     }
+    // Rebuild cached scenery only when the underlying scene changes.
     void RefreshBackdrop()
     {
         if (!backdropDirty && backdrop?.Size == ClientSize) return;
@@ -53,9 +56,11 @@ public sealed partial class GameWindow
         foreach (var button in Controls.OfType<GameButton>()) button.Backdrop = next;
         previous?.Dispose();
     }
+    // Format the garden's remaining persisted refresh delay for the native controls.
     string GardenRefreshCaption() => session.GardenRefreshRemaining>0 ? "Fresh garden " + TimeSpan.FromSeconds(Math.Ceiling(session.GardenRefreshRemaining)).ToString(@"hh\:mm\:ss") : "Fresh garden";
     readonly Dictionary<int,double> dealReveals=new();
     double dealUntil=-100,dealStarted=-100;
+    // Start decorative entrance effects for the newly displayed screen.
     void PresentSceneEntrance()
     {
         if(screen=="play"&&hand!=null&&!profile.ReducedMotion)
@@ -72,6 +77,7 @@ public sealed partial class GameWindow
         int i = 0;
         foreach (var button in Controls.OfType<GameButton>().Where(b => b.Name.StartsWith("card") || b.Name.StartsWith("level") || b.Name.StartsWith("gem"))) button.BeginEntrance(effects.Time, i++ * .018f);
     }
+    // Resolve a card's displayed rectangle from the current native layout.
     RectangleF CardBounds(int index)
     {
         var slot = hand!.Deal.Layout[index];
@@ -90,11 +96,13 @@ public sealed partial class GameWindow
         float stride = rows > 1 ? Math.Min(height * .7f, (310 - height) / (rows - 1)) : 0;
         return new(640 - ((min+max)*step+width)/2 + slot.X*step, 201 + slot.Row * stride, width, height);
     }
+    // Find a card's displayed center for flight and sparkle origins.
     PointF CardCenter(int index)
     {
         var r = CardBounds(index); return new(r.X + r.Width / 2, r.Y + r.Height / 2);
     }
     double timerPaint, timerSave;
+    // Advance the hand's timed effects and refresh their native indicators.
     void AdvanceTemporaryEffects(double seconds)
     {
         if (screen != "play" || overlay.Length > 0 || (!smoke && (!ContainsFocus || WindowState == FormWindowState.Minimized)) || hand is not ITemporaryHand timed || hand.Won) return;
@@ -123,7 +131,9 @@ public sealed partial class GameWindow
         if (timerPaint >= .2) { timerPaint = 0; backdropDirty = true; Invalidate(); }
         if (timerSave >= 5) { timerSave = 0; Save(); }
     }
+    // Collect uncovered board indices for reveal and hint presentation.
     HashSet<int> ExposedCards() => hand == null ? new() : Enumerable.Range(0, hand.Removed.Count).Where(hand.IsExposed).ToHashSet();
+    // Present newly exposed faces without altering the engine's covering graph.
     void RevealCards(HashSet<int> previous)
     {
         if (hand == null || profile.ReducedMotion) return;
@@ -133,12 +143,14 @@ public sealed partial class GameWindow
             effects.Burst(CardCenter(index), Color.FromArgb(254, 219, 130), 7);
         }
     }
+    // Animate the rewards already granted by the session.
     void RewardEffects(int coins, PointF origin)
     {
         effects.Coins(coins, origin); effects.Burst(origin, artwork.Gold, 24);
         effects.Cheer($"+{coins} little reasons to smile!", new(820, 530)); Chime(SoundCue.Coins);
     }
     GemAnimationFrame? reducedGemFrame;double reducedGemUntil;
+    // Begin playback of the jewel engine's recorded cascade frames.
     void StartGemAnimation()
     {
         if(gems is not IAnimatedCoinGame animated || animated.LastAnimation.Count==0)return;
@@ -148,6 +160,7 @@ public sealed partial class GameWindow
         AdvanceWheel();
         if(effects.Time<dealUntil+.1){backdropDirty=true;Invalidate();}
     }
+    // Advance the native jewel presentation without replaying reward logic.
     void UpdateGemAnimation()
     {
         if(reducedGemFrame!=null && effects.Time>=reducedGemUntil){reducedGemFrame=null;if(screen=="gems")foreach(var b in Controls.OfType<GameButton>().Where(b=>b.Name.StartsWith("gem")&&int.TryParse(b.Name.Substring(3),out _))){int i=int.Parse(b.Name.Substring(3));b.Gem=gems!.Cells[i];b.MatchGlow=0;b.Invalidate();}}
@@ -156,6 +169,7 @@ public sealed partial class GameWindow
         bool changed = gemAnimation.Advance(effects.Time);
         if (gemAnimation.Finished) { gemAnimation = null; Build(); return; }
         var frame = gemAnimation.Current; float progress = gemAnimation.Progress;
+        // Map the animated jewel to its source row for drop interpolation.
         int SourceRow(int i){int col=i%8,row=i/8;var kept=Enumerable.Range(0,8).Where(r=>!frame.Matched.Contains(r*8+col)).ToArray();int missing=8-kept.Length;return row<missing?row-missing:kept[row-missing];}
         for (int i = 0; i < frame.Cells.Count; i++)
         {
@@ -172,6 +186,7 @@ public sealed partial class GameWindow
         }
         if (changed && frame.Kind == GemFrameKind.Swap)
         {
+            // Resolve the drawing center used by the current native effect.
             PointF Center(int i) => new(462 + i % 8 * 64, 218 + i / 8 * 60);
             effects.FlyGem(frame.Cells[frame.First], Center(frame.Second), Center(frame.First));
             effects.FlyGem(frame.Cells[frame.Second], Center(frame.First), Center(frame.Second));
@@ -184,6 +199,7 @@ public sealed partial class GameWindow
             if (frame.Cascade > 1) effects.Cheer($"Cascade ×{frame.Cascade}!", new(1090, 531), Color.FromArgb(144, 100, 172));
         }
     }
+    // Draw the current chapter label and saved progress details.
     void PaintChapterDetails(Graphics g)
     {
         var chapter = CurrentChapter;
@@ -196,6 +212,7 @@ public sealed partial class GameWindow
         Art.Box(g, new(55, 394, 145, 69), Color.FromArgb(240, artwork.Cream), 17);
         Art.Text(g, "You’re doing\nsomething lovely.", 62, 407, 15, artwork.Teal, true, 131, true);
     }
+    // Draw committed win results and their current presentation phase.
     void PaintVictory(Graphics g)
     {
         float progress = profile.ReducedMotion ? 1 : Math.Clamp((float)(effects.Time - victoryStarted) / 1.1f, 0, 1);
@@ -213,6 +230,7 @@ public sealed partial class GameWindow
         FestiveArt.Pip(g, 320, 337, .7f, true); FestiveArt.Pip(g, 960, 337, .7f, true);
         Art.Text(g, "Your progress is saved. Your next smile is just a card away.", 280, 480, 14, artwork.Teal, false, 720, true);
     }
+    // Draw active effect timers and helper decoration around the hand.
     void PaintTemporaryEffects(Graphics g)
     {
         if (hand is not ITemporaryHand timed || hand.Won) return;
@@ -240,6 +258,7 @@ public sealed partial class GameWindow
             using var path = Art.Round(new(115, 195, 1051, 322), 24); g.DrawPath(pen, path);
         }
     }
+    // Render formation previews for inspecting the authored native layouts.
     void SaveFormationAtlas(string path)
     {
         using var image = new Bitmap(1280, 1210);

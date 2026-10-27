@@ -12,6 +12,7 @@ if (args.Length == 2 && args[0] == "--export-web")
     return;
 }
 int assertions = 0;
+// Count this assertion and fail with its descriptive message when the invariant is false.
 void Check(bool condition, string description)
 {
     assertions++; if (!condition) throw new Exception(description);

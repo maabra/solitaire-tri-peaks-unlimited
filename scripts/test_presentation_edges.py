@@ -5,10 +5,12 @@ from playwright.async_api import async_playwright
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'artifacts'/'web-screenshots';OUT.mkdir(exist_ok=True)
 URL='http://127.0.0.1:8765/'
+# Scenario: Shared UI regression checks: scale, action races, persistence and temporary art. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)
   errors=[]
+  # Create the isolated browser context and seed its scenario-specific saved profile.
   async def context(width=1280,height=800,profile=None):
    c=await browser.new_context(viewport={'width':width,'height':height},reduced_motion='reduce')
    if profile:await c.add_init_script('localStorage.setItem("meadow-peaks-profile",'+json.dumps(json.dumps(profile))+');')

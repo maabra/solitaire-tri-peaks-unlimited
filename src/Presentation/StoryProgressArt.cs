@@ -3,6 +3,7 @@ namespace MeadowPeaks;
 // Presentation-only preview of the existing Economy star thresholds.
 internal static class StoryProgressArt
 {
+    // Paint streak/star progress without modifying the hand's score or counters.
     public static void Draw(Graphics g, RectangleF bounds, int bestStreak, int cardsLeft)
     {
         int stars=bestStreak>=9?3:bestStreak>=5?2:1;

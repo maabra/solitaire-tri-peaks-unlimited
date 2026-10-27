@@ -17,6 +17,7 @@ if not credential.get('password'):
     raise SystemExit('No configured Git credential. Choose GitHub Actions in Settings > Pages.')
 headers = {'Authorization':'Bearer '+credential['password'], 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28', 'User-Agent':'MeadowPeaks-Pages-setup'}
 url = 'https://api.github.com/repos/'+REPOSITORY+'/pages'
+# Send the GitHub API request and handle its response for Pages configuration.
 def request(method, payload=None):
     data=json.dumps(payload).encode() if payload is not None else None
     req=urllib.request.Request(url, data=data, headers=headers, method=method)

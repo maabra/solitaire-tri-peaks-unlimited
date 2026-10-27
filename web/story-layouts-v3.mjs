@@ -1,13 +1,18 @@
 import {storyLayoutV2,storyNameV2} from './story-layouts-v2.mjs';
 const names=['Open circle','Twin rings','Infinity weave','Clover loops','Square courtyard','Nested boxes','Diamond windows','Triple arches','Moon arches','Sunburst','Flower wreath','Butterfly wings','Braided ribbons','Woven basket','Garden lattice','Stepping terraces','Eight alcoves','Six fans','Seven lanterns','Spiral staircase','Double spiral','Orbiting moons','Heart garden','Crown bridge','Crossed arches','Honeycomb','Star frame','Ripple pond','Hourglass','Castle windows','Linked diamonds','Zigzag promenade'];
 export const formationFamilies=64;
+// Name the historical 64-family formation selected by the level identifier.
 export function storyNameV3(level){if(level<5)return storyNameV2(level);const family=((level-5)*17)%64;return `${family>=32?'Interwoven ':''}${names[family%32]}`;}
+// Build the MP22/MP24 formation and explicit cover graph from its deterministic variation.
 export function storyLayoutV3(level){
  if(level<5)return storyLayoutV2(level);
  const family=((level-5)*17)%64,shape=family%32,variation=Math.floor((level-5)/64),count=level<15?24:[28,32,36][variation%3],points=[];
- let state=(level*48271+239)%2147483647;const rnd=()=>{state=state*16807%2147483647;return state/2147483647;};
+ let state=(level*48271+239)%2147483647;const /* Advance the local deterministic variation generator without using global randomness. */
+ rnd=()=>{state=state*16807%2147483647;return state/2147483647;};
  const bend=rnd()*18-9,flip=variation%2?-1:1;
+ // Append an authored point or option to the current local collection.
  const add=(x,y,a=0)=>points.push({DrawX:500+(x-500)*flip,DrawY:y,Angle:a*flip});
+ // Transform a family-specific point into the authored formation coordinates.
  function shapePoint(kind,t){const a=t*Math.PI*2,s=Math.sin(a),c=Math.cos(a);switch(kind){
   case 0:return [500+300*c,180+115*s,a*180/Math.PI+90];
   case 1:{const side=t<.5?-1:1,b=t% .5*4*Math.PI;return [500+side*200+155*Math.cos(b),180+100*Math.sin(b),Math.sin(b)*25];}
@@ -43,6 +48,7 @@ export function storyLayoutV3(level){
  for(let i=0;i<count;i++){let [x,y,a]=shapePoint(shape,i/count);if(family>=32){const secondary=shapePoint((shape+7)%32,i/count);x=x*.65+secondary[0]*.35;y=y*.62+secondary[1]*.38+(i%2?20:-20);a=a*.45+(i%2?13:-13);}add(x,y+bend*Math.sin(i),level<15?a*.12:a*.35);}
  // Interleave draw order so loops reveal several usable edges, not a single chain.
  const order=[...points.keys()].sort((a,b)=>(a%4)-(b%4)||a-b),p=order.map(i=>points[i]);
+ // Test authored card footprints when constructing the explicit covering graph.
  const overlap=(q,r)=>{const pa=q.Angle*Math.PI/180,qa=r.Angle*Math.PI/180;return [pa,pa+Math.PI/2,qa,qa+Math.PI/2].every(axis=>Math.abs((r.DrawX-q.DrawX)*Math.cos(axis)+(r.DrawY-q.DrawY)*Math.sin(axis))<35*(Math.abs(Math.cos(pa-axis))+Math.abs(Math.cos(qa-axis)))+49*(Math.abs(Math.sin(pa-axis))+Math.abs(Math.sin(qa-axis)))-3);};
  return p.map((s,i)=>({X:i%10,Row:Math.floor(i/10),DrawX:Math.fround(s.DrawX),DrawY:Math.fround(s.DrawY),Angle:Math.fround(s.Angle),BlockedBy:p.flatMap((q,j)=>j>i&&overlap(s,q)?[j]:[])}));
 }

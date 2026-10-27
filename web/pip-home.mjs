@@ -18,6 +18,7 @@ const thoughts=[
 
 // Its timer belongs to the home view, so leaving home cannot keep it running.
 class PipHome extends HTMLElement{
+ // Choose an initial thought and start the home mascot's rotating messages.
  connectedCallback(){
   this.index=Math.floor(Math.random()*thoughts.length);
   this.innerHTML='<button class="pip-home-chat" type="button" title="Tap Pip for another thought"><span class="pip-home-bird"></span><span class="pip-home-bubble"><small>Pip says</small><span class="pip-home-thought"></span></span></button>';
@@ -26,8 +27,11 @@ class PipHome extends HTMLElement{
    if(!document.hidden&&!document.querySelector('dialog[open]')&&!this.matches(':hover,:focus-within'))this.advance();
   },9000);
  }
+ // Stop the message timer when this element leaves the page.
  disconnectedCallback(){clearInterval(this.timer);}
+ // Move to the next home thought and update Pip's expression.
  advance(){this.index=(this.index+1)%thoughts.length;this.paint();}
+ // Render the current thought and matching generated Pip expression.
  paint(){const [mood,text]=thoughts[this.index];this.querySelector('.pip-home-bird').innerHTML=pipMarkup(mood,100);this.querySelector('.pip-home-thought').innerHTML=escapeHtml(text);}
 }
 customElements.define('pip-home',PipHome);

@@ -2,12 +2,14 @@ namespace MeadowPeaks;
 public sealed partial class GameWindow
 {
     WheelPrize? wheelPrize;double wheelStarted=-100;float wheelAngle;bool wheelSpinning;
+    // Request the session's saved prize before beginning the native spin animation.
     void SpinWheel()
     {
         if(wheelSpinning)return;var result=session.SpinWheel();if(result==null)return;
         wheelPrize=result;wheelStarted=effects.Time;wheelSpinning=!profile.ReducedMotion;wheelAngle=profile.ReducedMotion?-result.Index*45:0;
         Chime(SoundCue.Coins);Build();
     }
+    // Advance the native wheel toward the already selected prize segment.
     void AdvanceWheel()
     {
         if(!wheelSpinning||wheelPrize==null)return;
@@ -15,6 +17,7 @@ public sealed partial class GameWindow
         if(t>=1){wheelSpinning=false;if(overlay=="wheel"){Build();effects.Burst(new(640,390),artwork.Gold,28);}}
         if(overlay=="wheel"){backdropDirty=true;Invalidate();}
     }
+    // Draw the wheel at its current presentation angle and label its prizes.
     void PaintWheel(Graphics g)
     {
         AdventureMapArt.Ribbon(g,new(315,142,650,75),"Lucky meadow wheel","A LITTLE SPIN, A LOVELY SURPRISE");

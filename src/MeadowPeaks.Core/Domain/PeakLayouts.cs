@@ -2,6 +2,7 @@ namespace MeadowPeaks;
 
 public sealed class PeakLayouts : ILayoutProvider
 {
+    // Build the original peak formation used by the legacy deal generator.
     public List<Slot> Create(int level)
     {
         int variant = level < 4 ? 1 : (level / 7) % 3;

@@ -2,8 +2,10 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Trigger the normal delegated UI command rather than modifying the tested view directly.
 async def action(page,name):
  await page.evaluate("a=>{const e=document.createElement('button');e.dataset.action=a;(document.querySelector('#dialog').open?document.querySelector('#modal'):document.body).append(e);e.click();e.remove()}",name)
+# Scenario: Shop purchases, affordability, inventory browsing and place-specific menu art. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/village-places');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

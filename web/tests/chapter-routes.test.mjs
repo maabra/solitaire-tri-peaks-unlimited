@@ -1,3 +1,5 @@
+// Verify route bounds, tile alignment and gate states across every illustrated chapter.
+// Geometry assertions do not claim pixel-level obstacle detection within the paintings.
 import assert from 'node:assert/strict';
 import {chapterCorridors} from '../generated-content.mjs';
 import {roadFor,terrainX,chapterGateState,MAP_WIDTH,MAP_HEIGHT,MEADOW_TILE_HEIGHT} from '../adventure-map.mjs';

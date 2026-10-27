@@ -2,6 +2,7 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: Card ranks use clean glyph fills, valid font weights and room for two digits. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/card-lettering');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

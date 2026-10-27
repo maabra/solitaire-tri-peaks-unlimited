@@ -1,3 +1,4 @@
+// Exercise side-game progress, claim idempotency and card orientation as engine/view contracts.
 import assert from 'node:assert/strict';
 import {Session,ProfileStore,defaults,validateProfile} from '../session.mjs';
 import {playerFacingAngle} from '../card-orientation.mjs';

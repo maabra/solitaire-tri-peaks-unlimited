@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts' / 'web-screenshots'
 OUT.mkdir(parents=True, exist_ok=True)
 
+# Scenario: Optional local UI check: pip install playwright; playwright install chromium. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(channel='msedge', headless=True)

@@ -4,6 +4,7 @@ from pathlib import Path
 from playwright.async_api import async_playwright
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'artifacts'/'adventure-screenshots';OUT.mkdir(exist_ok=True)
+# Scenario: New event UI, consent gate, scrolling chapter and narrow-screen regression checks. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)

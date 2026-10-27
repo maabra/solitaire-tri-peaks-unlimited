@@ -44,7 +44,9 @@ internal sealed class GameButton : Control
     double entryTime = -10, now;
     float entry = 1, hoverAmount;
     bool reducedMotion;
+    // Start a decorative entrance delay without changing the button command.
     public void BeginEntrance(double time, float delay = 0) { if (reducedMotion) return; entryTime = time + delay; entry = 0; }
+    // Advance button presentation and report whether another repaint is needed.
     public void Advance(double time, bool reduced)
     {
         now = time; reducedMotion = reduced;
@@ -55,6 +57,7 @@ internal sealed class GameButton : Control
     }
     bool hover;
     readonly IGameArtwork artwork;
+    // Initialize native button styling and its presentation/input state.
     public GameButton(IGameArtwork artwork)
     {
         this.artwork = artwork;
@@ -64,13 +67,20 @@ internal sealed class GameButton : Control
         SetStyle(ControlStyles.Selectable|ControlStyles.ResizeRedraw,true);
         MouseEnter += (_, _) => { hover = true; Invalidate(); }; MouseLeave += (_, _) => { hover = false; Invalidate(); };
     }
+    // Invoke the normal button command path for keyboard or smoke input.
     public void PerformClick() { if(Enabled&&now>=RevealAt) OnClick(EventArgs.Empty); }
+    // Apply the control's click behavior through its normal event path.
     protected override void OnClick(EventArgs e){if(now>=RevealAt)base.OnClick(e);}
+    // Record pointer press feedback for the styled button.
     protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if(e.Button==MouseButtons.Left) {Focus();pressed=true;Invalidate();} }
+    // Release pointer press feedback after the mouse is released.
     protected override void OnMouseUp(MouseEventArgs e) { pressed=false;Invalidate();base.OnMouseUp(e); }
+    // Handle keyboard activation through the same button action as pointer input.
     protected override void OnKeyDown(KeyEventArgs e) { base.OnKeyDown(e); if(e.KeyCode is Keys.Enter or Keys.Space) {PerformClick();e.Handled=true;e.SuppressKeyPress=true;} }
+    // Keep relevant navigation/activation keys available to this control.
     protected override bool IsInputKey(Keys keyData) => keyData is Keys.Enter or Keys.Space || base.IsInputKey(keyData);
     bool pressed;
+    // Control background painting to avoid flicker beneath custom button artwork.
     protected override void OnPaintBackground(PaintEventArgs e)
     {
         // Reuse the scene image rather than repainting the entire landscape
@@ -78,6 +88,7 @@ internal sealed class GameButton : Control
         if (Backdrop != null) e.Graphics.DrawImage(Backdrop, ClientRectangle, Bounds, GraphicsUnit.Pixel);
         else base.OnPaintBackground(e);
     }
+    // Draw the button's current state and caption without issuing its command.
     protected override void OnPaint(PaintEventArgs e)
     {
         if(now<RevealAt)return;

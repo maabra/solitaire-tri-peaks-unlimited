@@ -14,13 +14,16 @@ async def main():
   await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'))
   await page.evaluate("""async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=12;s.p.Coins=1840;s.p.Hearts=12;s.p.GuideSeen=[...features.map(f=>f.id),'cards',...Array.from({length:17},(_,i)=>'mechanic'+i),...helpers.map(h=>'helper-'+h.Id)];s.p.Stars=Object.fromEntries(Array.from({length:11},(_,i)=>[i+1,1+i%3]));s.events.a.Album.Cards=Object.fromEntries(Array.from({length:42},(_,i)=>[i,1]));s.events.a.Album.Packs=[2,3,1];s.save();}""")
   await page.reload()
+  # Dispatch the requested game action through the page while keeping the test profile isolated.
   async def route(action):
    await page.evaluate("""a=>{document.querySelector('#dialog').close();const b=document.createElement('button');b.dataset.action=a;document.body.append(b);b.click();b.remove()}""",action)
    await page.wait_for_timeout(250)
+  # Wait for the current sample view and save its screenshot under each requested documentation name.
   async def shot(*names):
    await page.evaluate('document.fonts.ready')
    await page.wait_for_timeout(500)
    for name in names:await page.screenshot(path=str(Path('docs')/name))
+  # Prepare the requested deterministic sample hand for a documentation capture.
   async def hand(level,effect=None):
    await page.evaluate("""async ({level,effect})=>{const {Session}=await import('./session.mjs');const s=new Session();s.p.Unlocked=Math.max(s.p.Unlocked,level);s.p.Hearts=20;s.start(level,false,12345);if(effect)s.hand.use(effect);s.save()}""",{'level':level,'effect':effect})
    await page.reload();await route('continue');await page.locator('.board').wait_for()

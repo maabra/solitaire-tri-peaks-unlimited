@@ -4,6 +4,7 @@ namespace MeadowPeaks;
 // Replace a constructor argument here to install a compatible component.
 public static class Composition
 {
+    // Wire production engines, policies, clock and persistence at the application boundary.
     public static GameSession CreateSession(IProfileStore store)
     {
         var rules = new TriPeaksRules();

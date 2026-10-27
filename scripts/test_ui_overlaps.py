@@ -10,6 +10,7 @@ AUDIT=r'''()=>{
  const clip=[...root.querySelectorAll('h1,h2,h3,.tool-name,.menu-location')].filter(e=>e.getClientRects().length&&e.scrollWidth>e.clientWidth+2&&!e.closest('.activity-tabs')).map(e=>[e.className,e.textContent.trim().slice(0,60),e.scrollWidth,e.clientWidth]);
  return {overlaps,obscured,clip};
 }'''
+# Measure rendered element bounds and report overlaps or clipping against their intended surfaces.
 async def audit(unseen):
  out=Path('artifacts/overlap-regression');out.mkdir(parents=True,exist_ok=True)
  async with async_playwright() as p:
@@ -24,6 +25,7 @@ async def audit(unseen):
   (out/'report.json').write_text(json.dumps(results,indent=2),encoding='utf-8');await b.close()
   assert not any(any(r.values()) for r in results.values()), json.dumps(results,indent=2)
   print('No overlaps or covered controls:', 'first-time tutorials' if unseen else 'returning player')
+# Scenario: Exercise ui overlaps in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  await audit(True)
  await audit(False)

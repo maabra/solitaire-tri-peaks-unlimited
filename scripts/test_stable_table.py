@@ -1,13 +1,16 @@
 import asyncio
 from playwright.async_api import async_playwright
+# Capture board and surviving-card rectangles in document coordinates for stability comparisons.
 async def measure(page):
  return await page.evaluate("""()=>{const box=e=>{const r=e.getBoundingClientRect();return {x:r.x+scrollX,y:r.y+scrollY,w:r.width,h:r.height}};return {scroll:scrollY,header:box(document.querySelector('#app>.subhead')),zoom:document.querySelector('#app').style.zoom,board:box(document.querySelector('.board')),cards:Object.fromEntries([...document.querySelectorAll('.board .card')].map(e=>[e.dataset.action,box(e)]))}}""")
+# Compare surviving cards against the baseline; clearing a card must not shift its neighbors.
 def stable(before,after,label):
  assert before['zoom']==after['zoom'],(label,'zoom',before['zoom'],after['zoom'])
  for k in ['x','y','w','h']:assert abs(before['board'][k]-after['board'][k])<.6,(label,'board',k,before['board'],after['board'])
  for key,rect in after['cards'].items():
   if key in before['cards']:
    for k in ['x','y','w','h']:assert abs(rect[k]-before['cards'][key][k])<.6,(label,key,k)
+# Scenario: Exercise stable table in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(reduced_motion='reduce');errors=[];page.on('pageerror',lambda e:errors.append(str(e)))

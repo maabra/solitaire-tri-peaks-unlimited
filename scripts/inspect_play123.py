@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Inspect the reference host and its embedded game frames, then capture the launched reference screen.
 async def main():
  async with async_playwright() as p:
   b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1280,'height':900});await page.goto('https://www.play123.com/game/solitaire-story-tripeaks',wait_until='domcontentloaded',timeout=45000);await page.wait_for_timeout(2500)

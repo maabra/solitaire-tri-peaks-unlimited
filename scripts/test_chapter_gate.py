@@ -3,9 +3,11 @@ import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
 
+# Dispatch the requested game action through the page while keeping the test profile isolated.
 async def route(page,action):
  await page.evaluate("a=>{const e=document.createElement('button');e.dataset.action=a;document.body.append(e);e.click();e.remove()}",action)
 
+# Scenario: Check chapter gates in the actual cabinet, including a real level-100 win. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/chapter-gate');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

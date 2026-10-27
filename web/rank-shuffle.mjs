@@ -2,8 +2,10 @@ import {SeededRandom,adjacent} from './core.mjs';
 
 // Ranks change; card identities, cover links, keys and earned-prize badges do not.
 export class RankShuffle{
+ // Require an active adventure hand with enough remaining cards and a useful exposed target.
  static available(hand){return !!hand?.Deal.AdventureRules&&!hand.Won&&!hand.Failed&&hand.Waste.Rank!==0&&
   hand.Removed.filter(v=>!v).length>1&&hand.Deal.Cards.some((_,i)=>hand.isExposed(i)&&hand.allows(hand.face(i)));}
+ // Shuffle ranks while retaining card identities and guarantee an eligible exposed rank match.
  static apply(hand,seed){
   if(!this.available(hand)||hand.s.HelperCooldown>0)return false;
   const rng=new SeededRandom(seed),indices=hand.Removed.flatMap((removed,i)=>removed?[]:[i]);

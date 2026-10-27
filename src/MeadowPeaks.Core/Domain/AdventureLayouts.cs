@@ -11,6 +11,7 @@ public sealed class AdventureLayouts : ILayoutProvider
         "Lotus", "Mountain pass", "Windmill", "Star trail", "Honeycomb", "River bend", "Orchard", "Cloud bank",
         "Archway", "Firefly trail", "Coral reef", "Snowflake", "Flower basket", "Rolling hills", "Kite", "Festival"
     };
+    // Choose a deterministic layout family and compile its explicit covering relationships.
     public List<Slot> Create(int level)
     {
         if (level < 5) return new PeakLayouts().Create(level);
@@ -34,6 +35,7 @@ public sealed class AdventureLayouts : ILayoutProvider
         }
         return fixedCells.OrderBy(c => c).Select(c => new Slot(.5f + c%10 + (c/10%2)*.5f, c/10)).ToList();
     }
+    // Calculate the binomial count used to rank deterministic occupancy combinations.
     static long Choose(int n, int k)
     {
         if (k < 0 || k > n) return 0;
@@ -41,13 +43,18 @@ public sealed class AdventureLayouts : ILayoutProvider
         for (int j = 1; j <= k; j++) value = value * (n-j+1) / j;
         return value;
     }
+    // Map the level into its retained deterministic layout-pattern index.
     static int Index(int level) => (int)(((long)Math.Max(5, level) - 5) % PatternCount);
+    // Choose the supported formation depth for this part of the campaign.
     public static int DepthFor(int level) => level < 300 ? 4 : 4 + (level - 5) % (level < 700 ? 2 : level < 1300 ? 3 : level < 2100 ? 4 : 5);
+    // Name the selected formation family and deterministic variation.
     public static string NameFor(int level) => level < 5 ? "Classic peaks" : $"{Names[Index(level) % Names.Length]} {Index(level) / Names.Length + 1}";
 
+    // Produce a stable geometry signature for uniqueness and regression checks.
     public static string Fingerprint(IEnumerable<Slot> slots)
     {
         var points = slots.Select(s => (X: (int)Math.Round(s.X * 4), s.Row)).ToArray();
+        // Normalize the formation coordinates used in geometry comparison.
         string Key(bool mirror)
         {
             int min = points.Min(p => mirror ? -p.X : p.X);

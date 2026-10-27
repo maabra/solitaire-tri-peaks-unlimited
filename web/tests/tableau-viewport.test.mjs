@@ -1,3 +1,4 @@
+// Fit complete formations at representative viewport sizes so rotated cards remain within their tableau.
 import assert from 'node:assert/strict';
 import {fitTableau} from '../tableau-viewport.mjs';
 import {storyLayoutV3} from '../story-layouts-v3.mjs';

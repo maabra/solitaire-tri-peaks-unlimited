@@ -1,6 +1,7 @@
 import asyncio,os
 from pathlib import Path
 from playwright.async_api import async_playwright
+# Scenario: Exercise pip feedback in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/pip-feedback');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

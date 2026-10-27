@@ -14,10 +14,12 @@ internal sealed record WorldPalette(Color Sky, Color Horizon, Color Grass, Color
         ("#C3D8EA", "#E9EDDD", "#7AA6A3", "#A8A7EA"), ("#F7DDA7", "#FFF1CC", "#B0AC75", "#EDB35F"),
         ("#344A71", "#ADCFCB", "#AFCFD5", "#B9EDCF"), ("#BCE7E8", "#FFE4D1", "#8DBAAA", "#F7A8C4")
     };
+    // Resolve the chapter palette used by the native scenery.
     public static WorldPalette For(int index)
     {
         int n = Math.Abs(index % Colors.Length); var c = Colors[n];
         return new(ColorTranslator.FromHtml(c.sky), ColorTranslator.FromHtml(c.horizon), ColorTranslator.FromHtml(c.grass), ColorTranslator.FromHtml(c.accent), n is 1 or 8 or 13 or 18, n is 3 or 18, n is 6 or 10 or 12 or 19);
     }
+    // Interpolate color channels for native scene shading.
     public static Color Mix(Color a, Color b, float amount) => Color.FromArgb((int)(a.R * (1 - amount) + b.R * amount), (int)(a.G * (1 - amount) + b.G * amount), (int)(a.B * (1 - amount) + b.B * amount));
 }

@@ -19,6 +19,7 @@ export function installMapDrag(viewport){
   if(!(e.buttons&1)){drag=null;return;}
   viewport.scrollLeft=drag.left+drag.x-e.clientX;viewport.scrollTop=drag.top+drag.y-e.clientY;
  });
+ // Release the current drag state on pointer completion or cancellation.
  const stop=()=>{drag=null;};
  viewport.addEventListener('pointerup',stop);viewport.addEventListener('pointercancel',stop);viewport.addEventListener('lostpointercapture',stop);
 }

@@ -1,3 +1,5 @@
+// Verify that every retained chapter has its original linked art assets before packaging.
+// This catches missing files that pure engine tests cannot detect.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {campaign} from '../web/generated-content.mjs';

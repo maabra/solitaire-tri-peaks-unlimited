@@ -2,6 +2,7 @@
 import asyncio
 from playwright.async_api import async_playwright
 
+# Scenario: Check the authored 16:9 scene and full main activities inside the 720p frame. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(channel='msedge',headless=True)

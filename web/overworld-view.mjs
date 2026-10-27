@@ -6,6 +6,7 @@ import {MAP_WIDTH,MAP_HEIGHT,roadFor,routeMarkup,menuIcon,chapterGateState} from
 import {chapterName} from './chapter-worlds.mjs';
 import {features,featureUnlocked,journeyOptions,featureBadge} from './journey-guide.mjs';
 import {gameIcon} from './game-art.mjs';
+// Render the map action identifier and supplied accessibility attributes on one control.
 const button=(label,action,cls='',extra='')=>`<button data-action="${action}" class="${cls}" ${extra}>${label}</button>`;
 // Render the scrolling painting and route in one coordinate space. The app subsequently hoists
 // the ribbon, activity dock and controls out of that space so they stay fixed while exploring.

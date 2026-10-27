@@ -4,13 +4,15 @@ using System.Text;
 namespace MeadowPeaks;
 
 public enum SoundCue { Card, Combo, Coins, Gems, Victory }
-public interface IGameSoundtrack : ISoundPlayer { void Play(SoundCue cue); }
+public interface IGameSoundtrack : ISoundPlayer { /* Request the sound cue through the replaceable soundtrack service. */
+    void Play(SoundCue cue); }
 
 // Original short melodies synthesized locally. No external music or audio files.
 public sealed class MeadowSoundtrack : IGameSoundtrack, IDisposable
 {
     readonly Dictionary<SoundCue, SoundPlayer> players = new();
     readonly List<MemoryStream> streams = new();
+    // Prepare the native soundtrack resources owned by this player.
     public MeadowSoundtrack()
     {
         Make(SoundCue.Card, new[] { 523.25, 659.25 }, .055);
@@ -19,6 +21,7 @@ public sealed class MeadowSoundtrack : IGameSoundtrack, IDisposable
         Make(SoundCue.Gems, new[] { 783.99, 987.77, 1174.66 }, .065);
         Make(SoundCue.Victory, new[] { 523.25, 659.25, 783.99, 1046.5, 987.77, 1046.5 }, .13);
     }
+    // Build the native audio data used by the soundtrack.
     void Make(SoundCue cue, double[] notes, double duration)
     {
         const int rate = 22050; int samples = (int)(rate * duration), count = samples * notes.Length;
@@ -34,11 +37,14 @@ public sealed class MeadowSoundtrack : IGameSoundtrack, IDisposable
         }
         stream.Position = 0; streams.Add(stream); players[cue] = new SoundPlayer(stream);
     }
+    // Play the requested scene track through this soundtrack owner.
     public void Play() => Play(SoundCue.Card);
+    // Play the requested scene track through this soundtrack owner.
     public void Play(SoundCue cue)
     {
         try { players[cue].Play(); }
         catch (Exception ex) when (ex is InvalidOperationException || ex is System.ComponentModel.Win32Exception || ex is IOException) { }
     }
+    // Release native audio resources owned by the soundtrack.
     public void Dispose() { foreach (var player in players.Values) player.Dispose(); foreach (var stream in streams) stream.Dispose(); }
 }

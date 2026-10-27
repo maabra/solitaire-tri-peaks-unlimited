@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 
 
+# Combine the matching installed runtime files with a framework-dependent publish output, retaining runtime metadata.
 def bundle(source: Path, output: Path, dotnet: Path):
     source, output, dotnet = source.resolve(), output.resolve(), dotnet.resolve()
     if source == output or source in output.parents or output in source.parents:

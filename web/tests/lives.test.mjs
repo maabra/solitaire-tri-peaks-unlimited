@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import {Session,ProfileStore,defaults,validateProfile} from '../session.mjs';
 import {GemGame} from '../core.mjs';
-const memory=new Map(),storage={getItem:k=>memory.get(k)??null,setItem:(k,v)=>memory.set(k,v)};
+const memory=new Map(),storage={getItem:/* Read from the test's isolated in-memory storage instead of a real player's browser save. */
+ k=>memory.get(k)??null,setItem:/* Write into the test's isolated storage to exercise persistence and conflict handling. */
+ (k,v)=>memory.set(k,v)};
 let s=new Session(new ProfileStore(storage));assert.equal(s.p.Hearts,3);
 s.start(1);s.save();s=new Session(new ProfileStore(storage));assert.equal(s.p.Hearts,3);assert.equal(s.lifeCharged,false);
 s.replay();assert.equal(s.p.Hearts,2);s.leave();assert.equal(s.p.Hearts,1);assert.equal(s.hand,null);
@@ -10,7 +12,8 @@ assert.throws(()=>s.start(1),/No hearts/);const before=s.p.Coins;s.daily();asser
 s.p.Hearts=998;assert.equal(s.lives.add(10),1);assert.equal(s.p.Hearts,999);
 assert.throws(()=>validateProfile({...defaults(),Hearts:1000}));assert.throws(()=>validateProfile({...defaults(),Hearts:-1}));
 const legacy=defaults();delete legacy.Hearts;delete legacy.GemHeartProgress;assert.equal(validateProfile(legacy).Hearts,3);
-s.p.Hearts=3;s.start(1);Object.defineProperty(s.hand,'Failed',{get:()=>true});s.settleFailure();assert.equal(s.p.Hearts,2);s.settleFailure();assert.equal(s.p.Hearts,2);s.save();
+s.p.Hearts=3;s.start(1);Object.defineProperty(s.hand,'Failed',{get:/* Simulate a failed hand so this scenario can verify that its life charge is idempotent. */
+ ()=>true});s.settleFailure();assert.equal(s.p.Hearts,2);s.settleFailure();assert.equal(s.p.Hearts,2);s.save();
 s=new Session(new ProfileStore(storage));assert.equal(s.lifeCharged,true);s.replay();assert.equal(s.p.Hearts,2,'Restart after charged failure costs no second heart');
 s.p.Hearts=0;s.gems=new GemGame(76543);for(let i=0;i<10;i++){const move=s.gems.hint();assert.ok(move);assert.ok(s.playGems(...move));}assert.equal(s.p.Hearts,1);assert.equal(s.p.GemHeartProgress,0);
 const e=s.events;e.a.Daily.Values.wins=3;const hearts=s.p.Hearts;assert.ok(e.claimMission(0));assert.equal(s.p.Hearts,hearts+1);assert.equal(e.claimMission(0),false);assert.equal(s.p.Hearts,hearts+1);

@@ -3,6 +3,7 @@ import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
 
+# Scenario: Verify framed activity surfaces, artwork and navigation on desktop and phone. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/framed-navigation');out.mkdir(parents=True,exist_ok=True)
  async with async_playwright() as p:

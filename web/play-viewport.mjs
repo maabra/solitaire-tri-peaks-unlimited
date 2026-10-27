@@ -1,7 +1,9 @@
 import {gameWidth,gameHeight} from './game-frame.mjs';
 // Fit a hand once per viewport, never from its changing score/effects/helper state.
 export class PlayViewport {
+ // Initialize cached hand/layout information for stable play-screen fitting.
  constructor(){this.hand=null;this.viewport='';this.layout=null;}
+ // Fit the complete hand and surrounding controls, reusing geometry until its inputs change.
  fit(root,hand){
   const viewport=gameWidth()+'x'+gameHeight(),shell=root.querySelector('.board-shell'),tools=root.querySelector('.tools');
   if(!shell)return;

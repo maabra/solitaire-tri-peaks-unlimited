@@ -1,9 +1,11 @@
 import {gameIcon} from './game-art.mjs';
 import {escapeHtml} from './ui-markup.mjs';
 
+// Render an icon and quantity together so resource meaning does not rely on text substitutions.
 export function resourceBadge(value,icon,label){
  return `<span class="resource-badge" data-resource="${icon}" role="img" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><b>${escapeHtml(String(value))}</b>${gameIcon(icon,24)}</span>`;
 }
+// Replace supported heart progress text with its explicit resource presentation.
 export function swapHeartProgress(value){
  return `<span class="resource-goal" aria-label="${value} of 10 successful swaps toward 1 heart" title="10 successful swaps earn 1 heart">${resourceBadge(value+'/10','swap','Successful swaps: '+value+' of 10')}<span class="resource-arrow" aria-hidden="true">&#8594;</span>${resourceBadge(1,'heart','Reward: 1 heart')}</span>`;
 }
@@ -19,6 +21,7 @@ export function resourceTextParts(text){
  }
  if(from<text.length)parts.push(text.slice(from));return parts;
 }
+// Decorate recognized resource text while preserving its surrounding content.
 export function visualizeResources(root){
  if(!root)return;
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];
@@ -31,7 +34,9 @@ export function visualizeResources(root){
   node.replaceWith(fragment);
  }
 }
+// Observe newly rendered menu content so dynamic resource labels use the same presentation.
 export function watchResourceViews(roots){
+ // Attach resource decoration to the relevant document changes.
  const observe=()=>roots.forEach(root=>observer.observe(root,{subtree:true,childList:true,characterData:true}));
  const observer=new MutationObserver(records=>{
   observer.disconnect();

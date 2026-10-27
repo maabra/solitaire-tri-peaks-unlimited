@@ -7,6 +7,7 @@ public interface ICampaignCatalog
     int LevelCount { get; }
     int LevelsPerChapter { get; }
     IReadOnlyList<Chapter> Chapters { get; }
+    // Resolve the chapter containing a supported campaign level.
     Chapter ForLevel(int level);
 }
 
@@ -16,8 +17,10 @@ public sealed class MeadowCampaign : ICampaignCatalog
     public int LevelCount => TotalLevels;
     public int LevelsPerChapter => Content.CampaignContent.LevelsPerChapter;
     public IReadOnlyList<Chapter> Chapters { get; }
+    // Map a level into the bounded original chapter collection.
     public Chapter ForLevel(int level) => Chapters[Math.Clamp((level - 1) / LevelsPerChapter, 0, Chapters.Count - 1)];
 
+    // Build chapter descriptors from the canonical titles and illustrated campaign cap.
     public MeadowCampaign()
     {
         string[] worlds = { "Willow Meadow", "Moonlit Lake", "Amber Orchard", "Snowdrop Valley", "Fernwood Trail", "Cloudberry Hills", "Lavender Coast", "Golden Grove", "Starlight Garden", "Homeward Peaks", "Cherryblossom Bay", "Sunflower Fields", "Coral Cove", "Firefly Forest", "Peach Picnic", "Rainbow Springs", "Bluebell Woods", "Honeycomb Hollow", "Aurora Ridge", "Celebration Island" };

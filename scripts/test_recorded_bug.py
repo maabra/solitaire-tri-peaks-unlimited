@@ -3,6 +3,7 @@ import asyncio
 from pathlib import Path
 from playwright.async_api import async_playwright
 
+# Scenario: Regression for the supplied recording, flight coordinates, popup and full UI. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
  out=Path('artifacts/recorded-regression');out.mkdir(exist_ok=True)
  async with async_playwright() as p:

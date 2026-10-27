@@ -5,7 +5,9 @@ namespace MeadowPeaks;
 public interface IVisualEffect
 {
     bool Finished { get; }
+    // Advance an effect's lifetime using elapsed seconds rather than frame count.
     void Advance(float seconds);
+    // Paint the current effect state without changing game rules or rewards.
     void Draw(Graphics graphics, IGameArtwork artwork);
 }
 
@@ -19,6 +21,7 @@ public sealed class EffectScene
     public bool Ambient { get; set; } = true;
     public int Theme { get; set; }
     public int Count => effects.Count;
+    // Advance effect lifetimes and remove expired presentation objects.
     public void Advance(float seconds)
     {
         Time += seconds;
@@ -26,11 +29,17 @@ public sealed class EffectScene
         foreach (var effect in effects) effect.Advance(seconds);
         effects.RemoveAll(e => e.Finished);
     }
+    // Remove active decorations when changing or resetting the presentation.
     public void Clear() => effects.Clear();
+    // Register a decorative effect only when the current motion policy permits it.
     public void Add(IVisualEffect effect) { if (!ReducedMotion) { if (effects.Count >= 220) effects.RemoveAt(0); effects.Add(effect); } }
+    // Create a card-flight decoration between the supplied endpoints.
     public void Fly(Card card, PointF from, PointF to) => Add(new FlyingCard(card, from, to));
+    // Create a jewel-flight decoration between the supplied endpoints.
     public void FlyGem(int kind, PointF from, PointF to) => Add(new FlyingGem(kind, from, to));
+    // Create a floating text decoration at the supplied position.
     public void Cheer(string text, PointF center, Color? color = null) => Add(new FloatingCheer(text, center, color ?? Art.Teal));
+    // Emit a bounded group of decorative particles around the supplied origin.
     public void Burst(PointF origin, Color color, int count = 16)
     {
         for (int i = 0; i < count; i++)
@@ -39,10 +48,12 @@ public sealed class EffectScene
             Add(new Spark(origin, new((float)Math.Cos(a) * speed, (float)Math.Sin(a) * speed - 35), color, .55f + (float)random.NextDouble() * .5f, 3 + random.Next(6), i % 3));
         }
     }
+    // Visualize a coin reward with a bounded number of decorative flights.
     public void Coins(int amount, PointF origin)
     {
         for (int i = 0; i < Math.Clamp(amount / 12, 4, 12); i++) Add(new FlyingCoin(origin, new(1120, 49), i * .045f));
     }
+    // Replace the current effects with the victory particle presentation.
     public void Celebrate()
     {
         Clear();
@@ -50,6 +61,7 @@ public sealed class EffectScene
         for (int i = 0; i < 130; i++) Add(new Spark(new(random.Next(90, 1190), random.Next(-280, 80)), new(random.Next(-38, 39), random.Next(70, 140)), colors[i % colors.Length], 2.7f + (float)random.NextDouble(), random.Next(4, 9), i % 3, 10));
         Burst(new(470, 290), Art.Gold, 18); Burst(new(810, 290), Color.HotPink, 18);
     }
+    // Paint active effects while honoring reduced motion.
     public void Draw(Graphics g, IGameArtwork artwork)
     {
         if (ReducedMotion) return;
@@ -74,8 +86,11 @@ internal abstract class TimedEffect : IVisualEffect
     protected readonly float duration;
     protected float Progress => Math.Clamp(age / duration, 0, 1);
     public bool Finished => age >= duration;
+    // Set the decorative effect's lifetime independently of game state.
     protected TimedEffect(float duration) { this.duration = duration; }
+    // Advance the presentation age used to derive normalized effect progress.
     public void Advance(float seconds) => age += seconds;
+    // Paint the derived effect's current presentation frame.
     public abstract void Draw(Graphics g, IGameArtwork artwork);
 }
 
@@ -83,7 +98,9 @@ internal sealed class FlyingCard : TimedEffect
 {
     readonly Card card;
     readonly PointF from, to;
+    // Capture the immutable face and endpoints for a decorative card flight.
     public FlyingCard(Card card, PointF from, PointF to) : base(.5f) { this.card = card; this.from = from; this.to = to; }
+    // Interpolate the decorative card's flight and size without moving the real tableau control.
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         float p = 1 - MathF.Pow(1 - Progress, 3), x = from.X + (to.X - from.X) * p, y = from.Y + (to.Y - from.Y) * p - MathF.Sin(Progress * MathF.PI) * 105;
@@ -96,7 +113,9 @@ internal sealed class FlyingGem : TimedEffect
 {
     readonly int kind;
     readonly PointF from, to;
+    // Capture the jewel kind and endpoints for a decorative reward flight.
     public FlyingGem(int kind, PointF from, PointF to) : base(.30f) { this.kind = kind; this.from = from; this.to = to; }
+    // Paint the jewel along its normalized flight path.
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         float p = Progress * Progress * (3 - 2 * Progress), x = from.X + (to.X - from.X) * p, y = from.Y + (to.Y - from.Y) * p;
@@ -108,7 +127,9 @@ internal sealed class FlyingCoin : TimedEffect
 {
     readonly PointF from, to;
     readonly float delay;
+    // Capture a delayed decorative coin flight and its endpoints.
     public FlyingCoin(PointF from, PointF to, float delay) : base(.8f + delay) { this.from = from; this.to = to; this.delay = delay; }
+    // Wait for the stagger delay, then paint the coin toward its destination.
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         if (age < delay) return;
@@ -125,7 +146,9 @@ internal sealed class FloatingCheer : TimedEffect
     readonly string text;
     readonly PointF center;
     readonly Color color;
+    // Capture the label, origin and color for a short-lived text effect.
     public FloatingCheer(string text, PointF center, Color color) : base(1.5f) { this.text = text; this.center = center; this.color = color; }
+    // Paint the label's rising/fading presentation using its normalized lifetime.
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         float p = Progress, width = Math.Clamp(text.Length * 12 + 40, 140, 590), y = center.Y - p * 38;
@@ -141,8 +164,10 @@ internal sealed class Spark : TimedEffect
     readonly Color color;
     readonly float size, gravity;
     readonly int kind;
+    // Capture the particle's velocity, color and lifetime for deterministic playback.
     public Spark(PointF origin, PointF velocity, Color color, float duration, float size, int kind, float gravity = 110) : base(duration)
     { this.origin = origin; this.velocity = velocity; this.color = color; this.size = size; this.kind = kind; this.gravity = gravity; }
+    // Paint the particle at its age-derived position and opacity.
     public override void Draw(Graphics g, IGameArtwork artwork)
     {
         float x = origin.X + velocity.X * age, y = origin.Y + velocity.Y * age + gravity * age * age / 2;

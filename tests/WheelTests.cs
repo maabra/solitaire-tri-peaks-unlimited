@@ -2,6 +2,7 @@ using MeadowPeaks;
 using System.Text.Json;
 static class WheelTests
 {
+    // Check every wheel prize and persisted spin consumption so revisiting cannot create extra spins.
     public static void Run(Action<bool,string> check)
     {
         for(int i=0;i<8;i++)
@@ -26,5 +27,7 @@ static class WheelTests
         check(invalidWarning.Length>0,"Reject more consumed spins than earned");
         Console.WriteLine("PASS: all wheel prizes, earned spins, replay prevention and save restore.");
     }
-    sealed class Seeds:IRandomSource {readonly int index;public Seeds(int index){this.index=index;}public int NextSeed()=>index;}
+    sealed class Seeds:IRandomSource {readonly int index;/* Choose the deterministic prize/seed sequence exercised by this test case. */
+    public Seeds(int index){this.index=index;}/* Supply a seed through the injected random source so game logic need not own global randomness. */
+    public int NextSeed()=>index;}
 }

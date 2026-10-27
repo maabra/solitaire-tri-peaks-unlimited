@@ -2,15 +2,19 @@ namespace MeadowPeaks;
 
 public sealed record GemSwap(int First,int Second);
 public sealed record GemRun(int Seed,List<GemSwap> Swaps);
-public interface IPersistentCoinGame { GemRun Capture(); }
-public interface IPersistentCoinGameFactory { ICoinGame? Restore(GemRun run); }
+public interface IPersistentCoinGame { /* Capture the seed and accepted actions needed to restore this coin game. */
+    GemRun Capture(); }
+public interface IPersistentCoinGameFactory { /* Restore a saved coin game only if its accepted action history replays. */
+    ICoinGame? Restore(GemRun run); }
 public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
 {
     readonly int seed;
     readonly List<GemSwap> swaps=new();
+    // Persist the seed and accepted swaps so the garden can be replayed exactly.
     public GemRun Capture()=>new(seed,swaps.ToList());
     readonly List<GemAnimationFrame> frames = new();
     public IReadOnlyList<GemAnimationFrame> LastAnimation => frames.AsReadOnly();
+    // Copy a visual snapshot for animation; later cascades must not mutate earlier recorded frames.
     void Frame(GemFrameKind kind, HashSet<int>? matched, int cascade, int first = -1, int second = -1) => frames.Add(new(kind, Array.AsReadOnly((int[])cells.Clone()), Array.AsReadOnly(matched?.ToArray() ?? Array.Empty<int>()), cascade, first, second));
     readonly int[] cells = new int[64];
     public IReadOnlyList<int> Cells => Array.AsReadOnly(cells);
@@ -18,6 +22,7 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
     public int Earned { get; private set; }
     public int LastGain { get; private set; }
     readonly Random rng;
+    // Create the seeded board and its initial move/reward counters.
     public GemGame(int seed) { this.seed=seed;rng = new Random(seed); Fresh(); }
     // Avoid free matches in the starting grid and retry boards with no legal swap.
     // The player should begin with a choice, rather than an automatic cascade or a dead end.
@@ -32,6 +37,7 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
             }
         } while (Hint() == null);
     }
+    // Collect the union of cells in horizontal and vertical runs.
     public HashSet<int> Matches()
     {
         var result = new HashSet<int>();
@@ -42,8 +48,11 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
         }
         return result;
     }
+    // Require orthogonal adjacency without allowing a wrap between rows.
     static bool Neighbors(int a, int b) => a >= 0 && b >= 0 && a < 64 && b < 64 && (Math.Abs(a / 8 - b / 8) + Math.Abs(a % 8 - b % 8) == 1);
+    // Exchange the two cells; legality and rollback belong to the caller.
     void Swap(int a, int b) => (cells[a], cells[b]) = (cells[b], cells[a]);
+    // Try candidate swaps temporarily and restore the board before returning a legal suggestion.
     public (int, int)? Hint()
     {
         for (int i = 0; i < 64; i++) foreach (int j in new[] { i + 1, i + 8 })
@@ -54,6 +63,7 @@ public sealed class GemGame : ICoinGame, IAnimatedCoinGame, IPersistentCoinGame
         }
         return null;
     }
+    // Reject nonmatching swaps, then resolve cascades and record each visual phase and actual gain.
     public bool Play(int a, int b)
     {
         frames.Clear();

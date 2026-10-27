@@ -4,14 +4,17 @@ namespace MeadowPeaks;
 internal static class Art
 {
     public static readonly Color Ink = Color.FromArgb(37, 66, 62), Cream = Color.FromArgb(255, 248, 226), Gold = Color.FromArgb(248, 196, 87), Teal = Color.FromArgb(30, 105, 91);
+    // Create the rounded path shared by native panels and cards.
     public static GraphicsPath Round(RectangleF r, float radius = 16)
     {
         var p = new GraphicsPath(); float d = Math.Min(radius * 2, Math.Min(r.Width, r.Height));
         p.AddArc(r.X, r.Y, d, d, 180, 90); p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
         p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90); p.AddArc(r.X, r.Bottom - d, d, d, 90, 90); p.CloseFigure(); return p;
     }
+    // Paint a styled native box using the supplied geometry and colors.
     public static void Box(Graphics g, RectangleF r, Color color, float radius = 16)
     { using var p = Round(r, radius); using var b = new SolidBrush(color); g.FillPath(b, p); }
+    // Draw text using the supplied font, alignment and bounds.
     public static void Text(Graphics g, string text, float x, float y, float size, Color color, bool bold = false, float width = 0, bool center = false)
     {
         using var font = new Font(text.Any(char.IsSurrogate) ? "Segoe UI Emoji" : "Segoe UI", size, text.Any(char.IsSurrogate) ? FontStyle.Regular : bold ? FontStyle.Bold : FontStyle.Regular, GraphicsUnit.Pixel);
@@ -19,11 +22,13 @@ internal static class Art
         using var format = new StringFormat { Alignment = center ? StringAlignment.Center : StringAlignment.Near, LineAlignment = StringAlignment.Near };
         if (width > 0) g.DrawString(text, font, brush, new RectangleF(x, y, width, 1000), format); else g.DrawString(text, font, brush, x, y);
     }
+    // Paint one background hill layer.
     static void Hill(Graphics g, Color color, params PointF[] points)
     {
         using var b = new SolidBrush(color); using var p = new GraphicsPath();
         p.AddCurve(points, .7f); p.AddLine(points[^1], new(1280, 800)); p.AddLine(new PointF(1280, 800), new(0, 800)); p.CloseFigure(); g.FillPath(b, p);
     }
+    // Paint the native meadow landscape behind the UI.
     public static void Landscape(Graphics g, int region)
     {
         var palette = WorldPalette.For(region);
@@ -76,15 +81,20 @@ internal static class Art
         Box(g, new(1123, 514, 20, 38), Color.FromArgb(73, 108, 92), 8); Box(g, new(1101, 503, 14, 17), Gold, 2); Box(g, new(1151, 503, 14, 17), Gold, 2);
         for (int i = 0; i < 38; i++) FestiveArt.Flower(g, 22 + i * 181 % 1250, 719 + i % 4 * 17, 4 + i % 4, i % 3 == 0 ? Color.FromArgb(249, 237, 212) : palette.Accent);
     }
+    // Paint a scenery tree without creating an interactive game object.
     public static void Tree(Graphics g, float x, float y, float scale)
     {
         using var trunk = new SolidBrush(Color.FromArgb(69, 101, 77)); g.FillRectangle(trunk, x - 3 * scale, y, 6 * scale, 45 * scale);
         using var leaves = new SolidBrush(Color.FromArgb(47, 105, 83)); g.FillEllipse(leaves, x - 30 * scale, y - 40 * scale, 60 * scale, 72 * scale);
         using var light = new SolidBrush(Color.FromArgb(62, 125, 96)); g.FillEllipse(light, x - 27 * scale, y - 41 * scale, 42 * scale, 57 * scale);
     }
+    // Convert a card rank into its display label.
     public static string Rank(int rank) => rank switch { 0 => "★", 1 => "A", 11 => "J", 12 => "Q", 13 => "K", _ => rank.ToString() };
+    // Return the suit glyph used by native card rendering.
     public static string Suit(int suit) => new[] { "♠", "♥", "♦", "♣" }[suit % 4];
+    // Choose the red/black suit color used by native card faces.
     public static Color SuitColor(int suit) => suit is 1 or 2 ? Color.FromArgb(184,64,74) : Ink;
+    // Draw a card face or back within the supplied bounds.
     public static void Card(Graphics g, RectangleF r, Card card, bool face, bool hint, bool hover, bool labels = true)
     {
         Box(g, new(r.X + 1, r.Y + 5, r.Width, r.Height), Color.FromArgb(55, 0, 30, 25), 9);
@@ -125,6 +135,7 @@ internal static class Art
             if (hover) { using var b = new SolidBrush(Color.FromArgb(28, 255, 211, 104)); using var p = Round(r, 9); g.FillPath(b, p); }
         }
     }
+    // Draw a jewel cell using its kind and selection state.
     public static void DrawGem(Graphics g, RectangleF r, int kind)
     {
         Color[] colors = { Color.FromArgb(212, 86, 108), Color.FromArgb(79, 151, 201), Color.FromArgb(151, 110, 186), Color.FromArgb(231, 173, 62), Color.FromArgb(83, 166, 128), Color.FromArgb(231, 129, 76) };

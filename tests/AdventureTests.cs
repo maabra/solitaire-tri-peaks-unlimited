@@ -2,6 +2,7 @@ using MeadowPeaks;
 
 static class AdventureTests
 {
+    // Exercise adventure obstacles, their action-dependent transitions and saved-hand behavior.
     public static void Run(Action<bool, string> check)
     {
         var rules = new TriPeaksRules();
@@ -44,6 +45,7 @@ static class AdventureTests
             check(endless.Won, "Endless formation solved");
         }
         check(kinds.Count == 15 && formations.Count == MeadowCampaign.TotalLevels - 3, "Every special card and formation generated");
+        // Build a small purpose-specific deal fixture so the test isolates the intended mechanics.
         Deal Board(params Card[] cards) => new() { Cards = cards, Layout = cards.Select((_, i) => new Slot(i * 2, 0)).ToArray(), Waste = new(5, 0), Stock = new[] { new Card(7, 1), new Card(8, 1) } };
         var ice = new Hand(Board(new Card(6, 0) { Kind = CardKind.Ice, Strength = 1 }, new Card(6, 1)), rules);
         check(!ice.Play(0) && ice.Play(1) && ice.Effects.Clears == 1, "Ice blocks and thaws on clears");

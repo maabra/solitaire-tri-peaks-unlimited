@@ -3,15 +3,20 @@ using Microsoft.Web.WebView2.Core;
 namespace MeadowPeaks;
 internal sealed partial class DesktopGameWindow
 {
+    // Evaluate a script in the packaged WebView for an integration smoke assertion.
     async Task<string> Eval(string script)=>await browser.CoreWebView2.ExecuteScriptAsync(script);
+    // Throw a descriptive smoke-test failure when a required UI invariant is false.
     async Task Check(string expression,string label){if(await Eval(expression)!="true")throw new InvalidOperationException("Shared UI check failed: "+label);}
+    // Trigger a real shared-UI action by its delegated action identifier.
     async Task ClickAction(string action)=>await Eval("document.querySelector('[data-action=\""+action+"\"]').click()");
+    // Save the current packaged UI for inspection during smoke checks.
     async Task Shot(string name)
     {
         await Task.Delay(120);
         string directory=Path.Combine(Path.GetDirectoryName(Environment.ProcessPath)!,"screenshots");Directory.CreateDirectory(directory);
         using var file=File.Create(Path.Combine(directory,name+".png"));await browser.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png,file);
     }
+    // Exercise navigation, legal play and persistence in the actual packaged WebView.
     async Task SmokeSharedUi()
     {
         try

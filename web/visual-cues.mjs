@@ -2,6 +2,7 @@ import {gameIcon} from './game-art.mjs';
 
 const destinations={trail:['dice','Trail'],memory:['pairs','Pairs'],album:['album','Album'],missions:['missions','Picnic'],voyage:['boat','Voyage'],tournament:['trophy','Trophies'],hunt:['arrow','Hunt'],bingo:['bingo','Bingo'],regatta:['helm','Regatta'],balloon:['balloon','Flight'],travel:['travel','Travel'],milestones:['medal','Milestones'],chest:['chest','Chest'],postcard:['postcard','Postcards'],tickets:['ticket','Trail'],customize:['studio','Card studio'],hub:['compass','Activities'],eventPlay:['play','Play']};
 const controls={shop:['bag','Shop'],gems:['gems','Garden'],continue:['play','Play'],map:['mapRoute','Map'],events:['compass','Activities'],guide:['ruleBook','Cards'],birdHelp:['pipGuide','Pip'],replay:['restart','Replay'],undo:['undo','Undo'],gemHint:['hint','Match'],starHunt:['stars','Stars'],export:['export','Export'],import:['import','Import'],fullscreen:['fullscreen','Full screen']};
+// Build a visual action with its generated icon and readable caption.
 export function visualButton(button,icon,label){
  const original=button.getAttribute('aria-label')||button.textContent.trim();
  if(!button.getAttribute('aria-label'))button.setAttribute('aria-label',original);
@@ -9,6 +10,7 @@ export function visualButton(button,icon,label){
  button.innerHTML=`${gameIcon(icon,30)}<span>${label}</span>`;
  button.classList.add('visual-control');
 }
+// Decorate supported menu controls with shared icon artwork after rendering.
 export function visualizeMenu(root){
  const event=root.querySelector('.event-panel');
  // Long instructions remain available inside the same page and through its i button.
@@ -22,4 +24,5 @@ export function visualizeMenu(root){
  });
  root.querySelectorAll('.shop article').forEach(article=>{const description=article.querySelector('p');if(description)description.classList.add('helper-description');const buy=article.querySelector('[data-action^="buy:"]');if(buy){const title=article.querySelector('h3').cloneNode(true);title.querySelectorAll('button').forEach(e=>e.remove());buy.setAttribute('aria-label',buy.textContent.trim()==='Bag full'?`${title.textContent.trim()} bag is full`:`Buy ${title.textContent.trim()} for ${buy.textContent.trim().replace(/^Buy\s*/, '')} coins`);buy.title=buy.getAttribute('aria-label');}});
 }
+// Render the sequence of illustrated steps used to explain an activity.
 export function visualFlow(){return `<div class="picture-flow" aria-label="Play cards, earn rewards, grow your album">${[['play','Play'],['gift','Earn'],['album','Collect']].map(([icon,label],i)=>`${i?'<span class="flow-arrow" aria-hidden="true">›</span>':''}<span class="flow-step">${gameIcon(icon,48)}<small>${label}</small></span>`).join('')}</div>`;}

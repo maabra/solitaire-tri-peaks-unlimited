@@ -1,6 +1,7 @@
 using MeadowPeaks;
 static class BoundaryTests
 {
+ // Exercise numeric/save boundaries and ensure rejected commands preserve valid state.
  public static void Run(Action<bool,string> check)
  {
   var legacy = new Progress { Unlocked = 480000, Coins = 1873, HighestPlayedLevel = 480000 };

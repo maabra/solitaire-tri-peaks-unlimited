@@ -15,6 +15,7 @@ public static class DealCodes
         string body=$"{deal.Generation}-{(deal.Endless ? "E" : "C")}-{deal.Level}-{deal.Seed}";
         return body+"-"+Convert.ToHexString(SHA256.HashData(Encoding.ASCII.GetBytes(body))).Substring(0,8);
     }
+    // Reject malformed references and checksum mismatches before accepting their numeric fields.
     public static bool TryParse(string? code, out DealReference? deal)
     {
         deal=null; if(code==null || code.Length>80) return false;

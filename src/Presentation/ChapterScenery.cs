@@ -2,9 +2,11 @@ namespace MeadowPeaks;
 internal static class ChapterScenery
 {
     static readonly Color[] colors={Color.FromArgb(246,212,123),Color.FromArgb(219,150,88),Color.FromArgb(216,239,255),Color.FromArgb(24,38,79),Color.FromArgb(170,122,196),Color.FromArgb(96,183,195),Color.FromArgb(214,191,124),Color.FromArgb(237,179,207)};
+    // Paint deterministic chapter decoration using its palette and chapter identifier.
     public static void Draw(Graphics g,int chapter)
     {
-        int biome=(chapter-1)%8;long seed=chapter;double Next(){seed=seed*48271%2147483647;return seed/2147483647.0;}
+        int biome=(chapter-1)%8;long seed=chapter;/* Advance the scenery-only deterministic generator without affecting deal randomness. */
+    double Next(){seed=seed*48271%2147483647;return seed/2147483647.0;}
         if(chapter>1){using var tint=new SolidBrush(Color.FromArgb(biome==3?135:biome==2?85:35,colors[biome]));g.FillRectangle(tint,0,0,1280,800);}
         using var ink=new SolidBrush(biome==2?Color.FromArgb(190,Color.White):Color.FromArgb(200,colors[biome]));using var star=new Pen(Color.FromArgb(230,255,236,174),1.5f);
         for(int i=0;i<(biome==2?100:biome==3?65:32);i++)

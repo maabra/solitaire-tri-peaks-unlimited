@@ -3,9 +3,12 @@ import {chapterName} from './chapter-worlds.mjs';
 import {modeFor} from './mode-scenes.mjs';
 import {gameIcon} from './game-art.mjs';
 
+// List the scenery/table choices available from the profile's collection.
 export function surfaceChoices(session){return `<div class="surface-choices" role="group" aria-label="Play surface">${[['scene','travel','Scenery'],['table','studio','Card table']].map(([id,icon,label])=>`<button data-action="surface:${id}" aria-pressed="${session.p.Customization.Surface===id}">${gameIcon(icon,26)} ${label}</button>`).join('')}</div>`;}
 
+// Resolve the illustrated scenery appropriate for the active hand or mode.
 export function scenicSurface(session){return session.p.Customization.Surface==='scene';}
+// Apply the saved scenic-or-table preference without replacing the hand itself.
 export function applyPlaySurface(session){
  const scenic=scenicSurface(session);document.body.classList.toggle('scenic-play',scenic);
  if(!scenic||modeFor(session))return;

@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import {Session,ProfileStore,validateProfile} from '../session.mjs';
 import {helpers} from '../core.mjs';
 const MAX=2147483647;
-const storage=new Map(),adapter={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)};
+const storage=new Map(),adapter={getItem:/* Read from the test's isolated in-memory storage instead of a real player's browser save. */
+ k=>storage.get(k)??null,setItem:/* Write into the test's isolated storage to exercise persistence and conflict handling. */
+ (k,v)=>storage.set(k,v)};
 const s=new Session(new ProfileStore(adapter),()=> '2026-10-26');
 s.p.Coins=MAX;s.daily();assert.equal(s.p.Coins,MAX);s.spinWheel(0);assert.equal(s.p.Coins,MAX);
 s.p.Garden=MAX;s.gardenGift();assert.equal(s.p.Coins,MAX);validateProfile(s.p);

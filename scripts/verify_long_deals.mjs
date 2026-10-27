@@ -1,3 +1,5 @@
+// Construct every long-garden campaign hand through the real witness-validating generator.
+// A failed construction throws instead of counting a visually plausible but unsolvable board.
 import {adventureDeal} from '../web/adventure-hand.mjs';
 let count=0;
 for(let level=1095;level<=10000;level+=100){

@@ -21,14 +21,17 @@ public sealed class StandardEconomyPolicy : IEconomyPolicy
 public sealed class Wallet
 {
     readonly Progress profile;
+    // Bind wallet operations to the profile's saved balance.
     public Wallet(Progress profile) { this.profile = profile; }
     public int Balance => profile.Coins;
+    // Reject invalid or unaffordable costs before deducting coins.
     public bool Spend(int amount)
     {
         if (amount < 0 || Balance < amount) return false;
         profile.Coins -= amount;
         return true;
     }
+    // Add a non-negative reward while respecting the supported wallet cap.
     public void Credit(int amount)
     {
         if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount));
@@ -39,6 +42,7 @@ public sealed class Wallet
 public sealed class PowerupInventory
 {
     readonly Progress profile;
+    // Bind helper quantities to their saved profile representation.
     public PowerupInventory(Progress profile) { this.profile = profile; }
 
     // Keep the original save fields for backward compatibility. New item IDs
@@ -51,6 +55,7 @@ public sealed class PowerupInventory
         _ => profile.Items.GetValueOrDefault(id)
     };
 
+    // Apply a bounded inventory change without allowing negative or overflowing quantities.
     public void Add(string id, int amount)
     {
         long next = (long)Count(id) + amount;

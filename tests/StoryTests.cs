@@ -2,6 +2,7 @@ using MeadowPeaks;
 using System.Text.Json;
 static class StoryTests
 {
+    // Replay deterministic story deals and inspect layout families, including the optional complete campaign sweep.
     public static void Run(Action<bool,string> check,bool all=false)
     {
         var rules=new TriPeaksRules();var provider=new StoryDealProvider(rules);
@@ -42,5 +43,6 @@ static class StoryTests
         Console.WriteLine($"PASS: {count:N0} story formations; one-hour garden cooldown, board persistence and versioned deal codes.");
     }
     sealed class Clock:IGameClock {public DateTime Today=>UtcNow.Date;public DateTimeOffset UtcNow {get;set;}=new(2026,10,24,12,0,0,TimeSpan.Zero);}
-    sealed class Seeds:IRandomSource{public int NextSeed()=>42;}
+    sealed class Seeds:IRandomSource{/* Supply a seed through the injected random source so game logic need not own global randomness. */
+    public int NextSeed()=>42;}
 }

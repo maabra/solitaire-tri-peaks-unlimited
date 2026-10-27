@@ -5,13 +5,18 @@ namespace MeadowPeaks;
 public sealed class StoryLayouts : ILayoutProvider
 {
     public static readonly string[] Names={"Three peaks","Royal fan","Moon ring","Twin fans","Butterfly","River ribbon","Diamond loop","Starburst","Five towers","Double arch","Crown","Braided trail","Sunrise","Eight towers","Hourglass","Serpent"};
+    // Map the level to its deterministic formation name without changing historical family ordering.
     public static string NameFor(int level)=>$"{Names[(level-1)%Names.Length]} {(level-1)/Names.Length+1}";
+    // Build the original sixteen story families with deterministic level variations.
     public List<Slot> Create(int level)
     {
         int family=(level-1)%16,variation=(level-1)/16;
         var points=new List<(double X,double Y,double Angle)>();
+        // Append an authored point to the current formation before its covering graph is compiled.
         void Add(double x,double y,double angle=0)=>points.Add((x,y,angle));
+        // Place a layered packet with the authored offset between cards.
         void Stack(double x,double y,int count,double lean=0){for(int i=0;i<count;i++)Add(x+lean*i,y+i*21,lean*1.5);}
+        // Place a curved spread while recording each card's intended rotation.
         void Arc(double cx,double cy,double rx,double ry,int count,double from,double to,bool split=true)
         {
             var arc=Enumerable.Range(0,count).Select(i=>from+(to-from)*i/(count-1)).ToArray();
