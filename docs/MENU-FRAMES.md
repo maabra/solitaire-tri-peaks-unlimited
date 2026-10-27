@@ -13,3 +13,7 @@ Both assets were produced with the built-in imagegen tool. The help-frame prompt
 Adventure and collection menus now use the same fixed-surface model as Settings: the complete painting belongs to the dialog, the modal is inset onto its paper, and only the content page scrolls. The translucent full-page wash and second border are removed. Picnic stays 960 by 600 logical pixels rather than stretching its painting when Pip appears; overflow stays inside the linen area. Navigation and close controls avoid the basket, teacup and decorative rails. Narrow Travel and Milestones rows stack their actions so labels retain usable space.
 
 `test_menu_surfaces.py` verifies paper bounds, complete background coverage and stationary navigation/frame geometry during wheel scrolling. The existing Settings book checks and 26-menu, three-size audit also pass.
+
+## Shop receipts (2.5.5)
+
+A saved helper purchase updates the existing shelf nodes instead of rebuilding the menu. The selected card briefly shows Bought!, a floating +1 and an item bounce; its owned count is highlighted. A local receipt message remains readable above the shelf. Reduced motion keeps the text confirmation without animated movement. Receipt timers are independent per item and restart for repeat purchases; they never grant items or debit coins. `test_shop_feedback.py` checks real transactions, stable cards, repeated purchases, affordability and receipt cleanup.

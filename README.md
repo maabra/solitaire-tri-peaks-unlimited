@@ -47,7 +47,7 @@ The first chapter introduces Gem Garden, the daily picnic, Lucky Wheel, albums, 
 
 Helpers unlock through progress and obstacle discovery. Pip introduces places, explains tools, and offers a tip after repeated mistakes. Rewards are saved before their animations, so interrupted effects cannot duplicate prizes.
 
-![Owned quantities and prices on the illustrated shop board](docs/screenshots/shop.png)
+![Purchase confirmation, owned quantities and prices on the illustrated shop board](docs/screenshots/shop.png)
 
 ## More little adventures
 
