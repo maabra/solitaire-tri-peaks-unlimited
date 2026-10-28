@@ -1,0 +1,76 @@
+/* Generated surfaces are nine-sliced: lettering remains live, and corner art
+   retains its shape on short labels, wide actions and tall activity plaques. */
+:root {
+ --button-plum:url('assets/button-plum.png');
+ --button-meadow:url('assets/button-meadow.png');
+ --button-parchment:url('assets/button-parchment.png');
+}
+:is(#app,#dialog,#context-help,body>header) button:where(:not(
+ .card,.gem,.story-node,.road-destination,.chapter-gate,.bird-help,.pip-home-chat,
+ .brand,.memory-tile,.hidden-tile,.uncovered,.bingo-cell,.trail-space,
+ [data-action=goto],[data-action=findLevel],[data-action=locate],
+ [data-action^="preview:"],[data-action^="level:"],
+ [data-action^="gem:"],[data-action^="hunt:"],[data-action^="bingo:"]
+)) {
+ --painted-button:var(--button-plum);
+ --painted-ink:#fff9e7;
+ background:transparent!important;
+ border-color:transparent!important;
+ border-image:var(--painted-button) 150 fill / 10px stretch!important;
+ box-shadow:0 3px 5px #49372533!important;
+ color:var(--painted-ink)!important;
+ text-shadow:0 1px 1px #33212e66;
+}
+:is(#app,#dialog,#context-help,body>header) button:is(
+ .primary,.story-play,.help-done,.shop-buy,.picnic-claim,[aria-current],
+ [data-action=spinWheel],[data-action^="claim"],[data-action^="collect"]
+) {
+ --painted-button:var(--button-meadow);
+ --painted-ink:#142713;
+ text-shadow:0 1px #ffffff55;
+}
+:is(#app,#dialog,#context-help,body>header) :is(
+ .menu-navigation button,.activity-tabs button,.related-places button,
+ .map-icon,.event-tile,.info-button,.map-travel,.wallet,
+ button[data-action=menuBack],button[data-action=backMap],button[data-action=close],
+ button[data-action=export],button[data-action=import]
+) {
+ --painted-button:var(--button-parchment);
+ --painted-ink:#583c2a;
+ text-shadow:none;
+}
+:is(#app,#dialog,#context-help) :is(.activity-tabs,.menu-navigation) button[aria-current] {
+ --painted-button:var(--button-meadow);--painted-ink:#142713;
+}
+:is(#app,#dialog,#context-help) button:disabled:where(:not(.card,.gem,.story-node,.memory-tile,.hidden-tile,.uncovered)) {
+ --painted-button:var(--button-parchment);--painted-ink:#746b5c;
+ filter:grayscale(.8)!important;opacity:.72;cursor:default;text-shadow:none;
+}
+/* Match the little destinations to the village's illustrated shop and books. */
+#app .map-viewport .map-dock .map-icon {
+ background:transparent!important;border-color:transparent!important;
+ border-image:var(--button-parchment) 150 fill / 12px stretch!important;
+ box-shadow:0 3px 5px #49372533!important;
+}
+#app .map-viewport .map-dock .map-icon small,
+#app .map-controls .map-travel small {color:#583c2a!important;text-shadow:none!important}
+:is(#app,#dialog,#context-help) button:is(.info-button,.shell-close,.help-close) {
+ border-image-width:6px!important;
+}
+#modal .event-hub button.event-tile {border-image-width:15px!important}
+#modal .event-tile .activity-status {background:#f1e7c9;color:#4c6334;border:1px solid #d6c58d}
+#modal .event-tile .game-icon {filter:drop-shadow(0 3px 2px #73552d30)}
+#modal :is(.picnic-task,.shop article,.skin-card) {
+ box-shadow:0 3px 8px #73552d1c,inset 0 1px #fff9;
+}
+#modal .picnic-task.is-ready {box-shadow:0 0 0 2px #d6e7ab,0 4px 12px #5b7d3422}
+#modal .panel-heading .heading-art {filter:drop-shadow(0 3px 2px #80603b26)}
+/* A pressed action feels inset; motion preferences keep feedback instantaneous. */
+@media (hover:hover) {
+ :is(#app,#dialog,#context-help) button:not(:disabled):focus-visible {outline:3px solid #176f78;outline-offset:3px}
+}
+@media (prefers-reduced-motion:no-preference) {
+ body:not(.reduced) :is(#app,#dialog,#context-help) button:not(:disabled):active {
+  filter:brightness(.96);box-shadow:0 1px 2px #49372544;
+ }
+}

@@ -11,10 +11,10 @@ AUDIT=r'''()=>{
  return {overlaps,obscured,clip};
 }'''
 # Measure rendered element bounds and report overlaps or clipping against their intended surfaces.
-async def audit(unseen):
- out=Path('artifacts/overlap-regression');out.mkdir(parents=True,exist_ok=True)
+async def audit(unseen,width=1440,height=900):
+ out=Path('artifacts/overlap-regression')/f'{width}-{height}'/('tutorials' if unseen else 'returning');out.mkdir(parents=True,exist_ok=True)
  async with async_playwright() as p:
-  b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':1440,'height':900},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
+  b=await p.chromium.launch(channel='msedge',headless=True);page=await b.new_page(viewport={'width':width,'height':height},reduced_motion='reduce');await page.add_init_script("localStorage.setItem('meadow-storage-consent','yes')")
   await page.goto(os.environ.get('MEADOW_TEST_URL','http://127.0.0.1:8765/'));await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.Unlocked=10000;s.p.HighestPlayedLevel=10000;s.p.ChapterGifts100=[1];s.p.GuideSeen=[];s.start(351,false,106723,'MP21');s.save()}");
   if not unseen: await page.evaluate("async()=>{const {Session}=await import('./session.mjs');const {features}=await import('./journey-guide.mjs');const {helpers}=await import('./core.mjs');const s=new Session();s.p.GuideSeen=[...features.map(f=>f.id),'cards',...helpers.map(h=>'helper-'+h.Id),...Array.from({length:17},(_,i)=>'mechanic'+i)];s.save()}")
   await page.reload();results={}
@@ -27,6 +27,7 @@ async def audit(unseen):
   print('No overlaps or covered controls:', 'first-time tutorials' if unseen else 'returning player')
 # Scenario: Exercise ui overlaps in an isolated browser session. Fail on violated assertions rather than accepting screenshots alone.
 async def main():
- await audit(True)
- await audit(False)
+ for width,height in [(1440,900),(868,748),(700,432),(390,844)]:
+  await audit(True,width,height)
+  await audit(False,width,height)
 asyncio.run(main())

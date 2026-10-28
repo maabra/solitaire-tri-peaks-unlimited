@@ -16,7 +16,7 @@ export function patchBoard(host,markup,incremental,reduced,effect=null){
  board.style.cssText=fresh.style.cssText;board.className=fresh.className;
  for(const card of [...board.children])if(!fresh.querySelector(`[data-action="${card.dataset.action}"]`)){
   if(!reduced)flyCard(card,host.querySelector('.hand-row .pile:nth-child(3) .card'));
-  if(!reduced&&nextScore>oldScore){const r=card.getBoundingClientRect(),label=document.createElement('span');label.className='card-score-flight';label.textContent='+'+(nextScore-oldScore);label.style.left=r.x+'px';label.style.top=r.y+'px';document.body.append(label);label.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(-45px)',opacity:0}],{duration:motion.score}).finished.finally(()=>label.remove());}
+  if(!reduced&&nextScore>oldScore){const r=card.getBoundingClientRect(),label=document.createElement('span');label.className='card-score-flight';label.textContent='+'+(nextScore-oldScore);label.style.left=r.x+'px';label.style.top=r.y+'px';document.body.append(label);label.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(-45px)',opacity:0}],{duration:motion.score}).finished.catch(()=>{}).finally(()=>label.remove());}
   card.remove();
  }
  for(const source of fresh.children){let card=board.querySelector(`[data-action="${source.dataset.action}"]`);
